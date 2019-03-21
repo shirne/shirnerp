@@ -10,13 +10,13 @@ use app\common\validate\BaseUniqueValidate;
  * Class GoodsValidate
  * @package app\admin\validate
  */
-class GoodsValidate extends BaseUniqueValidate
+class StorageValidate extends BaseUniqueValidate
 {
     protected $rule=array(
-        'title'=>'require|unique:goods,%id%'
+        'title'=>'require|unique:storage,%id%'
     );
     protected $message=array(
-        'title.require'=>'请填写商品名称'
+        'title.require'=>'请填写仓库名称'
     );
 
 }

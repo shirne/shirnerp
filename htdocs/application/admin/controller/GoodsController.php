@@ -9,7 +9,7 @@ use app\common\facade\GoodsCategoryFacade;
 use app\common\model\GoodsModel;
 use think\Db;
 
-class GoodsControlller extends BaseController
+class GoodsController extends BaseController
 {
     public function search($key='',$cate=0,$type=0){
         $model=Db::name('goods')
@@ -41,8 +41,8 @@ class GoodsControlller extends BaseController
             return redirect(url('',['cate_id'=>$cate_id,'key'=>base64_encode($key)]));
         }
         $key=empty($key)?"":base64_decode($key);
-        $model = Db::view('goods','*')->view('goodsCategory',['name'=>'category_name','title'=>'category_title'],'goods.cate_id=goodsCategory.id','LEFT')
-            ->view('manager',['username'],'goods.user_id=manager.id','LEFT');
+        $model = Db::view('goods','*')->view('goodsCategory',['name'=>'category_name','title'=>'category_title'],'goods.cate_id=goodsCategory.id','LEFT');
+            //->view('manager',['username'],'goods.user_id=manager.id','LEFT');
         if(!empty($key)){
             $model->whereLike('goods.title|manager.username|goodsCategory.title',"%$key%");
         }

@@ -106,18 +106,18 @@ class CategoryController extends BaseController
                     $this->error(lang('Update failed!'));
                 }
             }
-        }else{
-            $model = Db::name('category')->find($id);
-            if(empty($model)){
-                $this->error('分类不存在');
-            }
-            $cate = CategoryFacade::getCategories();
-
-            $this->assign('cate',$cate);
-            $this->assign('model',$model);
-            $this->assign('id',$id);
-            return $this->fetch();
         }
+
+        $model = Db::name('category')->find($id);
+        if(empty($model)){
+            $this->error('分类不存在');
+        }
+        $cate = CategoryFacade::getCategories();
+
+        $this->assign('cate',$cate);
+        $this->assign('model',$model);
+        $this->assign('id',$id);
+        return $this->fetch();
     }
 
     /**
