@@ -19,7 +19,7 @@ class StorageController extends BaseController
             return redirect(url('',['key'=>base64_encode($key)]));
         }
         $key=empty($key)?"":base64_decode($key);
-        $model = Db::name('links');
+        $model = Db::name('storage');
         $where=array();
         if(!empty($key)){
             $where[] = array('title|url','like',"%$key%");
@@ -31,7 +31,7 @@ class StorageController extends BaseController
     }
 
     /**
-     * 添加链接
+     * 添加仓库
      * @return mixed
      */
     public function add(){
@@ -50,8 +50,8 @@ class StorageController extends BaseController
                     $this->error($this->uploadErrorCode.':'.$this->uploadError);
                 }
 
-                if (Db::name('Links')->insert($data)) {
-                    $this->success(lang('Add success!'), url('links/index'));
+                if (Db::name('storage')->insert($data)) {
+                    $this->success(lang('Add success!'), url('storage/index'));
                 } else {
                     $this->error(lang('Add failed!'));
                 }
@@ -64,7 +64,7 @@ class StorageController extends BaseController
     }
 
     /**
-     * 编辑链接
+     * 编辑仓库
      * @param $id
      * @return mixed
      */
@@ -89,18 +89,18 @@ class StorageController extends BaseController
                 unset($data['delete_image']);
 
                 $data['id']=$id;
-                if (Db::name('Links')->update($data)) {
+                if (Db::name('storage')->update($data)) {
                     delete_image($delete_images);
-                    $this->success(lang('Update success!'), url('links/index'));
+                    $this->success(lang('Update success!'), url('storage/index'));
                 } else {
                     $this->error(lang('Update failed!'));
                 }
             }
         }
 
-        $model = Db::name('Links')->find($id);
+        $model = Db::name('storage')->find($id);
         if(empty($model)){
-            $this->error('链接不存在');
+            $this->error('信息不存在');
         }
         $this->assign('model',$model);
         $this->assign('id',$id);
@@ -108,16 +108,16 @@ class StorageController extends BaseController
     }
 
     /**
-     * 删除链接
+     * 删除仓库
      * @param $id
      */
     public function delete($id)
     {
         $id = intval($id);
-        $model = Db::name('links');
+        $model = Db::name('storage');
         $result = $model->delete($id);
         if($result){
-            $this->success(lang('Delete success!'), url('links/index'));
+            $this->success(lang('Delete success!'), url('storage/index'));
         }else{
             $this->error(lang('Delete failed!'));
         }

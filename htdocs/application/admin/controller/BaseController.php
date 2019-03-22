@@ -128,7 +128,7 @@ class BaseController extends Controller {
      * @param string $template
      * @param array $vars
      * @param array $config
-     * @return string
+     * @return mixed
      */
     protected function fetch($template = '', $vars = [], $config = [])
     {
