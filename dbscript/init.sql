@@ -28,10 +28,11 @@ VALUES
   (83,8,'余额明细','Member/money_log','member_money_log','ion-md-paper',0,0),
   (86,8,'操作日志','Member/log','member_log','ion-md-clipboard',0,0),
   (91,9,'配置管理','Setting/index','setting_index','ion-md-options',0,0),
-  (92,9,'管理员','Manager/index','manager_index','ion-md-person',0,0),
-  (93,9,'菜单管理','Permission/index','permission_index','ion-md-code-working',0,0),
-  (94,9,'导航管理','Navigator/index','navigator_index','ion-md-reorder',0,1),
-  (95,9,'操作日志','Manager/log','manager_log','ion-md-clipboard',0,0);
+  (92,9,'基础数据','Data/index','data_index','ion-md-grid',0,0),
+  (93,9,'管理员','Manager/index','manager_index','ion-md-person',0,0),
+  (94,9,'菜单管理','Permission/index','permission_index','ion-md-code-working',0,0),
+  (95,9,'导航管理','Navigator/index','navigator_index','ion-md-reorder',0,1),
+  (96,9,'操作日志','Manager/log','manager_log','ion-md-clipboard',0,0);
 
 
 TRUNCATE TABLE `sa_manager`;

@@ -32,10 +32,10 @@ class BaseModel extends Model
     public static function getInstance()
     {
         $class = get_called_class();
-        if(!isset(static::$instances[$class])){
-            static::$instances[$class] = new static();
+        if(!isset(self::$instances[$class])){
+            self::$instances[$class] = new static();
         }
-        return static::$instances[$class];
+        return self::$instances[$class];
     }
 
     protected function triggerStatus($item,$status)

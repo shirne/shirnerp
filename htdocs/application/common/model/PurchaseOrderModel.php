@@ -3,9 +3,15 @@
 namespace app\common\model;
 
 
-use think\Model;
-
-class PurchaseOrderModel extends Model
+class PurchaseOrderModel extends BaseModel
 {
+    protected $autoWriteTimestamp = true;
 
+    public static function createOrder($customer_id, $storage_id, $goods, $currency='', $status=0)
+    {
+
+    }
+
+    protected function triggerStatus($item,$status)
+    {}
 }

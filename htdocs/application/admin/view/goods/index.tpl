@@ -28,7 +28,7 @@
 						</div>
 						<select name="cate_id" class="form-control">
 							<option value="0">不限分类</option>
-							<foreach name="category" item="v">
+							<foreach name="categories" item="v">
 								<option value="{$v.id}" {$cate_id == $v['id']?'selected="selected"':""}>{$v.html} {$v.title}</option>
 							</foreach>
 						</select>

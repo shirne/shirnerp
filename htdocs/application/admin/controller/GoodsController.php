@@ -53,10 +53,9 @@ class GoodsController extends BaseController
         $lists=$model->order('id DESC')->paginate(10);
         $this->assign('lists',$lists);
         $this->assign('page',$lists->render());
-        $this->assign('types',getArticleTypes());
         $this->assign('keyword',$key);
         $this->assign('cate_id',$cate_id);
-        $this->assign("category",GoodsCategoryFacade::getCategories());
+        $this->assign("categories",GoodsCategoryFacade::getCategories());
 
         return $this->fetch();
     }
@@ -75,10 +74,10 @@ class GoodsController extends BaseController
                 $this->error($validate->getError());
             } else {
                 $delete_images=[];
-                $uploaded = $this->upload('article', 'upload_cover');
+                $uploaded = $this->upload('goods', 'upload_image');
                 if (!empty($uploaded)) {
-                    $data['cover'] = $uploaded['url'];
-                    $delete_images[]=$data['delete_cover'];
+                    $data['image'] = $uploaded['url'];
+                    $delete_images[]=$data['delete_image'];
                 }elseif($this->uploadErrorCode>102){
                     $this->error($this->uploadErrorCode.':'.$this->uploadError);
                 }
@@ -89,9 +88,9 @@ class GoodsController extends BaseController
                 if(empty($data['create_time']))unset($data['create_time']);
                 $model=GoodsModel::create($data);
                 if ($model->id) {
-                    delete_image($delete_images);
+                    //delete_image($delete_images);
                     user_log($this->mid,'addgoods',1,'添加商品 '.$model->id ,'manager');
-                    $this->success(lang('Add success!'), url('Article/index'));
+                    $this->success(lang('Add success!'), url('Goods/index'));
                 } else {
                     delete_image($data['cover']);
                     $this->error(lang('Add failed!'));
@@ -99,9 +98,8 @@ class GoodsController extends BaseController
             }
         }
         $model=array('type'=>1,'cate_id'=>$cid);
-        $this->assign("category",GoodsCategoryFacade::getCategories());
+        $this->assign("categories",GoodsCategoryFacade::getCategories());
         $this->assign('article',$model);
-        $this->assign('types',getArticleTypes());
         $this->assign('id',0);
         return $this->fetch('edit');
     }
@@ -135,7 +133,7 @@ class GoodsController extends BaseController
                 if(empty($data['create_time']))unset($data['create_time']);
                 $model=GoodsModel::get($id);
                 if ($model->allowField(true)->save($data)) {
-                    delete_image($delete_images);
+                    //delete_image($delete_images);
                     user_log($this->mid, 'updategoods', 1, '修改商品 ' . $id, 'manager');
                     $this->success("编辑成功", url('Article/index'));
                 } else {
@@ -143,17 +141,16 @@ class GoodsController extends BaseController
                     $this->error("编辑失败");
                 }
             }
-        }else{
-
-            $model = GoodsModel::get($id);
-            if(empty($model)){
-                $this->error('商品不存在');
-            }
-            $this->assign("category",GoodsCategoryFacade::getCategories());
-            $this->assign('goods',$model);
-            $this->assign('id',$id);
-            return $this->fetch();
         }
+
+        $model = GoodsModel::get($id);
+        if(empty($model)){
+            $this->error('商品不存在');
+        }
+        $this->assign("categories",GoodsCategoryFacade::getCategories());
+        $this->assign('goods',$model);
+        $this->assign('id',$id);
+        return $this->fetch();
     }
 
     /**

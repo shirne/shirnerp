@@ -9,7 +9,7 @@ use think\Db;
 class CustomerController extends BaseController
 {
     /**
-     * 供应商列表
+     * 客户列表
      * @param string $key
      * @return mixed|\think\response\Redirect
      */
@@ -31,7 +31,7 @@ class CustomerController extends BaseController
     }
 
     /**
-     * 添加供应商
+     * 添加客户
      * @return mixed
      */
     public function add(){
@@ -64,7 +64,7 @@ class CustomerController extends BaseController
     }
 
     /**
-     * 编辑供应商
+     * 编辑客户
      * @param $id
      * @return mixed
      */
@@ -108,7 +108,7 @@ class CustomerController extends BaseController
     }
 
     /**
-     * 删除供应商
+     * 删除客户
      * @param $id
      */
     public function delete($id)

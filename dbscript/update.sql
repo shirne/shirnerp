@@ -3,8 +3,18 @@ CREATE TABLE `sa_currency` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `key` varchar(20) DEFAULT NULL COMMENT '币种编码',
   `title` varchar(50) DEFAULT NULL COMMENT '币种名称',
-  `symbol` varchar(2) DEFAULT NULL COMMENT '币种符号',
+  `symbol` varchar(10) DEFAULT NULL COMMENT '币种符号',
   `icon` varchar(150) DEFAULT NULL COMMENT '图标',
+  `sort` int(11) DEFAULT 0 COMMENT '排序',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `key` (`key`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `sa_unit`;
+CREATE TABLE `sa_unit` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `key` varchar(10) DEFAULT NULL COMMENT '单位名称',
+  `description` varchar(50) DEFAULT NULL COMMENT '单位说明',
   `sort` int(11) DEFAULT 0 COMMENT '排序',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`) USING BTREE
@@ -86,6 +96,7 @@ CREATE TABLE `sa_supplier` (
 	`website` varchar(100) NULL,
 	`email` varchar(150) NULL,
 	`fax` varchar(20) NULL,
+  `status` TINYINT(4) DEFAULT '1',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -145,6 +156,7 @@ CREATE TABLE `sa_customer` (
 	`website` varchar(100) NULL,
 	`email` varchar(150) NULL,
 	`fax` varchar(20) NULL,
+  `status` TINYINT(4) DEFAULT '1',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`),

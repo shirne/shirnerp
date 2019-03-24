@@ -3,6 +3,7 @@
 namespace app\admin\controller;
 
 
+use app\common\model\SaleOrderModel;
 use excel\Excel;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use think\Db;
