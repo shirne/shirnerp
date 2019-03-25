@@ -8,17 +8,9 @@
     
     <div class="row list-header">
         <div class="col-6">
-            <a href="{:url('storage/add')}" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 添加仓库</a>
+            <a href="{:url('storage/add')}" class="btn btn-outline-primary btn-sm btn-add-storage"><i class="ion-md-add"></i> 添加仓库</a>
         </div>
         <div class="col-6">
-            <form action="{:url('storage/index')}" method="post">
-                <div class="input-group input-group-sm">
-                    <input type="text" class="form-control" name="key" placeholder="输入链接标题或者地址关键词搜索">
-                    <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" type="submit"><i class="ion-md-search"></i></button>
-                    </div>
-                </div>
-            </form>
         </div>
     </div>
     <table class="table table-hover table-striped">
@@ -26,27 +18,21 @@
             <tr>
                 <th width="50">编号</th>
                 <th>名称</th>
+                <th>编号</th>
+                <th>地区</th>
                 <th>地址</th>
-                <th>排序</th>
                 <th width="160">&nbsp;</th>
             </tr>
         </thead>
         <tbody>
+        <php>$empty=list_empty(6);</php>
         <volist name="lists" id="v" empty="$empty">
             <tr>
                 <td>{$v.id}</td>
-                <td>
-                    <if condition="!empty($v['logo'])">
-                    <figure class="figure img-view" data-img="{$v.logo}" >
-                        <img src="{$v.logo}?w=100" class="figure-img img-fluid rounded" alt="image">
-                    </figure>
-                        <else/>
-                        -
-                    </if>
-                </td>
                 <td>{$v.title}</td>
-                <td><a href="{$v.url}" target="_blank">{$v.url}</a> </td>
-                <td>{$v.sort}</td> 
+                <td>{$v.storage_no}</td>
+                <td>{$v.province}/{$v.city}/{$v.area}</td>
+                <td>{$v.address}</td>
                 <td class="operations">
                     <a class="btn btn-outline-primary" title="编辑" href="{:url('storage/edit',array('id'=>$v['id']))}"><i class="ion-md-create"></i> </a>
                     <a class="btn btn-outline-danger link-confirm" title="删除" data-configm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('storage/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
@@ -57,4 +43,91 @@
     </table>
     {$page|raw}
 </div>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__STATIC__/js/location.min.js"></script>
+<script type="text/html" id="storageEdit">
+    <div class="row" style="margin:0 10%;">
+        <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">仓库名称</span> </div><input type="text" name="title" class="form-control" placeholder="请填写仓库名称"/> </div></div>
+        <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">仓库全称</span> </div><input type="text" name="fullname" class="form-control" placeholder="请填写仓库全称"/> </div> </div>
+        <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">仓库编码</span> </div><input type="text" name="storage_no" class="form-control" placeholder="请填写仓库编码"/> </div> </div>
+        <div class="col-12 form-group area-box">
+            <div class="input-group">
+                <div class="input-group-prepend"><span class="input-group-text">所在地区</span> </div>
+                <select class="form-control" ></select>
+                <select class="form-control" ></select>
+                <select class="form-control" ></select>
+            </div>
+            <input type="hidden" name="province" />
+            <input type="hidden" name="city" />
+            <input type="hidden" name="area" />
+        </div>
+        <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">仓库地址</span> </div><input type="text" name="address" class="form-control" placeholder="请填写仓库地址"/> </div> </div>
+    </div>
+</script>
+    <script type="text/javascript">
+        jQuery(function ($) {
+            $('.btn-add-storage').click(function (e) {
+                e.preventDefault();
+                editStorage(0);
+            });
+            $('.btn-edit-storage').click(function (e) {
+                e.preventDefault();
+                editStorage($(this).data('id'));
+            });
+
+            var storageTpl = $('#storageEdit').html();
+            var storageUrl = '{:url("storage/edit",['id'=>'__ID__'])}';
+            function editStorage(id) {
+                var dlg=new Dialog({
+                    onshown:function (body) {
+                        if(id>0){
+                            $.ajax({
+                                url:storageUrl.replace('__ID__',id),
+                                dataType:'JSON',
+                                success:function (json) {
+                                    //console.log(json);
+                                    if(json.code==1) {
+                                        var storage = json.data.storage
+                                        bindData(body, storage);
+                                        body.find(".area-box").jChinaArea({
+                                            aspnet:true,
+                                            s1:storage.province,
+                                            s2:storage.city,
+                                            s3:storage.area
+                                        });
+                                    }
+                                }
+                            })
+                        }else{
+                            body.find(".area-box").jChinaArea({
+                                aspnet:true,
+                                s1:"",
+                                s2:"",
+                                s3:""
+                            });
+                        }
+                    },
+                    onsure:function (body) {
+                        $.ajax({
+                            url:id>0?storageUrl.replace('__ID__',id):'{:url("storage/add")}',
+                            type:'POST',
+                            dataType:'JSON',
+                            data:getData(body),
+                            success:function (json) {
+                                //console.log(json);
+                                dialog.alert(json.msg);
+                                if(json.code==1){
+                                    location.reload();
+                                    dlg.close();
+                                }
+                            }
+                        });
+                        return false;
+                    }
+                }).show(storageTpl,id>0?'编辑客户':'添加客户');
+            }
+
+        })
+    </script>
 </block>

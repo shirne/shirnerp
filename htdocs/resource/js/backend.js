@@ -9,6 +9,23 @@ function radio_tab(radios,lists,prefix) {
     }).filter(':checked').trigger('change');
 }
 
+//绑定数据
+function bindData(body,data) {
+    for(var i in data){
+        body.find('[name='+i+']').val(data[i]);
+    }
+}
+
+//获取表单数据
+function getData(body) {
+    var data={};
+    var fields=body.find('[name]');
+    for(var i=0;i<fields.length;i++){
+        data[fields.eq(i).attr('name')]=fields.eq(i).val();
+    }
+    return data;
+}
+
 jQuery(function ($) {
     //高亮当前选中的导航
     var bread = $(".breadcrumb");
@@ -77,7 +94,7 @@ jQuery(function ($) {
         if (!window[action] || typeof window[action] !== 'function') {
             return dialog.error('未知操作');
         }
-        var needChecks = $(this).data('needChecks');
+        var needChecks = $(this).data('needchecks');
         if (needChecks === undefined) needChecks = true;
         if (needChecks) {
             var target = $(this).data('target');
@@ -90,10 +107,10 @@ jQuery(function ($) {
                 for (var i = 0; i < ids.length; i++) {
                     idchecks.push(ids.eq(i).val());
                 }
-                window[action](idchecks);
+                window[action].call(this,idchecks);
             }
         } else {
-            window[action]();
+            window[action].call(this);
         }
     });
 

@@ -3,7 +3,7 @@ namespace app\admin\controller;
 
 
 use app\common\facade\CategoryFacade;
-use app\common\facade\ProductCategoryFacade;
+use app\common\facade\GoodsCategoryFacade;
 use think\Db;
 use think\facade\Cache;
 use think\facade\Log;
@@ -22,10 +22,10 @@ class IndexController extends BaseController{
     public function index(){
 
         $stat=array();
-        $stat['feedback']=Db::name('feedback')->count();
-        $stat['member']=Db::name('member')->count();
-        $stat['article']=Db::name('article')->count();
-        $stat['links']=Db::name('links')->count();
+        $stat['goods']=Db::name('goods')->count();
+        $stat['customer']=Db::name('customer')->count();
+        $stat['supplier']=Db::name('supplier')->count();
+        $stat['sale_order']=Db::name('saleOrder')->count();
 
         $this->assign('stat',$stat);
 
@@ -150,8 +150,8 @@ class IndexController extends BaseController{
 
     public function getCate($model='article'){
         switch ($model){
-            case 'product':
-                $lists=ProductCategoryFacade::getCategories();
+            case 'goods':
+                $lists=GoodsCategoryFacade::getCategories();
                 break;
             default:
                 $lists=CategoryFacade::getCategories();

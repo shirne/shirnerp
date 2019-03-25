@@ -15,7 +15,7 @@ class GoodsController extends BaseController
         $model=Db::name('goods')
             ->where('status',1);
         if(!empty($key)){
-            $model->where('id|title','like',"%$key%");
+            $model->where('id|title|fullname','like',"%$key%");
         }
         if($cate>0){
             $model->whereIn('cate_id',GoodsCategoryFacade::getSubCateIds($cate));
@@ -51,6 +51,7 @@ class GoodsController extends BaseController
         }
 
         $lists=$model->order('id DESC')->paginate(10);
+        $this->assign('units',getGoodsUnits());
         $this->assign('lists',$lists);
         $this->assign('page',$lists->render());
         $this->assign('keyword',$key);
@@ -69,7 +70,7 @@ class GoodsController extends BaseController
         if ($this->request->isPost()) {
             $data = $this->request->post();
             $validate = new GoodsValidate();
-
+            $validate->setId(0);
             if (!$validate->check($data)) {
                 $this->error($validate->getError());
             } else {
@@ -99,7 +100,7 @@ class GoodsController extends BaseController
         }
         $model=array('type'=>1,'cate_id'=>$cid);
         $this->assign("categories",GoodsCategoryFacade::getCategories());
-        $this->assign('article',$model);
+        $this->assign('goods',$model);
         $this->assign('id',0);
         return $this->fetch('edit');
     }
@@ -116,7 +117,7 @@ class GoodsController extends BaseController
         if ($this->request->isPost()) {
             $data=$this->request->post();
             $validate=new GoodsValidate();
-
+            $validate->setId($id);
             if (!$validate->check($data)) {
                 $this->error($validate->getError());
             }else{

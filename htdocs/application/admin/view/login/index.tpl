@@ -30,7 +30,7 @@
 <div class="container" id="loginContainer">
     <div class="row justify-content-center">
         <div class="col-10 col-md-7 col-lg-5" id="loginBox">
-            <h1>管理员登录</h1>
+            <h1>凯旋蔬菜管理系统</h1>
 
             <form action="{:url('login/login')}" method="post">
                 <div class="form-group">

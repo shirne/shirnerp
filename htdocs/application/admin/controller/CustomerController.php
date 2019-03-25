@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 
 use app\admin\validate\CustomerValidate;
+use app\common\model\CustomerModel;
 use think\Db;
 
 class CustomerController extends BaseController
@@ -50,7 +51,8 @@ class CustomerController extends BaseController
                     $this->error($this->uploadErrorCode.':'.$this->uploadError);
                 }
 
-                if (Db::name('customer')->insert($data)) {
+                $result = CustomerModel::create($data);
+                if ($result['id']) {
                     $this->success(lang('Add success!'), url('customer/index'));
                 } else {
                     $this->error(lang('Add failed!'));
@@ -88,8 +90,8 @@ class CustomerController extends BaseController
                 }
                 unset($data['delete_image']);
 
-                $data['id']=$id;
-                if (Db::name('customer')->update($data)) {
+                $result = CustomerModel::update($data,['id'=>$id]);
+                if ($result) {
                     delete_image($delete_images);
                     $this->success(lang('Update success!'), url('customer/index'));
                 } else {
@@ -114,6 +116,10 @@ class CustomerController extends BaseController
     public function delete($id)
     {
         $id = intval($id);
+        $hasOrder = Db::name('saleOrder')->where('customer_id',$id)->count();
+        if($hasOrder){
+            $this->error('已有订单，无法删除');
+        }
         $model = Db::name('customer');
         $result = $model->delete($id);
         if($result){

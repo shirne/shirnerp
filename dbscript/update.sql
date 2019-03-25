@@ -44,6 +44,7 @@ CREATE TABLE `sa_goods` (
   `cate_id` INT(11) DEFAULT 0 COMMENT '排序',
   `unit` VARCHAR(5) DEFAULT '斤',
   `image` VARCHAR(150) DEFAULT '',
+  `description` VARCHAR(500) DEFAULT '',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -80,6 +81,37 @@ CREATE TABLE `sa_goods_storage` (
   PRIMARY KEY (`id`),
   KEY `goods_id` (`goods_id`),
   KEY `storage_id` (`storage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `sa_trans_order`;
+CREATE TABLE `sa_trans_order` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `from_storage_id` INT(11) NOT NULL,
+  `storage_id` INT(4) NOT NULL,
+  `order_no` VARCHAR(30) NOT NULL,
+  `status` TINYINT(4) NOT NULL,
+  `create_time` INT(11) DEFAULT '0',
+  `update_time` INT(11) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `from_storage_id` (`from_storage_id`) USING BTREE,
+  UNIQUE KEY `storage_id` (`storage_id`) USING BTREE,
+  UNIQUE KEY `order_no` (`order_no`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `sa_trans_order_goods`;
+CREATE TABLE `sa_trans_order_goods` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `trans_order_id` INT(11) NOT NULL,
+  `goods_id` INT(11) NOT NULL,
+  `goods_title` VARCHAR(50) NOT NULL,
+  `goods_no` VARCHAR(30) DEFAULT '',
+  `goods_unit` VARCHAR(5) DEFAULT '斤',
+  `count` DECIMAL(14,2) DEFAULT '0',
+  `create_time` INT(11) DEFAULT '0',
+  `update_time` INT(11) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `goods_id` (`goods_id`) USING BTREE,
+  UNIQUE KEY `trans_order_id` (`trans_order_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `sa_supplier`;

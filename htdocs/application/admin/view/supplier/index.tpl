@@ -6,7 +6,7 @@
 <div id="page-wrapper">
     <div class="row list-header">
         <div class="col-md-6">
-            <a href="{:url('supplier/add')}" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 添加供应商</a>
+            <a href="{:url('supplier/add')}" class="btn btn-outline-primary btn-sm btn-add-supplier"><i class="ion-md-add"></i> 添加供应商</a>
         </div>
         <div class="col-md-6">
             <form action="{:url('supplier/index')}" method="post">
@@ -23,12 +23,12 @@
         <thead>
             <tr>
                 <th width="50">编号</th>
-                <th>用户名</th>
-                <th>邮箱</th>
+                <th>名称</th>
+                <th>简称</th>
+                <th>地区</th>
+                <th>地址</th>
+                <th>电话</th>
                 <th>注册时间/修改时间</th>
-                <th>上次登陆</th>
-                <th>类型</th>
-                <th>状态</th>
                 <th width="160">&nbsp;</th>
             </tr>
         </thead>
@@ -36,24 +36,16 @@
         <foreach name="lists" item="v">
             <tr>
                 <td>{$v.id}</td>
-                <td>{$v.username}</td>
-                <td>{$v.email}</td>
+                <td>{$v.title}</td>
+                <td>{$v.short}</td>
+                <td>{$v.province}/{$v.city}/{$v.area}</td>
+                <td>{$v.address}</td>
+                <td>{$v.phone}</td>
                 <td>{$v.create_time|showdate}<br />{$v.update_time|showdate}</td>
-                <td>{$v.login_ip}<br />{$v.logintime|showdate}</td>
-                <td>
-                    <if condition="$v.type eq 1"> <span class="label label-success">超级管理员</span>
-                    <elseif condition="$v.type eq 2"/><span class="label label-danger">管理员</span>
-                    </if>
-                </td> 
-                <td><if condition="$v.status eq 1">正常<else/><span style="color:red">禁用</span></if></td>
                 <td class="operations">
                     <a class="btn btn-outline-primary" title="编辑" href="{:url('supplier/update',array('id'=>$v['id']))}"><i class="ion-md-create"></i> </a>
 
-                <if condition="$v.status eq 1">	
-                    <a class="btn btn-outline-danger link-confirm" title="禁用" data-confirm="禁用后用户将不能登陆后台!\n请确认!!!" href="{:url('supplier/delete',array('id'=>$v['id']))}" ><i class="ion-md-close"></i> </a>
-            	<else/>
-                    <a class="btn btn-outline-success" title="启用" href="{:url('supplier/delete',array('id'=>$v['id']))}" ><i class="ion-md-checkmark-circle"></i> </a>
-            	</if>
+                    <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="删除后将不能恢复!\n请确认!!!" href="{:url('supplier/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
                 </td>
             </tr>
         </foreach>
@@ -61,4 +53,94 @@
     </table>
 </div>
 
+</block>
+<block name="script">
+    <script type="text/javascript" src="__STATIC__/js/location.min.js"></script>
+    <script type="text/html" id="supplierEdit">
+        <div class="row" style="margin:0 10%;">
+            <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">供应商名称</span> </div><input type="text" name="title" class="form-control" placeholder="请填写供应商名称"/> </div></div>
+            <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">供应商简称</span> </div><input type="text" name="short" class="form-control" placeholder="请填写供应商简称"/> </div> </div>
+            <div class="col-12 form-group area-box">
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text">所在地区</span> </div>
+                    <select class="form-control" ></select>
+                    <select class="form-control" ></select>
+                    <select class="form-control" ></select>
+                </div>
+                <input type="hidden" name="province" />
+                <input type="hidden" name="city" />
+                <input type="hidden" name="area" />
+            </div>
+            <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">供应商电话</span> </div><input type="text" name="phone" class="form-control" placeholder="请填写供应商电话"/> </div> </div>
+            <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">供应商邮箱</span> </div><input type="text" name="email" class="form-control" /> </div> </div>
+            <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">供应商网站</span> </div><input type="text" name="website" class="form-control" /> </div> </div>
+            <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">供应商传真</span> </div><input type="text" name="fax" class="form-control" /> </div> </div>
+        </div>
+    </script>
+    <script type="text/javascript">
+        jQuery(function ($) {
+            $('.btn-add-supplier').click(function (e) {
+                e.preventDefault();
+                editSupplier(0);
+            });
+            $('.btn-edit-supplier').click(function (e) {
+                e.preventDefault();
+                editSupplier($(this).data('id'));
+            });
+
+            var supplierTpl = $('#supplierEdit').html();
+            var supplierUrl = '{:url("supplier/edit",['id'=>'__ID__'])}';
+            function editSupplier(id) {
+                var dlg=new Dialog({
+                    onshown:function (body) {
+                        if(id>0){
+                            $.ajax({
+                                url:supplierUrl.replace('__ID__',id),
+                                dataType:'JSON',
+                                success:function (json) {
+                                    //console.log(json);
+                                    if(json.code==1) {
+                                        var supplier = json.data.supplier
+                                        bindData(body, supplier);
+                                        body.find(".area-box").jChinaArea({
+                                            aspnet:true,
+                                            s1:supplier.province,
+                                            s2:supplier.city,
+                                            s3:supplier.area
+                                        });
+                                    }
+                                }
+                            })
+                        }else{
+                            body.find(".area-box").jChinaArea({
+                                aspnet:true,
+                                s1:"",
+                                s2:"",
+                                s3:""
+                            });
+                        }
+                    },
+                    onsure:function (body) {
+                        $.ajax({
+                            url:id>0?supplierUrl.replace('__ID__',id):'{:url("supplier/add")}',
+                            type:'POST',
+                            dataType:'JSON',
+                            data:getData(body),
+                            success:function (json) {
+                                //console.log(json);
+                                dialog.alert(json.msg);
+                                if(json.code==1){
+                                    location.reload();
+                                    dlg.close();
+                                }
+                            }
+                        });
+                        return false;
+                    }
+                }).show(supplierTpl,id>0?'编辑供应商':'添加供应商');
+            }
+
+        })
+
+    </script>
 </block>

@@ -12,9 +12,96 @@
             </button>
         </div>
     </foreach>
+    <div class="row">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-info">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <i class="ion-md-apps ion-5x"></i>
+                        </div>
+                        <div class="col-6 text-right">
+                            <p class="announcement-heading">{$stat.goods}</p>
+                            <p class="announcement-text">商品</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer announcement-bottom">
+                    <nav class="nav nav-fill">
+                        <a class="nav-item nav-link" href="{:url('goods/index')}"><i class="ion-md-navicon"></i> 管理商品 </a>
+                        <a class="nav-item nav-link" href="{:url('storage/index')}"><i class="ion-md-stats-bars"></i> 管理库存 </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-info">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <i class="ion-md-people ion-5x"></i>
+                        </div>
+                        <div class="col-6 text-right">
+                            <p class="announcement-heading">{$stat.customer}</p>
+                            <p class="announcement-text">客户</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer announcement-bottom">
+                    <nav class="nav nav-fill">
+                        <a class="nav-item nav-link" href="{:url('customer/index')}"><i class="ion-md-navicon"></i> 管理客户 </a>
+                        <a class="nav-item nav-link" href="{:url('finance/customer')}"><i class="ion-md-stats-bars"></i> 财务统计 </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-info">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <i class="ion-md-contacts ion-5x"></i>
+                        </div>
+                        <div class="col-6 text-right">
+                            <p class="announcement-heading">{$stat.supplier}</p>
+                            <p class="announcement-text">供应商</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer announcement-bottom">
+                    <nav class="nav nav-fill">
+                        <a class="nav-item nav-link" href="{:url('supplier/index')}"><i class="ion-md-navicon"></i> 管理供应商 </a>
+                        <a class="nav-item nav-link" href="{:url('finance/supplier')}"><i class="ion-md-add"></i> 财务统计 </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-info">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <i class="ion-md-analytics ion-5x"></i>
+                        </div>
+                        <div class="col-6 text-right">
+                            <p class="announcement-heading">{$stat.sale_order}</p>
+                            <p class="announcement-text">销售</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer announcement-bottom">
+                    <nav class="nav nav-fill">
+                        <a class="nav-item nav-link" href="{:url('saleOrder/index')}"><i class="ion-md-navicon"></i> 管理销售单 </a>
+                        <a class="nav-item nav-link" href="{:url('saleOrder/statics')}"><i class="ion-md-stats-bars"></i> 订单统计 </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div class="row">
-        <div class="col-md-6 mt-3">
+        <div class="col-md-6 mb-3">
             <div class="card border-default">
                 <div class="card-header">
                     <h5 class="panel-title"><i class="ion-md-stats"></i> 销售</h5>
@@ -35,7 +122,7 @@
                 </table>
             </div>
         </div>
-        <div class="col-md-6 mt-3">
+        <div class="col-md-6 mb-3">
             <div class="card border-default">
                 <div class="card-header">
                     <h5 class="panel-title"><i class="ion-md-filing"></i> 库存</h5>
@@ -62,7 +149,7 @@
                 </table>
             </div>
         </div>
-        <div class="col-md-6 mt-3">
+        <div class="col-md-6 mb-3">
             <div class="card border-default">
                 <div class="card-header">
                     <h5 class="panel-title"><i class="ion-md-swap"></i> 资金</h5>
@@ -89,7 +176,7 @@
                 </table>
             </div>
         </div>
-        <div class="col-md-6 mt-3">
+        <div class="col-md-6 mb-3">
             <div class="card border-default">
                 <div class="card-header">
                     <h5 class="panel-title"><i class="ion-md-cart"></i> 采购</h5>

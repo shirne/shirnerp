@@ -10,6 +10,8 @@
 // +----------------------------------------------------------------------
 
 // 应用公共文件
+use think\Db;
+
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
 function writelog($message,$type=\think\Log::INFO){
@@ -519,20 +521,32 @@ function get_translate($table,$key,$field='',$lang=''){
     return \app\common\facade\TranslateFacade::get_trans($table,$key,$field,$lang);
 }
 
-
-function getMemberLevels()
+function getGoodsUnits()
 {
-    static $levels;
-    if (empty($levels)) {
-        $levels = cache('levels');
+    static $units;
+    if (empty($currencies)) {
+        $units = cache('units');
         if (empty($levels)) {
-            $model=new \app\admin\model\MemberLevelModel();
-            $data =  $model->order('sort ASC,level_id ASC')->select();
-            $levels=array_index($data,'level_id');
-            cache('levels', $levels);
+            $data =  Db::name('unit')->order('sort ASC,id ASC')->select();
+            $units=array_index($data,'key');
+            cache('units', $units);
         }
     }
-    return $levels;
+    return $units;
+}
+
+function getCurrencies()
+{
+    static $currencies;
+    if (empty($currencies)) {
+        $currencies = cache('currencies');
+        if (empty($levels)) {
+            $data =  Db::name('currency')->order('sort ASC,id ASC')->select();
+            $currencies=array_index($data,'key');
+            cache('currencies', $currencies);
+        }
+    }
+    return $currencies;
 }
 
 function getLevelConfig($levels){

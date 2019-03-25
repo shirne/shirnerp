@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 
 use app\admin\validate\SupplierValidate;
+use app\common\model\SupplierModel;
 use think\Db;
 
 class SupplierController extends BaseController
@@ -50,7 +51,8 @@ class SupplierController extends BaseController
                     $this->error($this->uploadErrorCode.':'.$this->uploadError);
                 }
 
-                if (Db::name('supplier')->insert($data)) {
+                $result = SupplierModel::create($data);
+                if ($result['id']) {
                     $this->success(lang('Add success!'), url('supplier/index'));
                 } else {
                     $this->error(lang('Add failed!'));
@@ -88,8 +90,8 @@ class SupplierController extends BaseController
                 }
                 unset($data['delete_image']);
 
-                $data['id']=$id;
-                if (Db::name('supplier')->update($data)) {
+                $result = SupplierModel::update($data,['id'=>$id]);
+                if ($result) {
                     delete_image($delete_images);
                     $this->success(lang('Update success!'), url('supplier/index'));
                 } else {
@@ -114,6 +116,10 @@ class SupplierController extends BaseController
     public function delete($id)
     {
         $id = intval($id);
+        $hasOrder = Db::name('purchaseOrder')->where('supplier_id',$id)->count();
+        if($hasOrder){
+            $this->error('已有订单，无法删除');
+        }
         $model = Db::name('supplier');
         $result = $model->delete($id);
         if($result){

@@ -46,10 +46,10 @@ class GoodsCategoryController extends BaseController
                     $this->error($this->uploadErrorCode.':'.$this->uploadError);
                 }
 
-                $result=Db::name('category')->insert($data);
+                $result=Db::name('goodsCategory')->insert($data);
                 if ($result) {
                     GoodsCategoryFacade::clearCache();
-                    $this->success(lang('Add success!'), url('category/index'));
+                    $this->success(lang('Add success!'), url('goodsCategory/index'));
                 } else {
                     delete_image([$data['icon'],$data['image']]);
                     $this->error(lang('Add failed!'));
@@ -93,29 +93,29 @@ class GoodsCategoryController extends BaseController
                 unset($data['delete_icon']);
                 unset($data['delete_image']);
 
-                $result=Db::name('category')->where('id',$id)->update($data);
+                $result=Db::name('goodsCategory')->where('id',$id)->update($data);
 
                 if ($result) {
                     delete_image($delete_images);
                     GoodsCategoryFacade::clearCache();
-                    $this->success(lang('Update success!'), url('category/index'));
+                    $this->success(lang('Update success!'), url('goodsCategory/index'));
                 } else {
                     delete_image([$data['icon'],$data['image']]);
                     $this->error(lang('Update failed!'));
                 }
             }
-        }else{
-            $model = Db::name('category')->find($id);
-            if(empty($model)){
-                $this->error('分类不存在');
-            }
-            $cate = GoodsCategoryFacade::getCategories();
-
-            $this->assign('cate',$cate);
-            $this->assign('model',$model);
-            $this->assign('id',$id);
-            return $this->fetch();
         }
+
+        $model = Db::name('goodsCategory')->find($id);
+        if(empty($model)){
+            $this->error('分类不存在');
+        }
+        $cate = GoodsCategoryFacade::getCategories();
+
+        $this->assign('cate',$cate);
+        $this->assign('model',$model);
+        $this->assign('id',$id);
+        return $this->fetch();
     }
 
     /**
@@ -126,20 +126,20 @@ class GoodsCategoryController extends BaseController
     {
         $id = idArr($id);
         //查询属于这个分类的文章
-        $posts = Db::name('Article')->where('cate_id','in',$id)->count();
+        $posts = Db::name('Goods')->where('cate_id','in',$id)->count();
         if($posts){
             $this->error("禁止删除含有文章的分类");
         }
         //禁止删除含有子分类的分类
-        $hasChild = Db::name('Category')->where('pid','in',$id)->count();
+        $hasChild = Db::name('goodsCategory')->where('pid','in',$id)->count();
         if($hasChild){
             $this->error("禁止删除含有子分类的分类");
         }
         //验证通过
-        $result = Db::name('Category')->where('id','in',$id)->delete();
+        $result = Db::name('goodsCategory')->where('id','in',$id)->delete();
         if($result){
             GoodsCategoryFacade::clearCache();
-            $this->success(lang('Delete success!'), url('category/index'));
+            $this->success(lang('Delete success!'), url('goodsCategory/index'));
         }else{
             $this->error(lang('Delete failed!'));
         }

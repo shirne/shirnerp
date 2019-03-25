@@ -114,20 +114,6 @@
                 editCurrency($(this).data('id'));
             });
 
-            function bindData(body,data) {
-                for(var i in data){
-                    body.find('[name='+i+']').val(data[i]);
-                }
-            }
-
-            function getData(body) {
-                var data=new Object();
-                var fields=body.find('[name]');
-                for(var i=0;i<fields.length;i++){
-                    data[fields.eq(i).attr('name')]=fields.eq(i).val();
-                }
-                return data;
-            }
 
             var unitTpl = $('#unitEdit').html();
             var unitUrl = '{:url("data/edit_unit",['id'=>'__ID__'])}';

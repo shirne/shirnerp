@@ -114,6 +114,16 @@ class StorageController extends BaseController
     public function delete($id)
     {
         $id = intval($id);
+        $hasGoods = Db::name('goodsStorage')->where('storage_id',$id)->where('count','NEQ',0)->count();
+        if($hasGoods){
+            $this->error('尚有库存，无法删除');
+        }
+        $hasOrder = Db::name('saleOrder')->where('storage_id',$id)->count();
+        if(!$hasOrder)$hasOrder = Db::name('purchaseOrder')->where('storage_id',$id)->count();
+        if(!$hasOrder)$hasOrder = Db::name('transOrder')->where('storage_id',$id)->whereOr('from_storage_id',$id)->count();
+        if($hasOrder){
+            $this->error('已有关联订单，无法删除');
+        }
         $model = Db::name('storage');
         $result = $model->delete($id);
         if($result){
