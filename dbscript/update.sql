@@ -45,6 +45,7 @@ CREATE TABLE `sa_goods` (
   `unit` VARCHAR(5) DEFAULT '斤',
   `image` VARCHAR(150) DEFAULT '',
   `description` VARCHAR(500) DEFAULT '',
+  `delete_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -90,11 +91,12 @@ CREATE TABLE `sa_trans_order` (
   `storage_id` INT(4) NOT NULL,
   `order_no` VARCHAR(30) NOT NULL,
   `status` TINYINT(4) NOT NULL,
+  `delete_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `from_storage_id` (`from_storage_id`) USING BTREE,
-  UNIQUE KEY `storage_id` (`storage_id`) USING BTREE,
+  KEY `from_storage_id` (`from_storage_id`) ,
+  KEY `storage_id` (`storage_id`) ,
   UNIQUE KEY `order_no` (`order_no`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -107,11 +109,12 @@ CREATE TABLE `sa_trans_order_goods` (
   `goods_no` VARCHAR(30) DEFAULT '',
   `goods_unit` VARCHAR(5) DEFAULT '斤',
   `count` DECIMAL(14,2) DEFAULT '0',
+  `delete_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `goods_id` (`goods_id`) USING BTREE,
-  UNIQUE KEY `trans_order_id` (`trans_order_id`) USING BTREE
+  KEY `goods_id` (`goods_id`),
+  KEY `trans_order_id` (`trans_order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `sa_supplier`;
@@ -129,6 +132,7 @@ CREATE TABLE `sa_supplier` (
 	`email` varchar(150) NULL,
 	`fax` varchar(20) NULL,
   `status` TINYINT(4) DEFAULT '1',
+  `delete_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -143,15 +147,18 @@ CREATE TABLE `sa_purchase_order` (
   `supplier_id` INT(11) NOT NULL,
   `storage_id` INT(4) NOT NULL,
   `order_no` VARCHAR(30) NOT NULL,
+  `supplier_order_no` VARCHAR(30) NOT NULL,
   `status` TINYINT(4) NOT NULL,
+  `pay_status` TINYINT(4) DEFAULT '0',
   `amount` DECIMAL(14,2) DEFAULT '0',
   `payed_amount` DECIMAL(14,2) DEFAULT '0',
   `currency` VARCHAR(10) DEFAULT 'RMB',
+  `delete_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `supplier_id` (`supplier_id`) USING BTREE,
-  UNIQUE KEY `storage_id` (`storage_id`) USING BTREE,
+  KEY `supplier_id` (`supplier_id`),
+  KEY `storage_id` (`storage_id`),
   UNIQUE KEY `order_no` (`order_no`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -165,12 +172,14 @@ CREATE TABLE `sa_purchase_order_goods` (
   `goods_no` VARCHAR(30) DEFAULT '',
   `goods_unit` VARCHAR(5) DEFAULT '斤',
   `count` DECIMAL(14,2) DEFAULT '0',
+  `price` DECIMAL(14,2) DEFAULT '0',
   `amount` DECIMAL(14,2) DEFAULT '0',
+  `delete_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `goods_id` (`goods_id`) USING BTREE,
-  UNIQUE KEY `purchase_order_id` (`purchase_order_id`) USING BTREE
+  KEY `goods_id` (`goods_id`),
+  KEY `purchase_order_id` (`purchase_order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -189,6 +198,7 @@ CREATE TABLE `sa_customer` (
 	`email` varchar(150) NULL,
 	`fax` varchar(20) NULL,
   `status` TINYINT(4) DEFAULT '1',
+  `delete_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -202,14 +212,17 @@ CREATE TABLE `sa_sale_order` (
   `customer_id` INT(11) NOT NULL,
   `storage_id` INT(11) NOT NULL,
   `order_no` VARCHAR(30) NOT NULL,
+  `customer_order_no` VARCHAR(30) NOT NULL,
   `status` TINYINT(4) NOT NULL,
+  `pay_status` TINYINT(4) DEFAULT '0',
   `amount` DECIMAL(14,2) DEFAULT '0',
   `payed_amount` DECIMAL(14,2) DEFAULT '0',
   `currency` VARCHAR(10) DEFAULT 'RMB',
+  `delete_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `customer_id` (`customer_id`) USING BTREE,
+  KEY `customer_id` (`customer_id`),
   UNIQUE KEY `order_no` (`order_no`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -223,10 +236,12 @@ CREATE TABLE `sa_sale_order_goods` (
   `goods_no` VARCHAR(30) DEFAULT '',
   `goods_unit` VARCHAR(5) DEFAULT '斤',
   `count` DECIMAL(14,2) DEFAULT '0',
+  `price` DECIMAL(14,2) DEFAULT '0',
   `amount` DECIMAL(14,2) DEFAULT '0',
+  `delete_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `goods_id` (`goods_id`) USING BTREE,
-  UNIQUE KEY `sale_order_id` (`sale_order_id`) USING BTREE
+  KEY `goods_id` (`goods_id`),
+  KEY `sale_order_id` (`sale_order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -12,11 +12,10 @@
 					<a href="javascript:" class="btn btn-outline-secondary checkreverse-btn">反选</a>
 				</div>
 				<div class="btn-group btn-group-sm mr-2" role="group" aria-label="action button group">
-					<a href="javascript:" class="btn btn-outline-secondary action-btn" data-action="publish">发布</a>
-					<a href="javascript:" class="btn btn-outline-secondary action-btn" data-action="cancel">撤销</a>
 					<a href="javascript:" class="btn btn-outline-secondary action-btn" data-action="delete">{:lang('Delete')}</a>
 				</div>
-				<a href="{:url('goods/add')}" class="btn btn-outline-primary btn-sm action-btn" data-needchecks="false" data-action="add"><i class="ion-md-add"></i> 添加商品</a>
+				<a href="{:url('goods/add')}" class="btn btn-outline-primary btn-sm action-btn mr-2" data-needchecks="false" data-action="add"><i class="ion-md-add"></i> 添加商品</a>
+				<a href="javascript:" class="btn btn-outline-primary btn-sm action-btn" data-needchecks="false" data-action="batchadd"><i class="ion-md-add"></i> 批量添加</a>
 			</div>
 		</div>
 		<div class="col-md-6">
@@ -46,7 +45,7 @@
 	<table class="table table-hover table-striped">
 		<thead>
 			<tr>
-				<th width="50">编号</th>
+				<th width="50">#</th>
 				<th>名称</th>
 				<th>全名</th>
 				<th>单位</th>
@@ -60,7 +59,7 @@
 			<volist name="lists" id="v" >
 				<tr>
 					<td><input type="checkbox" name="id" value="{$v.id}" /></td>
-					<td>{$v.title}</td>
+					<td><span class="badge badge-info">{$v.goods_no}</span> {$v.title}</td>
 					<td>
                         {$v.fullname}
 					</td>
@@ -139,6 +138,40 @@
 		<div class="form-group">
 			<label for="description">商品摘要</label>
 			<textarea name="description" class="form-control" >{$goods.description}</textarea>
+		</div>
+	</script>
+	<script type="text/html" id="batchAddTpl">
+		<div class="form-group">
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text">商品名称</span>
+				</div>
+				<textarea class="form-control" name="titles" placeholder="一行一个 编号:品名"></textarea>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<label class="input-group-text">统一分类</label>
+				</div>
+				<select name="cate_id" id="goods-cate" class="form-control">
+					<foreach name="categories" item="v">
+						<option value="{$v.id}" {$goods['cate_id'] == $v['id']?'selected="selected"':""}>{$v.html} {$v.title}</option>
+					</foreach>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<label class="input-group-text">统一单位</label>
+				</div>
+				<select name="unit" class="form-control">
+					<foreach name="units" item="v">
+						<option value="{$v.key}" {$goods['unit'] == $v['key']?'selected="selected"':""}>{$v.key}</option>
+					</foreach>
+				</select>
+			</div>
 		</div>
 	</script>
 	<script type="text/javascript">
@@ -242,7 +275,34 @@
 
             w.actionEdit=function () {
                 editGoods($(this).data('id'))
-            }
+            };
+            var batchAddTpl = $('#batchAddTpl').html();
+            var batchAddUrl = '{:url("goods/batch")}';
+
+            w.actionBatchadd=function () {
+                var dlg = new Dialog({
+                    onshown:function (body) {
+                    },
+                    onsure:function (body) {
+                        var data = getData(body);
+                        $.ajax({
+                            url:batchAddUrl,
+                            type:'POST',
+                            dataType:'JSON',
+                            data:data,
+                            success:function (json) {
+                                //console.log(json);
+                                dialog.alert(json.msg);
+                                if(json.code==1){
+                                    location.reload();
+                                    dlg.close();
+                                }
+                            }
+                        });
+                        return false;
+                    }
+                }).show(batchAddTpl,'批量添加');
+            };
         })(window);
 	</script>
 </block>

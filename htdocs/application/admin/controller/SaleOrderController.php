@@ -17,7 +17,8 @@ class SaleOrderController extends BaseController
         }
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('saleOrder','*')
-            ->view('customer',['title','short','phone','province','city','area'],'customer.id=saleOrder.customer_id','LEFT');
+            ->view('customer',['customer_title','short','phone','province','city','area'],'customer.id=saleOrder.customer_id','LEFT')
+        ->where('delete_time',0);
 
         if(!empty($key)){
             $model->whereLike('saleOrder.order_no|customer.title',"%$key%");
@@ -46,6 +47,20 @@ class SaleOrderController extends BaseController
         $this->assign('orderids',empty($orderids)?0:implode(',',$orderids));
         $this->assign('lists',$lists);
         $this->assign('page',$lists->render());
+        return $this->fetch();
+    }
+
+    public function create($customer_id=0){
+        if($this->request->isPost()){
+            $order = $this->request->put('order');
+            $goods = $this->request->put('goods');
+            $result = SaleOrderModel::createOrder($order,$goods);
+            if($result){
+                $this->success('开单成功！');
+            }else{
+                $this->error('开单失败');
+            }
+        }
         return $this->fetch();
     }
 
@@ -139,10 +154,11 @@ class SaleOrderController extends BaseController
      */
     public function delete($id)
     {
-        $model = Db::name('order');
-        $result = $model->whereIn("order_id",idArr($id))->useSoftDelete('delete_time',time())->delete();
+        $model = Db::name('saleOrder');
+
+        $result = $model->whereIn("id",idArr($id))->where('status',0)->useSoftDelete('delete_time',time())->delete();
         if($result){
-            //Db::name('orderProduct')->whereIn("order_id",idArr($id))->delete();
+            Db::name('saleOrderGoods')->whereIn("sale_order_id",idArr($id))->useSoftDelete('delete_time',time())->delete();
             user_log($this->mid,'deletesaleorder',1,'删除订单 '.$id ,'manager');
             $this->success(lang('Delete success!'), url('Order/index'));
         }else{

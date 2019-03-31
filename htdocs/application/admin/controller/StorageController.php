@@ -4,10 +4,32 @@ namespace app\admin\controller;
 
 
 use app\admin\validate\StorageValidate;
+use app\common\model\TransOrderModel;
+use excel\Excel;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use think\Db;
 
 class StorageController extends BaseController
 {
+    public function search($key=''){
+        $model=Db::name('storage');
+        if(!empty($key)){
+            $model->where('id|title|fullname|storage_no','like',"%$key%");
+        }
+
+        $lists=$model->field('id,title,fullname,storage_no,create_time')
+            ->order('id ASC')->limit(20)->select();
+
+
+        return json(['data'=>$lists,'code'=>1]);
+    }
+
+    public function getStorage($storage_id, $goods_id){
+        $stores = Db::name('goodsStorage')->where('storage_id',$storage_id)->whereIn('goods_id',$goods_id)->select();
+        $storages = array_index($stores, 'goods_id,count');
+        return json(['data'=>$storages,'code'=>1]);
+    }
+
     /**
      * 仓库列表
      * @param string $key
@@ -104,6 +126,72 @@ class StorageController extends BaseController
         }
         $this->assign('model',$model);
         $this->assign('id',$id);
+        return $this->fetch();
+    }
+
+    public function goods($id){
+        $goods = Db::view('goodsStorage','*')
+            ->join('goods','goods.id=goodsStorage.goods_id','LEFT')
+            ->where('storage_id',$id)->select();
+
+        $storage = Db::name('storage')->find($id);
+        $this->assign('storage',$storage);
+        $this->assign('goods',$goods);
+        $this->assign('id',$id);
+        return $this->fetch();
+    }
+
+    public function prints($id){
+        $goods = Db::view('goodsStorage','*')
+            ->join('goods','goods.id=goodsStorage.goods_id','LEFT')
+            ->where('storage_id',$id)->select();
+        $storage = Db::name('storage')->find($id);
+        $this->assign('storage',$storage);
+        $this->assign('goods',$goods);
+        $this->assign('id',$id);
+        return $this->fetch();
+    }
+
+    public function export($id){
+        $storage = Db::name('storage')->find($id);
+
+        $goods = Db::view('goodsStorage','*')
+            ->join('goods','goods.id=goodsStorage.goods_id','LEFT')
+            ->where('storage_id',$id)->select();
+        if(empty($goods)){
+            $this->error('没有要导出的项');
+        }
+
+        $excel=new Excel();
+        $excel->setHeader(array(
+            '品名','库存','单位','对账','备注'
+        ));
+        $excel->setColumnType('A',DataType::TYPE_STRING);
+
+        foreach ($goods as $row){
+            $excel->addRow(array(
+                $row['title'],$row['count'],$row['unit'],'',''
+            ));
+        }
+
+        $excel->output($storage['title'].'-库存-'.date('Y-m-d-H-i'));
+    }
+
+    /**
+     * 转库
+     * @return mixed
+     */
+    public function trans($id=0,$from_id=0,$goods=''){
+        if($this->request->isPost()){
+            $order = $this->request->put('order');
+            $goods = $this->request->put('goods');
+            $result = TransOrderModel::createOrder($order,$goods);
+            if($result){
+                $this->success('开单成功！');
+            }else{
+                $this->error('开单失败');
+            }
+        }
         return $this->fetch();
     }
 

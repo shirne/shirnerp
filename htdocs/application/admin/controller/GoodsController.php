@@ -11,21 +11,32 @@ use think\Db;
 
 class GoodsController extends BaseController
 {
-    public function search($key='',$cate=0,$type=0){
-        $model=Db::name('goods')
-            ->where('status',1);
+    public function search($key='',$cate=0,$storage_id=0){
+        $model=Db::name('goods');
         if(!empty($key)){
-            $model->where('id|title|fullname','like',"%$key%");
+            $model->where('id|title|fullname|goods_no','like',"%$key%");
         }
         if($cate>0){
             $model->whereIn('cate_id',GoodsCategoryFacade::getSubCateIds($cate));
         }
-        if(!empty($type)){
-            $model->where('type',$type);
+
+        $lists=$model->field('id,title,goods_no,cate_id,unit,image,description,create_time')
+            ->order('id ASC')->limit(10)->select();
+
+        if(!empty($storage_id)){
+            $ids = array_column($lists,'id');
+            $storages = Db::name('goodsStorage')->where('storage_id',$storage_id)
+                ->whereIn('goods_id',$ids)->select();
+            $storages = array_index($storages,'goods_id');
+            foreach ($lists as &$item){
+                if($storages[$item['id']]){
+                    $item['storage']=$storages[$item['id']]['count'];
+                }else{
+                    $item['storage']=0;
+                }
+            }
         }
 
-        $lists=$model->field('id,title,cover,description,create_time')
-            ->order('id ASC')->limit(10)->select();
         return json(['data'=>$lists,'code'=>1]);
     }
 
@@ -103,6 +114,44 @@ class GoodsController extends BaseController
         $this->assign('goods',$model);
         $this->assign('id',0);
         return $this->fetch('edit');
+    }
+
+    /**
+     * 批量添加
+     */
+    public function batch()
+    {
+        $data = $this->request->post();
+
+        $titles = $data['titles'];
+        if(empty($titles)){
+            $this->error('请填写品名');
+        }
+        $titles = preg_split('/[\r\n]+/s',$titles);
+        $datas = [];
+        foreach ($titles as $title){
+            if(strpos($title,':')>0){
+                $titlesubs=explode(':',$title,2);
+                $datas[] = [
+                    'title' => $titlesubs[1],
+                    'fullname' => $title,
+                    'goods_no'=> $titlesubs[0],
+                    'cate_id' => $data['cate_id'],
+                    'unit' => $data['unit']
+                ];
+            }else {
+                $datas[] = [
+                    'title' => $title,
+                    'fullname' => $title,
+                    'goods_no'=> $title,
+                    'cate_id' => $data['cate_id'],
+                    'unit' => $data['unit']
+                ];
+            }
+        }
+        $model=new GoodsModel();
+        $model->saveAll($datas);
+        $this->success('保存成功！');
     }
 
     /**

@@ -9,6 +9,19 @@ use think\Db;
 
 class CustomerController extends BaseController
 {
+    public function search($key=''){
+        $model=Db::name('customer');
+        if(!empty($key)){
+            $model->where('id|title|phone','like',"%$key%");
+        }
+
+        $lists=$model->field('id,title,short,phone,create_time')
+            ->order('id ASC')->limit(20)->select();
+
+
+        return json(['data'=>$lists,'code'=>1]);
+    }
+
     /**
      * 客户列表
      * @param string $key

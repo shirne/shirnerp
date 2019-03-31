@@ -5,12 +5,11 @@ namespace app\common\model;
 
 use think\Db;
 
-class SaleOrderModel extends BaseModel
+class TransOrderModel extends BaseModel
 {
     protected $autoWriteTimestamp = true;
 
-    public static function createOrder($order, $orderGoods)
-    {
+    public static function createOrder($order, $orderGoods){
         if(empty($order['order_no'])){
             $order['order_no']=self::create_no();
         }
@@ -40,9 +39,9 @@ class SaleOrderModel extends BaseModel
         $order['amount']=$total_price;
         if($model->allowField(true)->save($order)) {
             foreach ($rows as &$row) {
-                $row['sale_order_id']=$model['id'];
+                $row['trans_order_id']=$model['id'];
             }
-            Db::name('saleOrderGoods')->insertAll($rows);
+            Db::name('transOrderGoods')->insertAll($rows);
 
             $data = $model->getOrigin();
             $model->triggerStatus($data,$order['status']);
@@ -55,8 +54,9 @@ class SaleOrderModel extends BaseModel
         if($status>$item['status']){
             switch ($status){
                 case 1:
-                    $goods = Db::name('saleOrderGoods')->where('sale_order_id',$item['id'])->select();
-                    StorageModel::updateGoods($item['storage_id'],$goods,'-');
+                    $goods = Db::name('transOrderGoods')->where('trans_order_id',$item['id'])->select();
+                    StorageModel::updateGoods($item['from_storage_id'],$goods,'-');
+                    StorageModel::updateGoods($item['storage_id'],$goods);
                     break;
             }
         }

@@ -24,6 +24,18 @@ class BaseModel extends Model
         }
     }
 
+    protected static function create_no($pk='id'){
+        $maxid=static::field('max('.$pk.') as maxid')->find();
+        $maxid = $maxid['maxid'];
+        if(empty($maxid))$maxid=0;
+        return date('YmdHis').self::pad_orderid($maxid+1,4);
+    }
+
+    private static function pad_orderid($id,$len=4){
+        $strlen=strlen($id);
+        return $strlen<$len?str_pad($id,$len,'0',STR_PAD_LEFT):substr($id,$strlen-$len);
+    }
+
     protected static $instances=[];
 
     /**

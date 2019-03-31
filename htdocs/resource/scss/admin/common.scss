@@ -40,6 +40,24 @@ h6 {
   display: none;
 }
 
+.auto-complete{
+  min-width: 300px;
+  .list-group-item{
+    white-space: nowrap;
+    overflow: hidden;
+    transition: all linear .5s;
+    &:hover,&.hover {
+      background-color:#eee;
+      &:after {
+        position: absolute;
+        right:10px;
+        content:"按回车键选择";
+        color:#999;
+      }
+    }
+  }
+}
+
 .chgstatus{
   padding:4px 8px;
   padding-left: 24px;

@@ -17,7 +17,8 @@ class PurchaseOrderController extends BaseController
         }
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('purchaseOrder','*')
-            ->view('supplier',['title','short','phone','province','city','area'],'supplier.id=purchaseOrder.supplier_id','LEFT');
+            ->view('supplier',['title'=>'supplier_title','phone','province','city','area'],'supplier.id=purchaseOrder.supplier_id','LEFT')
+            ->where('purchaseOrder.delete_time',0);
 
         if(!empty($key)){
             $model->whereLike('purchaseOrder.order_no|supplier.title',"%$key%");
@@ -46,6 +47,21 @@ class PurchaseOrderController extends BaseController
         $this->assign('orderids',empty($orderids)?0:implode(',',$orderids));
         $this->assign('lists',$lists);
         $this->assign('page',$lists->render());
+        return $this->fetch();
+    }
+
+    public function create($customer_id=0){
+        if($this->request->isPost()){
+            $order = $this->request->put('order');
+            $goods = $this->request->put('goods');
+            $result = PurchaseOrderModel::createOrder($order,$goods);
+            if($result){
+                $this->success('开单成功！');
+            }else{
+                $this->error('开单失败');
+            }
+        }
+        $this->assign('customer_id',$customer_id);
         return $this->fetch();
     }
 
@@ -139,10 +155,10 @@ class PurchaseOrderController extends BaseController
      */
     public function delete($id)
     {
-        $model = Db::name('order');
-        $result = $model->whereIn("order_id",idArr($id))->useSoftDelete('delete_time',time())->delete();
+        $model = Db::name('purchaseOrder');
+        $result = $model->whereIn("id",idArr($id))->where('status',0)->useSoftDelete('delete_time',time())->delete();
         if($result){
-            //Db::name('orderProduct')->whereIn("order_id",idArr($id))->delete();
+            Db::name('purchaseOrderGoods')->whereIn("purchase_order_id",idArr($id))->useSoftDelete('delete_time',time())->delete();
             user_log($this->mid,'deletepurchaseorder',1,'删除订单 '.$id ,'manager');
             $this->success(lang('Delete success!'), url('Order/index'));
         }else{

@@ -9,6 +9,19 @@ use think\Db;
 
 class SupplierController extends BaseController
 {
+    public function search($key=''){
+        $model=Db::name('supplier');
+        if(!empty($key)){
+            $model->where('id|title|phone','like',"%$key%");
+        }
+
+        $lists=$model->field('id,title,short,phone,create_time')
+            ->order('id ASC')->limit(20)->select();
+
+
+        return json(['data'=>$lists,'code'=>1]);
+    }
+
     /**
      * 供应商列表
      * @param string $key
