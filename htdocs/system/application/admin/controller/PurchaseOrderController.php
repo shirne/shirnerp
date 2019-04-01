@@ -50,7 +50,7 @@ class PurchaseOrderController extends BaseController
         return $this->fetch();
     }
 
-    public function create($customer_id=0){
+    public function create($supplier_id=0){
         if($this->request->isPost()){
             $order = $this->request->put('order');
             $goods = $this->request->put('goods');
@@ -61,7 +61,8 @@ class PurchaseOrderController extends BaseController
                 $this->error('开单失败');
             }
         }
-        $this->assign('customer_id',$customer_id);
+        $this->assign('currencies',getCurrencies());
+        $this->assign('supplier_id',$supplier_id);
         return $this->fetch();
     }
 
@@ -70,9 +71,8 @@ class PurchaseOrderController extends BaseController
      * @param $order_ids
      * @param string $key
      * @param string $status
-     * @param string $audit
      */
-    public function export($order_ids='',$key='',$status='',$audit=''){
+    public function export($order_ids='',$key='',$status=''){
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('purchaseOrder','*')
             ->view('supplier',['username','realname','avatar','level_id'],'supplier.id=order.supplier_id','LEFT')

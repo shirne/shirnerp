@@ -76,7 +76,7 @@
                             -
                         </if>
                     </td>
-                    <td class="{$v['amount']>0?'text-success':'text-danger'}">{$v.field|money_type|raw}&nbsp;{$v.amount|showmoney}</td>
+                    <td class="{$v['amount']>0?'text-success':'text-danger'}">{$v.amount}</td>
                     <td>
                         <if condition="$v['customer_id']">
                             <span class="badge badge-info">客户</span> {$v['customer_title']}

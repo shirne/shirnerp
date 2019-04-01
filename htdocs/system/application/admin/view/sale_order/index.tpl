@@ -41,7 +41,7 @@
                     <td>{$v.order_no}</td>
                     <td>{$v.customer_title}</td>
                     <td>{$v.create_time|showdate}</td>
-                    <td>{$v.amount}</td>
+                    <td><span class="badge badge-info">{$v.currency}</span> {$v.amount}</td>
                     <td>
                         <if condition="$v['status'] EQ 1">
                             <span class="badge badge-success">已出库</span>

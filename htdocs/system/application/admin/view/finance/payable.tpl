@@ -44,7 +44,7 @@
                     <td>{$v['amount'] - $v['payed_amount']}</td>
                     <td>{$v.create_time|showdate}</td>
                     <td class="operations">
-                        <a href="javascript:" title="入账" class="btn btn-outline-primary"><i class="ion-md-list-box"></i> </a>
+                        <a href="javascript:" title="入账" data-id="{$v.id}" data-amount="{$v['amount'] - $v['payed_amount']}" class="btn btn-outline-primary finance-btn"><i class="ion-md-list-box"></i> </a>
                         <a class="btn btn-outline-primary" title="明细" href="{:url('finance/payableDetail',array('id'=>$v['id']))}"><i class="ion-md-document"></i> </a>
                     </td>
                 </tr>
@@ -54,4 +54,64 @@
 
     </div>
 
+</block>
+<block name="script">
+    <script type="text/html" id="financeLog">
+        <div class="row" style="margin:0 10%;">
+            <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">金额</span> </div><input type="text" name="amount" class="form-control" placeholder="请填写付款金额"/> </div></div>
+            <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">备注</span> </div><input type="text" name="reson" class="form-control" /> </div> </div>
+        </div>
+    </script>
+    <script type="text/javascript">
+        jQuery(function ($) {
+            var tpl=$('#financeLog').text();
+            $('.finance-btn').click(function() {
+                var id=$(this).data('id');
+                var release=$(this).data('amount');
+                var dlg=new Dialog({
+                    onshown:function(body){
+                        if(release)body.find('[name=amount]').val(release);
+                        else body.find('[name=amount]').val('');
+                    },
+                    onsure:function(body){
+                        var amountField=body.find('[name=amount]');
+                        var amount=amountField.val();
+                        if(!amount){
+                            dialog.warning('请填写金额');
+                            amountField.focus();
+                            return false;
+                        }
+                        if(amount!=parseFloat(amount)){
+                            dialog.warning('请填写两位尾数以内的金额');
+                            amountField.focus();
+                            return false;
+                        }
+                        if(amount>release){
+
+                        }
+                        $.ajax({
+                            url:'{:url("payableLog")}',
+                            type:'POST',
+                            data:{
+                                id:id,
+                                amount:amount,
+                                reson:body.find('input[name=reson]').val()
+                            },
+                            dataType:'JSON',
+                            success:function(j){
+                                if(j.code==1) {
+                                    dlg.hide();
+                                    dialog.alert(j.msg,function() {
+                                        location.reload();
+                                    })
+                                }else{
+                                    dialog.warning(j.msg);
+                                }
+                            }
+                        })
+                    }
+                }).show(tpl,'付款入账');
+            });
+        })
+    </script>
 </block>

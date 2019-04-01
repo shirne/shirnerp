@@ -61,6 +61,8 @@ class SaleOrderController extends BaseController
                 $this->error('开单失败');
             }
         }
+        $this->assign('currencies',getCurrencies());
+        $this->assign('customer_id',$customer_id);
         return $this->fetch();
     }
 

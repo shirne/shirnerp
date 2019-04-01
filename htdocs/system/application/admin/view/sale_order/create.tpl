@@ -11,7 +11,27 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-6 col-md-6 col-lg-3 mt-3">
+                            <div class="col-6 mt-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">客户</span></div>
+                                    <input type="text" class="form-control" @focus="showCustomer" @blur="hideCustomer" v-model="cKey"/>
+                                </div>
+                            </div>
+                            <div class="col-3 mt-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">客户单号</span></div>
+                                    <input type="text" class="form-control" name="customer_order_no" v-model="order.customer_order_no"/>
+                                </div>
+                            </div>
+                            <div class="col-3 mt-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">单号</span></div>
+                                    <input type="text" class="form-control" placeholder="不填写将由系统自动生成" name="order_no" v-model="order.order_no"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">仓库</span></div>
                                     <select class="form-control" v-model="order.storage_id">
@@ -20,25 +40,17 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-6 col-lg-3 mt-3">
+                            <div class="col-4 mt-3">
                                 <div class="input-group">
-                                    <div class="input-group-prepend"><span class="input-group-text">客户</span></div>
-                                    <input type="text" class="form-control" @focus="showCustomer" @blur="hideCustomer" v-model="cKey"/>
+                                    <div class="input-group-prepend"><span class="input-group-text">货币</span></div>
+                                    <select class="form-control" v-model="order.curency">
+                                        <volist name="currencies" id="cur">
+                                            <option value="{$cur.key}">[{$cur.key}]{$cur.title}</option>
+                                        </volist>
+                                    </select>
                                 </div>
                             </div>
-                            <div class="col-4 col-md-4 col-lg-2 mt-3">
-                                <div class="input-group">
-                                    <div class="input-group-prepend"><span class="input-group-text">客户单号</span></div>
-                                    <input type="text" class="form-control" name="customer_order_no" v-model="order.customer_order_no"/>
-                                </div>
-                            </div>
-                            <div class="col-4 col-md-4 col-lg-2 mt-3">
-                                <div class="input-group">
-                                    <div class="input-group-prepend"><span class="input-group-text">单号</span></div>
-                                    <input type="text" class="form-control" placeholder="不填写将由系统自动生成" name="order_no" v-model="order.order_no"/>
-                                </div>
-                            </div>
-                            <div class="col-4 col-md-4 col-lg-2 mt-3">
+                            <div class="col-4 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">状态</span></div>
                                     <select name="status" class="form-control" v-model="order.status">

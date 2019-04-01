@@ -3,6 +3,9 @@
 namespace app\admin\controller;
 
 
+use app\common\model\FinanceLogModel;
+use app\common\model\PurchaseOrderModel;
+use app\common\model\SaleOrderModel;
 use think\Db;
 
 class FinanceController extends BaseController
@@ -104,6 +107,28 @@ class FinanceController extends BaseController
         return $this->fetch();
     }
 
+    public function receiveLog(){
+        if($this->request->isPost()){
+            $data = $this->request->only('id,amount,remark','post');
+            $data['id']=intval($data['id']);
+
+            $order = SaleOrderModel::get($data['id']);
+            if(!$order){
+                $this->error('订单错误！');
+            }
+            if($order['payed_amount']>=$order['amount']){
+                $this->error('订单款项已结完！');
+            }
+            if(FinanceLogModel::addLog('sale',$order,$data['amount'],$data['remark'])){
+                $this->success('入账成功！');
+            }else{
+                $this->error('入账失败！');
+            }
+
+        }
+        $this->error('请求错误！');
+    }
+
     public function payable($key='',$status=''){
         if($this->request->isPost()){
             return redirect(url('',['status'=>$status,'key'=>base64_encode($key)]));
@@ -142,6 +167,28 @@ class FinanceController extends BaseController
         $this->assign('lists',$lists);
         $this->assign('page',$lists->render());
         return $this->fetch();
+    }
+
+    public function payableLog(){
+        if($this->request->isPost()){
+            $data = $this->request->only('id,amount,remark','post');
+            $data['id']=intval($data['id']);
+
+            $order = PurchaseOrderModel::get($data['id']);
+            if(!$order){
+                $this->error('订单错误！');
+            }
+            if($order['payed_amount']>=$order['amount']){
+                $this->error('订单款项已结完！');
+            }
+            if(FinanceLogModel::addLog('purchase',$order,$data['amount'],$data['remark'])){
+                $this->success('入账成功！');
+            }else{
+                $this->error('入账失败！');
+            }
+
+        }
+        $this->error('请求错误！');
     }
 
     public function logs($id=0,$from_id=0,$fromdate='',$todate='',$type='all'){
