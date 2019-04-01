@@ -99,7 +99,7 @@
                                 success:function (json) {
                                     //console.log(json);
                                     if(json.code==1) {
-                                        var customer = json.data.customer;
+                                        var customer = json.data.model;
                                         bindData(body, customer);
                                         body.find(".area-box").jChinaArea({
                                             aspnet:true,

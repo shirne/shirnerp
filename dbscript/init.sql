@@ -14,7 +14,7 @@ VALUES
   (12,2,'商品管理','Goods/index','goods_index','ion-md-paper',0,0),
   (14,2,'仓库管理','Storage/index','storage_index','ion-md-filing',0,0),
   (13,2,'单页管理','Page/index','page_index','ion-md-document',0,1),
-  (15,2,'商品调度','TransOrder/index','trans_order_index','ion-md-filing',0,0),
+  (15,2,'商品调度','TransOrder/index','trans_order_index','ion-md-swap',0,0),
   (31,3,'供应商管理','Supplier/index','supplier_index','ion-md-contacts',0,0),
   (32,3,'入库单管理','PurchaseOrder/index','purchase_order_index','ion-md-paper',0,0),
   (41,4,'客户管理','Customer/index','customer_index','ion-md-contacts',0,0),

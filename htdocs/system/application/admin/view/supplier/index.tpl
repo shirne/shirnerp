@@ -43,7 +43,7 @@
                 <td>{$v.phone}</td>
                 <td>{$v.create_time|showdate}<br />{$v.update_time|showdate}</td>
                 <td class="operations">
-                    <a class="btn btn-outline-primary" title="编辑" href="{:url('supplier/update',array('id'=>$v['id']))}"><i class="ion-md-create"></i> </a>
+                    <a class="btn btn-outline-primary btn-edit-supplier" data-id="{$v.id}"  title="编辑" href="{:url('supplier/update',array('id'=>$v['id']))}"><i class="ion-md-create"></i> </a>
 
                     <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="删除后将不能恢复!\n请确认!!!" href="{:url('supplier/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
                 </td>
@@ -100,7 +100,7 @@
                                 success:function (json) {
                                     //console.log(json);
                                     if(json.code==1) {
-                                        var supplier = json.data.supplier
+                                        var supplier = json.data.model;
                                         bindData(body, supplier);
                                         body.find(".area-box").jChinaArea({
                                             aspnet:true,

@@ -71,8 +71,8 @@ class FinanceController extends BaseController
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('saleOrder','*')
             ->view('customer',['title'=>'customer_title','short','phone','province','city','area'],'customer.id=saleOrder.customer_id','LEFT')
-            ->whereExp('saleOrder.amount','GT','saleOrder.payed_amount')
-            ->where('delete_time',0);
+            ->whereExp('saleOrder.amount',' > saleOrder.payed_amount')
+            ->where('saleOrder.delete_time',0);
 
         if(!empty($key)){
             $model->whereLike('saleOrder.order_no|customer.title',"%$key%");
@@ -111,7 +111,7 @@ class FinanceController extends BaseController
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('purchaseOrder','*')
             ->view('supplier',['title'=>'supplier_title','phone','province','city','area'],'supplier.id=purchaseOrder.supplier_id','LEFT')
-            ->whereExp('purchaseOrder.amount','GT','purchaseOrder.payed_amount')
+            ->whereExp('purchaseOrder.amount',' > purchaseOrder.payed_amount')
             ->where('purchaseOrder.delete_time',0);
 
         if(!empty($key)){

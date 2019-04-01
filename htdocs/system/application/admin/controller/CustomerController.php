@@ -34,11 +34,11 @@ class CustomerController extends BaseController
         }
         $key=empty($key)?"":base64_decode($key);
         $model = Db::name('customer');
-        $where=array();
+
         if(!empty($key)){
-            $where[] = array('title|short','like',"%$key%");
+            $model->whereLike('title|short|phone',"%$key%");
         }
-        $lists=$model->where($where)->order('ID DESC')->paginate(15);
+        $lists=$model->order('ID DESC')->paginate(15);
         $this->assign('lists',$lists);
         $this->assign('page',$lists->render());
         return $this->fetch();
@@ -57,7 +57,7 @@ class CustomerController extends BaseController
             if (!$validate->check($data)) {
                 $this->error($validate->getError());
             } else {
-                $uploaded=$this->upload('links','upload_logo');
+                $uploaded=$this->upload('customer','upload_logo');
                 if(!empty($uploaded)){
                     $data['logo']=$uploaded['url'];
                 }elseif($this->uploadErrorCode>102){
@@ -94,7 +94,7 @@ class CustomerController extends BaseController
                 $this->error($validate->getError());
             } else {
                 $delete_images=[];
-                $uploaded=$this->upload('adv','upload_logo');
+                $uploaded=$this->upload('customer','upload_logo');
                 if(!empty($uploaded)){
                     $data['logo']=$uploaded['url'];
                     $delete_images[]=$data['delete_logo'];

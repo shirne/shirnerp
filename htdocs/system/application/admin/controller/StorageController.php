@@ -131,7 +131,8 @@ class StorageController extends BaseController
 
     public function goods($id){
         $goods = Db::view('goodsStorage','*')
-            ->join('goods','goods.id=goodsStorage.goods_id','LEFT')
+            ->view('goods','*','goods.id=goodsStorage.goods_id','LEFT')
+            ->view('goodsCategory',['title'=>'category_title'],'goods.cate_id=goodsCategory.id','LEFT')
             ->where('storage_id',$id)->select();
 
         $storage = Db::name('storage')->find($id);
@@ -143,7 +144,8 @@ class StorageController extends BaseController
 
     public function prints($id){
         $goods = Db::view('goodsStorage','*')
-            ->join('goods','goods.id=goodsStorage.goods_id','LEFT')
+            ->view('goods','*','goods.id=goodsStorage.goods_id','LEFT')
+            ->view('goodsCategory',['title'=>'category_title'],'goods.cate_id=goodsCategory.id','LEFT')
             ->where('storage_id',$id)->select();
         $storage = Db::name('storage')->find($id);
         $this->assign('storage',$storage);
@@ -156,7 +158,7 @@ class StorageController extends BaseController
         $storage = Db::name('storage')->find($id);
 
         $goods = Db::view('goodsStorage','*')
-            ->join('goods','goods.id=goodsStorage.goods_id','LEFT')
+            ->view('goods','*','goods.id=goodsStorage.goods_id','LEFT')
             ->where('storage_id',$id)->select();
         if(empty($goods)){
             $this->error('没有要导出的项');

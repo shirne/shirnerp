@@ -17,7 +17,7 @@ class TransOrderController extends BaseController
         $model=Db::view('transOrder','*')
             ->view('storage fromStorage',['title'=>'from_storage_title'],'fromStorage.id=transOrder.from_storage_id','LEFT')
             ->view('storage',['title'=>'storage_title'],'storage.id=transOrder.storage_id','LEFT')
-            ->where('delete_time',0);
+            ->where('transOrder.delete_time',0);
 
         if(!empty($key)){
             $model->whereLike('transOrder.order_no|fromStorage.title|storage.title',"%$key%");
@@ -98,7 +98,7 @@ class TransOrderController extends BaseController
         $data=array(
             'status'=>$status
         );
-        $order->save($data);
+        $order->updateStatus($data);
         user_log($this->mid,'audittransorder',1,'更新订单 '.$id .' '.$audit,'manager');
         $this->success('操作成功');
     }

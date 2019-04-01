@@ -147,7 +147,7 @@ class PurchaseOrderController extends BaseController
         $data=array(
             'status'=>$status
         );
-        $order->save($data);
+        $order->updateStatus($data);
         user_log($this->mid,'auditpurchaseorder',1,'更新订单 '.$id .' '.$audit,'manager');
         $this->success('操作成功');
     }

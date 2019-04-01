@@ -18,7 +18,7 @@ class SaleOrderController extends BaseController
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('saleOrder','*')
             ->view('customer',['title'=>'customer_title','short','phone','province','city','area'],'customer.id=saleOrder.customer_id','LEFT')
-        ->where('delete_time',0);
+        ->where('saleOrder.delete_time',0);
 
         if(!empty($key)){
             $model->whereLike('saleOrder.order_no|customer.title',"%$key%");
@@ -146,7 +146,7 @@ class SaleOrderController extends BaseController
         $data=array(
             'status'=>$status
         );
-        $order->save($data);
+        $order->updateStatus($data);
         user_log($this->mid,'auditsaleorder',1,'更新订单 '.$id .' '.$audit,'manager');
         $this->success('操作成功');
     }
