@@ -183,7 +183,7 @@ CREATE TABLE `sa_o_auth` (
   `appkey` varchar(50) DEFAULT '',
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `sa_subscribe`
@@ -255,7 +255,7 @@ CREATE TABLE `sa_member` (
   UNIQUE KEY `username` (`username`) USING BTREE,
   KEY `mobile` (`mobile`),
   KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `sa_pay_order`;
@@ -326,7 +326,7 @@ CREATE TABLE `sa_member_message` (
   INDEX `type`(`type`),
   INDEX `show_at`(`show_at`),
   INDEX `is_delete`(`is_delete`)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `sa_member_level`;
@@ -524,7 +524,7 @@ CREATE TABLE `sa_member_oauth` (
   `language` varchar(20) DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `type`(`type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `sa_invite_code`
