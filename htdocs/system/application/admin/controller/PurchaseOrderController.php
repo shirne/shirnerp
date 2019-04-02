@@ -121,13 +121,15 @@ class PurchaseOrderController extends BaseController
      * @return \think\Response
      */
     public function detail($id){
-        $model=Db::name('purchaseOrder')->where('order_id',$id)->find();
+        $model=Db::name('purchaseOrder')->where('id',$id)->find();
         if(empty($model))$this->error('订单不存在');
-        $customer=Db::name('supplier')->find($model['supplier_id']);
-        $goods = Db::name('purchaseOrderGoods')->where('id',  $id)->select();
+        $supplier=Db::name('supplier')->find($model['supplier_id']);
+        $goods = Db::name('purchaseOrderGoods')->where('purchase_order_id',  $id)
+            ->order('id ASC')->select();
         $this->assign('model',$model);
-        $this->assign('customer',$customer);
+        $this->assign('supplier',$supplier);
         $this->assign('goods',$goods);
+        $this->assign('paylog',Db::name('financeLog')->where('type','purchase')->where('order_id',$id)->select());
         return $this->fetch();
     }
 

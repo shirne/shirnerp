@@ -70,11 +70,11 @@ class TransOrderController extends BaseController
      * @return \think\Response
      */
     public function detail($id){
-        $model=Db::name('transOrder')->where('order_id',$id)->find();
+        $model=Db::name('transOrder')->where('id',$id)->find();
         if(empty($model))$this->error('订单不存在');
         $from_storage = Db::name('storage')->where('id',$model['from_storage_id'])->find();
         $storage = Db::name('storage')->where('id',$model['storage_id'])->find();
-        $goods = Db::name('transOrderGoods')->where('id',  $id)->select();
+        $goods = Db::name('transOrderGoods')->where('trans_order_id',  $id)->order('id ASC')->select();
         $this->assign('model',$model);
         $this->assign('from_storage',$from_storage);
         $this->assign('storage',$storage);

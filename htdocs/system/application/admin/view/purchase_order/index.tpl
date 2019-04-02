@@ -55,7 +55,7 @@
                             <a class="btn btn-outline-primary link-confirm" title="入库" data-confirm="请确认商品已入库，操作不可撤销!" href="{:url('purchaseOrder/status',array('id'=>$v['id'],'status'=>1))}" ><i class="ion-md-filing"></i> </a>
                             <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('purchaseOrder/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
                             <else/>
-                            <a class="btn btn-outline-primary link-detail" data-id="{$v.id}" title="详细" href="{:url('purchaseOrder/detail',array('id'=>$v['id']))}" ><i class="ion-md-document"></i> </a>
+                            <a class="btn btn-outline-primary link-detail" data-id="{$v.id}" title="详情" href="{:url('purchaseOrder/detail',array('id'=>$v['id']))}" ><i class="ion-md-document"></i> </a>
                         </if>
                     </td>
                 </tr>
@@ -70,7 +70,21 @@
         jQuery(function ($) {
             $('.link-detail').click(function (e) {
                 e.preventDefault();
-
+                var self=$(this);
+                var dlg = new Dialog({
+                    btns: ['确定'],
+                    onshow: function (body) {
+                        $.ajax({
+                            url: self.attr('href'),
+                            beforeSend: function(request) {
+                                request.setRequestHeader("X-Requested-With","htmlhttp");
+                            },
+                            success: function (text) {
+                                body.html(text);
+                            }
+                        });
+                    }
+                }).show('<p class="loading">'+lang('loading...')+'</p>','订单详情');
             })
         })
     </script>

@@ -122,13 +122,15 @@ class SaleOrderController extends BaseController
      * @return \think\Response
      */
     public function detail($id){
-        $model=Db::name('saleOrder')->where('order_id',$id)->find();
+        $model=Db::name('saleOrder')->where('id',$id)->find();
         if(empty($model))$this->error('订单不存在');
         $customer=Db::name('customer')->find($model['customer_id']);
-        $goods = Db::name('saleOrderGoods')->where('id',  $id)->select();
+        $goods = Db::name('saleOrderGoods')->where('sale_order_id',  $id)
+            ->order('id ASC')->select();
         $this->assign('model',$model);
         $this->assign('customer',$customer);
         $this->assign('goods',$goods);
+        $this->assign('paylog',Db::name('financeLog')->where('type','purchase')->where('order_id',$id)->select());
         return $this->fetch();
     }
 
