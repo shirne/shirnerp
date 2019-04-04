@@ -8,7 +8,17 @@
 
         <div class="row list-header">
             <div class="col-6">
-                <a href="{:url('saleOrder/create')}" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 添加销售单</a>
+                <div class="btn-toolbar list-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="btn-group btn-group-sm mr-2" role="group" aria-label="check action group">
+                        <a href="javascript:" class="btn btn-outline-secondary checkall-btn" data-toggle="button" aria-pressed="false">全选</a>
+                        <a href="javascript:" class="btn btn-outline-secondary checkreverse-btn">反选</a>
+                    </div>
+                    <div class="btn-group btn-group-sm mr-2" role="group" aria-label="action button group">
+                        <a href="javascript:" class="btn btn-outline-secondary action-btn" data-action="prints">打印</a>
+                        <a href="javascript:" class="btn btn-outline-secondary action-btn" data-action="export">导出</a>
+                    </div>
+                    <a href="{:url('saleOrder/create')}" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 添加销售单</a>
+                </div>
             </div>
             <div class="col-6">
                 <form action="{:url('saleOrder/index')}" method="post">
@@ -26,6 +36,7 @@
             <tr>
                 <th width="50">编号</th>
                 <th>单号</th>
+                <th>仓库</th>
                 <th>客户</th>
                 <th>日期</th>
                 <th>金额</th>
@@ -37,8 +48,9 @@
             <php>$empty=list_empty(7);</php>
             <volist name="lists" id="v" empty="$empty">
                 <tr>
-                    <td>{$v.id}</td>
+                    <td><input type="checkbox" name="id" value="{$v.id}" /></td>
                     <td>{$v.order_no}</td>
+                    <td>{$v.storage_title}</td>
                     <td>{$v.customer_title}</td>
                     <td>{$v.create_time|showdate}</td>
                     <td><span class="badge badge-info">{$v.currency}</span> {$v.amount}</td>
@@ -66,6 +78,53 @@
 </block>
 <block name="script">
     <script type="text/javascript">
+        (function(w,$){
+            w.actionPrints=function(ids){
+                var dlg=new Dialog({
+                    onshow:function (body) {
+                        $.ajax({
+                            url:"{:url('storage/search',['limit'=>100])}",
+                            dataType:'JSON',
+                            success:function (json) {
+                                if(json.code==1){
+                                    body.find('.row').html('<div class="col-3"><label><input type="checkbox" name="storage_ids[]" value="{@id}" />&nbsp;{@title}</label></div>'.compile(
+                                        json.data,true
+                                    ));
+                                }
+                            }
+                        })
+                    },
+                    onsure:function (body) {
+                        var checkboxes = body.find('input:checked');
+                        var storage_ids = [];
+                        for(var i=0;i<checkboxes.length;i++){
+                            storage_ids.push(checkboxes.eq(i).val())
+                        }
+                        window.open("{:url('saleOrder/prints',['order_ids'=>'__ORDER_IDS__','storage_ids'=>'__STORAGE_IDS__'])}".replace('__ORDER_IDS__',ids).replace('__STORAGE_IDS__',storage_ids.join(',')));
+                        dlg.close();
+                        return false;
+                    }
+                }).show('<div class="row"></div><div class="text-muted">不选择将按全部仓库打印</div>','选择需要打印的仓库');
+            };
+            w.actionExport=function(ids){
+                dialog.confirm('确定禁用选中会员？',function() {
+                    $.ajax({
+                        url:"{:url('member/delete',['id'=>'__id__','type'=>0])}".replace('__id__',ids.join(',')),
+                        type:'GET',
+                        dataType:'JSON',
+                        success:function(json){
+                            if(json.code==1){
+                                dialog.alert(json.msg,function() {
+                                    location.reload();
+                                });
+                            }else{
+                                dialog.warning(json.msg);
+                            }
+                        }
+                    });
+                });
+            };
+        })(window,jQuery);
         jQuery(function ($) {
             $('.link-detail').click(function (e) {
                 e.preventDefault();
@@ -85,6 +144,6 @@
                     }
                 }).show('<p class="loading">'+lang('loading...')+'</p>','订单详情');
             })
-        })
+        });
     </script>
 </block>

@@ -11,15 +11,16 @@ class FinanceLogModel extends BaseModel
      * @param $type
      * @param $order BaseModel
      * @param $amount
+     * @param $pay_type
      * @param $remark
      * @return bool
      */
-    public static function addLog($type,$order,$amount, $remark){
+    public static function addLog($type,$order,$amount,$pay_type, $remark){
 
         $data=[
             'type'=>$type,
             'order_id'=>$order['id'],
-            'pay_type'=>'',
+            'pay_type'=>$pay_type,
             'currency'=>$order['currency'],
             'remark'=>$remark
         ];

@@ -26,6 +26,7 @@
             <tr>
                 <th width="50">编号</th>
                 <th>单号</th>
+                <th>仓库</th>
                 <th>供应商</th>
                 <th>日期</th>
                 <th>金额</th>
@@ -39,6 +40,7 @@
                 <tr>
                     <td>{$v.id}</td>
                     <td>{$v.order_no}</td>
+                    <td>{$v.storage_title}</td>
                     <td>{$v.supplier_title}</td>
                     <td>{$v.create_time|showdate}</td>
                     <td>{$v.amount}</td>

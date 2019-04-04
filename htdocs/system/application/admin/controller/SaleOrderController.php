@@ -18,7 +18,8 @@ class SaleOrderController extends BaseController
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('saleOrder','*')
             ->view('customer',['title'=>'customer_title','short','phone','province','city','area'],'customer.id=saleOrder.customer_id','LEFT')
-        ->where('saleOrder.delete_time',0);
+            ->view('storage',['title'=>'storage_title'],'storage.id=saleOrder.storage_id','LEFT')
+            ->where('saleOrder.delete_time',0);
 
         if(!empty($key)){
             $model->whereLike('saleOrder.order_no|customer.title',"%$key%");
@@ -125,12 +126,41 @@ class SaleOrderController extends BaseController
         $model=Db::name('saleOrder')->where('id',$id)->find();
         if(empty($model))$this->error('订单不存在');
         $customer=Db::name('customer')->find($model['customer_id']);
-        $goods = Db::name('saleOrderGoods')->where('sale_order_id',  $id)
-            ->order('id ASC')->select();
+        $goods = Db::view('saleOrderGoods','*')
+            ->view('storage',['title'=>'storage_title'],'storage.id=saleOrderGoods.storage_id','LEFT')
+            ->where('sale_order_id',  $id)
+            ->order('saleOrderGoods.id ASC')->select();
         $this->assign('model',$model);
         $this->assign('customer',$customer);
         $this->assign('goods',$goods);
-        $this->assign('paylog',Db::name('financeLog')->where('type','purchase')->where('order_id',$id)->select());
+        $this->assign('paylog',Db::name('financeLog')->where('type','sale')->where('order_id',$id)->select());
+        return $this->fetch();
+    }
+
+    public function prints($order_ids, $storage_ids='')
+    {
+        if(empty($order_ids)){
+            $this->error('请选择订单打印');
+        }
+        $order_ids = idArr($order_ids);
+        $storage_ids = idArr($storage_ids);
+        $orders=Db::view('saleOrder','*')
+            ->view('customer',['title'=>'customer_title'],'saleOrder.customer_id=customer.id','LEFT')
+            ->whereIn('saleOrder.id',$order_ids)->select();
+        if(empty($orders))$this->error('订单不存在');
+
+        $goodsModel=Db::view('saleOrderGoods','*')
+            ->view('storage',['title'=>'storage_title'],'storage.id=saleOrderGoods.storage_id','LEFT')
+            ->whereIn('sale_order_id',  $order_ids);
+        if(!empty($storage_ids)){
+            $goodsModel->whereIn('storage_id',$storage_ids);
+        }
+        $goods =$goodsModel->order('saleOrderGoods.id ASC')->select();
+        $orderGoods = array_index($goods,'sale_order_id',true);
+
+        $this->assign('orders',$orders);
+        $this->assign('orderGoods',$orderGoods);
+        $this->assign('storage_ids',$storage_ids);
         return $this->fetch();
     }
 

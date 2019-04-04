@@ -146,6 +146,7 @@
                 order:{
                     supplier_id:0,
                     storage_id:0,
+                    currency:"{:current($currencies)['key']}",
                     status:0,
                     order_no:'',
                     supplier_order_no:''
@@ -205,7 +206,7 @@
                     });
                 },
                 updateStorage:function(){
-                    if(this.order.from_storage_id){
+                    if(this.order.storage_id){
                         var goods_ids=[];
                         for(var i=0;i<this.goods.length;i++){
                             goods_ids.push(this.goods[i].goods_id);
@@ -216,7 +217,7 @@
                             type:'GET',
                             dataType:'JSON',
                             data:{
-                                storage_id:self.order.from_storage_id,
+                                storage_id:self.order.storage_id,
                                 goods_id:goods_ids.join(',')
                             },
                             success:function (json) {

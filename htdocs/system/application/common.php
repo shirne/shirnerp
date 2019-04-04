@@ -90,6 +90,18 @@ function getLogTypes($withall=true){
     if(!$withall)unset($fields['all']);
     return $fields;
 }
+function getFinanceTypes($withall=true){
+    $fields = [
+        'all'=>lang('All'),
+        'transfer'=>'银行转账',
+        'ready'=>'现金支付',
+        'wechat'=>'微信转账',
+        'alipay'=>'支付宝转账',
+        'other'=>'其它',
+    ];
+    if(!$withall)unset($fields['all']);
+    return $fields;
+}
 function getMemberTypes(){
     return [
         1=>lang('Member'),
@@ -368,7 +380,7 @@ function get_order_status($status){
  * @return string
  */
 function order_status($status,$wrap=true){
-    $style='default';
+    $style='secondary';
     switch ($status){
         case "0":
             $style='warning';
@@ -389,6 +401,110 @@ function order_status($status,$wrap=true){
     }
     return $wrap?wrap_label(get_order_status($status),$style):get_order_status($status);
 }
+
+
+/**
+ * 获取订单状态
+ * @param $status
+ * @return string
+ */
+function get_sale_order_status($status){
+    switch ($status){
+        case "-2":
+            return lang('Cancelled');
+        case "-1":
+            return lang('Invalid');
+        case "0":
+            return '未出库';
+        case "1":
+            return '已出库';
+
+    }
+    return lang('Unknown');
+}
+/**
+ * 订单状态
+ * @param $status
+ * @param bool $wrap
+ * @return string
+ */
+function sale_order_status($status,$wrap=true){
+    $style='secondary';
+    switch ($status){
+        case "0":
+            $style='warning';
+            break;
+        case "1":
+            $style='success';
+            break;
+
+    }
+    return $wrap?wrap_label(get_sale_order_status($status),$style):get_sale_order_status($status);
+}
+
+/**
+ * 获取订单状态
+ * @param $status
+ * @return string
+ */
+function get_purchase_order_status($status){
+    switch ($status){
+        case "-2":
+            return lang('Cancelled');
+        case "-1":
+            return lang('Invalid');
+        case "0":
+            return '未入库';
+        case "1":
+            return '已入库';
+
+    }
+    return lang('Unknown');
+}
+/**
+ * 订单状态
+ * @param $status
+ * @param bool $wrap
+ * @return string
+ */
+function purchase_order_status($status,$wrap=true){
+    $style='secondary';
+    switch ($status){
+        case "0":
+            $style='warning';
+            break;
+        case "1":
+            $style='success';
+            break;
+
+    }
+    return $wrap?wrap_label(get_purchase_order_status($status),$style):get_purchase_order_status($status);
+}
+
+
+function finance_type($type,$wrap=true){
+    $types = getFinanceTypes();
+    $style='secondary';
+    $typename = isset($types[$type])?$types[$type]:lang('Unknown');
+    switch ($type){
+        case "transfer":
+            $style='warning';
+            break;
+        case "ready":
+            $style='info';
+            break;
+        case "wechat":
+            $style='success';
+            break;
+        case "alipay":
+            $style='primary';
+            break;
+
+    }
+
+    return $wrap?wrap_label($typename,$style):$typename;
+}
+
 function money_type($type,$wrap=true){
     switch ($type){
         case "money":

@@ -17,8 +17,9 @@ class StorageController extends BaseController
             $model->where('id|title|fullname|storage_no','like',"%$key%");
         }
 
+        $limit = $this->request->get('limit',20);
         $lists=$model->field('id,title,fullname,storage_no,create_time')
-            ->order('id ASC')->limit(20)->select();
+            ->order('id ASC')->limit($limit)->select();
 
 
         return json(['data'=>$lists,'code'=>1]);

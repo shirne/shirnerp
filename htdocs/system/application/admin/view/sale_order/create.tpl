@@ -43,7 +43,7 @@
                             <div class="col-4 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">货币</span></div>
-                                    <select class="form-control" v-model="order.curency">
+                                    <select class="form-control" v-model="order.currency">
                                         <volist name="currencies" id="cur">
                                             <option value="{$cur.key}">[{$cur.key}]{$cur.title}</option>
                                         </volist>
@@ -70,6 +70,7 @@
                             <th>单位</th>
                             <th>单价</th>
                             <th>总价</th>
+                            <th>出库仓</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -81,6 +82,12 @@
                                 <td>{{good.unit}} </td>
                                 <td><input type="text" class="form-control" @change="updateRow(idx)" v-model="good.price"/> </td>
                                 <td>{{good.total_price}} </td>
+                                <td>
+                                    <select class="form-control" v-model="good.storage_id">
+                                        <option :value="0">请选择仓库</option>
+                                        <option v-for="storage in storages" :key="storage.id" :value="storage.id">[{{storage.storage_no}}]{{storage.title}}</option>
+                                    </select>
+                                </td>
                                 <td><a href="javascript:" class="btn btn-outline-primary" @click="delGoods(idx)">删除</a> </td>
                             </tr>
                         </tbody>
@@ -92,10 +99,13 @@
                             <td></td>
                             <td></td>
                             <td>{{total.price}}</td>
+                            <td>
+
+                            </td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td colspan="7"><a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-addrow">添加行</a> </td>
+                            <td colspan="8"><a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-addrow">添加行</a> </td>
                         </tr>
                         </tfoot>
                     </table>
@@ -145,6 +155,7 @@
                 order:{
                     customer_id:0,
                     storage_id:0,
+                    currency:'{:current($currencies)['key']}',
                     status:0,
                     order_no:'',
                     customer_order_no:''
@@ -165,6 +176,13 @@
                 'order.storage_id':function (val, oVal) {
                     this.listGoods=[];
                     this.emptyGoods=[];
+                    if(val){
+                        for(var i=0;i<this.goods.length;i++){
+                            if(!this.goods[i].storage_id){
+                                this.goods[i].storage_id = val;
+                            }
+                        }
+                    }
                     this.updateStorage();
                 },
                 cKey:function (val, oVal) {
@@ -197,6 +215,7 @@
                         id:0,
                         title:'',
                         orig_title:'',
+                        storage_id:this.order.storage_id,
                         count:'',
                         unit:'',
                         price:0,
@@ -204,7 +223,7 @@
                     });
                 },
                 updateStorage:function(){
-                    if(this.order.from_storage_id){
+                    if(this.order.storage_id){
                         var goods_ids=[];
                         for(var i=0;i<this.goods.length;i++){
                             goods_ids.push(this.goods[i].goods_id);
@@ -215,7 +234,7 @@
                             type:'GET',
                             dataType:'JSON',
                             data:{
-                                storage_id:self.order.from_storage_id,
+                                storage_id:self.order.storage_id,
                                 goods_id:goods_ids.join(',')
                             },
                             success:function (json) {

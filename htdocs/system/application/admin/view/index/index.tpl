@@ -104,6 +104,7 @@
         <div class="col-md-6 mb-3">
             <div class="card border-default">
                 <div class="card-header">
+                    <a href="{:url('saleOrder/create')}" class="float-right">销售开单</a>
                     <h5 class="panel-title"><i class="ion-md-stats"></i> 销售</h5>
                 </div>
                 <table class="table table-striped">
@@ -176,6 +177,7 @@
         <div class="col-md-6 mb-3">
             <div class="card border-default">
                 <div class="card-header">
+                    <a href="{:url('purchaseOrder/create')}" class="float-right">采购入库</a>
                     <h5 class="panel-title"><i class="ion-md-cart"></i> 采购</h5>
                 </div>
                 <table class="table table-striped">

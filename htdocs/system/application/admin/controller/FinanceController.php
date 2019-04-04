@@ -103,13 +103,14 @@ class FinanceController extends BaseController
         $this->assign('status',$status);
         $this->assign('orderids',empty($orderids)?0:implode(',',$orderids));
         $this->assign('lists',$lists);
+        $this->assign('paytypes',getFinanceTypes(false));
         $this->assign('page',$lists->render());
         return $this->fetch();
     }
 
     public function receiveLog(){
         if($this->request->isPost()){
-            $data = $this->request->only('id,amount,remark','post');
+            $data = $this->request->only('id,amount,pay_type,remark','post');
             $data['id']=intval($data['id']);
 
             $order = SaleOrderModel::get($data['id']);
@@ -119,7 +120,7 @@ class FinanceController extends BaseController
             if($order['payed_amount']>=$order['amount']){
                 $this->error('订单款项已结完！');
             }
-            if(FinanceLogModel::addLog('sale',$order,$data['amount'],$data['remark'])){
+            if(FinanceLogModel::addLog('sale',$order,$data['amount'],$data['pay_type'],$data['remark'])){
                 $this->success('入账成功！');
             }else{
                 $this->error('入账失败！');
@@ -165,13 +166,14 @@ class FinanceController extends BaseController
         $this->assign('status',$status);
         $this->assign('orderids',empty($orderids)?0:implode(',',$orderids));
         $this->assign('lists',$lists);
+        $this->assign('paytypes',getFinanceTypes(false));
         $this->assign('page',$lists->render());
         return $this->fetch();
     }
 
     public function payableLog(){
         if($this->request->isPost()){
-            $data = $this->request->only('id,amount,remark','post');
+            $data = $this->request->only('id,amount,pay_type,remark','post');
             $data['id']=intval($data['id']);
 
             $order = PurchaseOrderModel::get($data['id']);
@@ -181,7 +183,7 @@ class FinanceController extends BaseController
             if($order['payed_amount']>=$order['amount']){
                 $this->error('订单款项已结完！');
             }
-            if(FinanceLogModel::addLog('purchase',$order,$data['amount'],$data['remark'])){
+            if(FinanceLogModel::addLog('purchase',$order,$data['amount'],$data['pay_type'],$data['remark'])){
                 $this->success('入账成功！');
             }else{
                 $this->error('入账失败！');

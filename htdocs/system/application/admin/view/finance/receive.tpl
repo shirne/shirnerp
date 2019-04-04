@@ -57,6 +57,16 @@
 <block name="script">
     <script type="text/html" id="financeLog">
         <div class="row" style="margin:0 10%;">
+            <div class="col-12 form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text">方式</span> </div>
+                    <select name="pay_type" class="form-control">
+                        <foreach name="paytypes" key="key" id="ptype">
+                            <option value="{$key}">{$ptype}</option>
+                        </foreach>
+                    </select>
+                </div>
+            </div>
             <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">金额</span> </div><input type="text" name="amount" class="form-control" placeholder="请填写入账金额"/> </div></div>
             <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">备注</span> </div><input type="text" name="reson" class="form-control" /> </div> </div>
         </div>
@@ -88,12 +98,14 @@
                         if(amount>release){
 
                         }
+                        var pay_type = body.find('[name=pay_type]').val();
                         $.ajax({
                             url:'{:url("receiveLog")}',
                             type:'POST',
                             data:{
                                 id:id,
                                 amount:amount,
+                                pay_type:pay_type,
                                 reson:body.find('input[name=reson]').val()
                             },
                             dataType:'JSON',

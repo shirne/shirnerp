@@ -52,7 +52,6 @@
             <thead>
             <tr>
                 <th width="50">编号</th>
-                <th>类型</th>
                 <th>订单</th>
                 <th>金额</th>
                 <th>来源</th>
@@ -66,17 +65,22 @@
             <volist name="logs" id="v" empty="$empty">
                 <tr>
                     <td>{$v.id}</td>
-                    <td>{$types[$v['type']]}</td>
                     <td>
                         <if condition="$v['type'] EQ 'sale'">
+                            <a href="{:url('saleOrder/detail',['id'=>$v['order_id']])}" rel="ajax" data-title="订单详情">
                             <span class="badge badge-info">销售单</span> {$v['order_id']}
+                            </a>
                             <elseif condition="$v['type'] EQ 'purchase'"/>
+                            <a href="{:url('purchaseOrder/detail',['id'=>$v['order_id']])}" rel="ajax" data-title="订单详情">
                             <span class="badge badge-warning">采购单</span> {$v['order_id']}
+                            </a>
                             <else/>
-                            -
+                            {$v['order_id']}
                         </if>
                     </td>
-                    <td class="{$v['amount']>0?'text-success':'text-danger'}">{$v.amount}</td>
+                    <td class="{$v['amount']>0?'text-success':'text-danger'}">
+                        {$v.pay_type|finance_type|raw}{$v.amount}
+                    </td>
                     <td>
                         <if condition="$v['customer_id']">
                             <span class="badge badge-info">客户</span> {$v['customer_title']}

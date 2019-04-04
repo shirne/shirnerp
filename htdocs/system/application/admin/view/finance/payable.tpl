@@ -26,9 +26,9 @@
             <tr>
                 <th width="50">编号</th>
                 <th>供应商</th>
-                <th>应收</th>
-                <th>已收</th>
-                <th>未收</th>
+                <th>应付</th>
+                <th>已付</th>
+                <th>未付</th>
                 <th>账期</th>
                 <th width="160">&nbsp;</th>
             </tr>
@@ -58,7 +58,22 @@
 <block name="script">
     <script type="text/html" id="financeLog">
         <div class="row" style="margin:0 10%;">
-            <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">金额</span> </div><input type="text" name="amount" class="form-control" placeholder="请填写付款金额"/> </div></div>
+            <div class="col-12 form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text">方式</span> </div>
+                    <select name="pay_type" class="form-control">
+                        <foreach name="paytypes" key="key" id="ptype">
+                            <option value="{$key}">{$ptype}</option>
+                        </foreach>
+                    </select>
+                </div>
+            </div>
+            <div class="col-12 form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text">金额</span> </div>
+                    <input type="text" name="amount" class="form-control" placeholder="请填写付款金额"/>
+                </div>
+            </div>
             <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">备注</span> </div><input type="text" name="reson" class="form-control" /> </div> </div>
         </div>
     </script>
@@ -89,12 +104,14 @@
                         if(amount>release){
 
                         }
+                        var pay_type = body.find('[name=pay_type]').val();
                         $.ajax({
                             url:'{:url("payableLog")}',
                             type:'POST',
                             data:{
                                 id:id,
                                 amount:amount,
+                                pay_type:pay_type,
                                 reson:body.find('input[name=reson]').val()
                             },
                             dataType:'JSON',

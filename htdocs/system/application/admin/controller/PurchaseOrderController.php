@@ -18,6 +18,7 @@ class PurchaseOrderController extends BaseController
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('purchaseOrder','*')
             ->view('supplier',['title'=>'supplier_title','phone','province','city','area'],'supplier.id=purchaseOrder.supplier_id','LEFT')
+            ->view('storage',['title'=>'storage_title'],'storage.id=purchaseOrder.storage_id','LEFT')
             ->where('purchaseOrder.delete_time',0);
 
         if(!empty($key)){
@@ -76,6 +77,7 @@ class PurchaseOrderController extends BaseController
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('purchaseOrder','*')
             ->view('supplier',['username','realname','avatar','level_id'],'supplier.id=order.supplier_id','LEFT')
+            ->view('storage',['title'=>'storage_title'],'storage.id=purchaseOrder.storage_id','LEFT')
             ->where('purchaseOrder.delete_time',0);
         if(empty($order_ids)){
             if(!empty($key)){
@@ -124,8 +126,11 @@ class PurchaseOrderController extends BaseController
         $model=Db::name('purchaseOrder')->where('id',$id)->find();
         if(empty($model))$this->error('订单不存在');
         $supplier=Db::name('supplier')->find($model['supplier_id']);
-        $goods = Db::name('purchaseOrderGoods')->where('purchase_order_id',  $id)
-            ->order('id ASC')->select();
+        $goods = Db::view('purchaseOrderGoods','*')
+            ->view('storage',['title'=>'storage_title'],'storage.id=purchaseOrderGoods.storage_id','LEFT')
+            ->where('purchase_order_id',  $id)
+            ->order('purchaseOrderGoods.id ASC')->select();
+
         $this->assign('model',$model);
         $this->assign('supplier',$supplier);
         $this->assign('goods',$goods);
