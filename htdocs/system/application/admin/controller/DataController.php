@@ -5,6 +5,7 @@ namespace app\admin\controller;
 
 use app\admin\validate\CurrencyValidate;
 use app\admin\validate\UnitValidate;
+use app\common\model\CurrencyModel;
 use think\Db;
 
 class DataController extends BaseController
@@ -67,5 +68,22 @@ class DataController extends BaseController
         $unit = Db::name('currency')->where('id',$id)->find();
         $this->assign('currency',$unit);
         return $this->fetch();
+    }
+
+    public function setBaseCurrency($key){
+        CurrencyModel::update(['is_base'=>1],['key'=>$key]);
+        $this->success('设置成功');
+    }
+    public function updateCurrencyExchange($key, $rate){
+        //$currency = CurrencyModel::getCurrency($key);
+
+        CurrencyModel::update(['exchange_rate'=>$rate],['key'=>$key]);
+
+        Db::name('currencyRate')->insert([
+            'currency'=>$key,
+            'exchange_rate'=>$rate,
+            'create_time'=>time()
+        ]);
+        $this->success('设置成功');
     }
 }

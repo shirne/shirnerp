@@ -53,6 +53,7 @@
                             <th>标识</th>
                             <th>名称</th>
                             <th>符号</th>
+                            <th>汇率</th>
                             <th>排序</th>
                             <th width="160">操作</th>
                         </tr>
@@ -65,6 +66,15 @@
                                 <td>{$v.key}</td>
                                 <td>{$v.title}</td>
                                 <td>{$v.symbol}</td>
+                                <td class="operations text-center">
+                                    <if condition="$v['is_base'] EQ 1">
+                                        <span class="badge badge-warning">基准货币</span>
+                                        <else/>
+                                        <span class="badge badge-info">{$v.exchange_rate}</span>
+                                        <a href="javascript:" class="btn btn-sm btn-outline-primary baseCurrencyBtn" data-key="{$v.key}" title="设为基准货币"><i class="ion-md-cash"></i> </a>
+                                        <a href="javascript:" class="btn btn-sm btn-outline-primary exchangeCurrencyBtn" data-key="{$v.key}" title="更新汇率"><i class="ion-md-swap"></i> </a>
+                                    </if>
+                                </td>
                                 <td>{$v.sort}</td>
                                 <td class="operations">
                                     <a class="btn btn-outline-primary currencyEditBtn" data-id="{$v.id}" title="编辑" href="javascript:"><i class="ion-md-create"></i> </a>
@@ -112,6 +122,27 @@
             $('.currencyEditBtn').click(function (e) {
                 e.preventDefault();
                 editCurrency($(this).data('id'));
+            });
+            $('.baseCurrencyBtn').click(function (e) {
+                e.preventDefault();
+                var key = $(this).data('key');
+                dialog.confirm('您确定把币种【'+key+'】设为基准币种吗?<br />此操作将会影响已录单据的统计',function () {
+                    $.ajax({
+                        url:'{:url("setBaseCurrency",['key'=>'__KEY__'])}'.replace('__KEY__',key),
+                        dataType:'JSON',
+                        success:function (json) {
+                            if(json.code==1){
+                                dialog.success(json.msg)
+                            }else{
+                                dialog.error(json.msg)
+                            }
+                        }
+                    })
+                })
+            });
+            $('.exchangeCurrencyBtn').click(function (e) {
+                e.preventDefault();
+
             });
 
 

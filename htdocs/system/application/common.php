@@ -663,16 +663,7 @@ function getGoodsUnits()
 
 function getCurrencies()
 {
-    static $currencies;
-    if (empty($currencies)) {
-        $currencies = cache('currencies');
-        if (empty($levels)) {
-            $data =  Db::name('currency')->order('sort ASC,id ASC')->select();
-            $currencies=array_index($data,'key');
-            cache('currencies', $currencies);
-        }
-    }
-    return $currencies;
+    return \app\common\model\CurrencyModel::getCurrencies();
 }
 
 function getLevelConfig($levels){

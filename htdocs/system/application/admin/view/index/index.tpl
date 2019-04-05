@@ -50,7 +50,7 @@
                 <div class="card-footer announcement-bottom">
                     <nav class="nav nav-fill">
                         <a class="nav-item nav-link" href="{:url('customer/index')}"><i class="ion-md-navicon"></i> 管理客户 </a>
-                        <a class="nav-item nav-link" href="{:url('finance/customer')}"><i class="ion-md-stats-bars"></i> 财务统计 </a>
+                        <a class="nav-item nav-link" href="{:url('finance/receive')}"><i class="ion-md-add"></i> 应收款 </a>
                     </nav>
                 </div>
             </div>
@@ -71,7 +71,7 @@
                 <div class="card-footer announcement-bottom">
                     <nav class="nav nav-fill">
                         <a class="nav-item nav-link" href="{:url('supplier/index')}"><i class="ion-md-navicon"></i> 管理供应商 </a>
-                        <a class="nav-item nav-link" href="{:url('finance/supplier')}"><i class="ion-md-add"></i> 财务统计 </a>
+                        <a class="nav-item nav-link" href="{:url('finance/payable')}"><i class="ion-md-remove"></i> 应付款 </a>
                     </nav>
                 </div>
             </div>

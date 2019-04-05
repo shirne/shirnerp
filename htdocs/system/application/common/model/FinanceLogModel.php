@@ -25,12 +25,15 @@ class FinanceLogModel extends BaseModel
             'remark'=>$remark
         ];
         $amount = abs(floatval($amount));
+        $base_amount = CurrencyModel::exchange($amount, $order['currency']);
         if($data['type'] == 'sale'){
             $data['customer_id']=$order['customer_id'];
             $data['amount'] = $amount;
+            $data['base_amount']=$base_amount;
         }elseif($data['type'] == 'purchase'){
             $data['supplier_id']=$order['supplier_id'];
             $data['amount'] = -$amount;
+            $data['base_amount']=-$base_amount;
         }
         $model = static::create($data);
         if($model['id']){

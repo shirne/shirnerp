@@ -34,13 +34,15 @@ class SaleOrderModel extends BaseModel
                 'storage_id'=>$good['storage_id']?:$order['storage_id'],
                 'count'=>$good['count'],
                 'price'=>$good['price'],
-                'amount'=>$good['count'] * $good['price']
+                'base_price'=>CurrencyModel::exchange($good['price'],$order['currency']),
+                'amount'=>$good['count'] * $good['price'],
             ];
 
         }
 
         $model = new static();
         $order['amount']=$total_price;
+        $order['base_amount']=CurrencyModel::exchange($order['amount'],$order['currency']);
         if($model->allowField(true)->save($order)) {
             foreach ($rows as &$row) {
                 $row['sale_order_id']=$model['id'];
