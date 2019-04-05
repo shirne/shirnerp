@@ -74,7 +74,7 @@ class DataController extends BaseController
         CurrencyModel::update(['is_base'=>1],['key'=>$key]);
         $this->success('设置成功');
     }
-    public function updateCurrencyExchange($key, $rate){
+    public function setCurrencyRate($key, $rate){
         //$currency = CurrencyModel::getCurrency($key);
 
         CurrencyModel::update(['exchange_rate'=>$rate],['key'=>$key]);

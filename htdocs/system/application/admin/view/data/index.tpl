@@ -19,7 +19,7 @@
                             <th>单位</th>
                             <th>排序</th>
                             <th>备注</th>
-                            <th width="160">操作</th>
+                            <th width="100">操作</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -55,7 +55,7 @@
                             <th>符号</th>
                             <th>汇率</th>
                             <th>排序</th>
-                            <th width="160">操作</th>
+                            <th width="100">操作</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -142,7 +142,20 @@
             });
             $('.exchangeCurrencyBtn').click(function (e) {
                 e.preventDefault();
-
+                var key = $(this).data('key');
+                dialog.prompt('请填写今日汇率',function (rate) {
+                    $.ajax({
+                        url:'{:url("setCurrencyRate",['key'=>'__KEY__','rate'=>'__RATE__'])}'.replace('__KEY__',key).replace('__RATE__',rate),
+                        dataType:'JSON',
+                        success:function (json) {
+                            if(json.code==1){
+                                dialog.success(json.msg)
+                            }else{
+                                dialog.error(json.msg)
+                            }
+                        }
+                    })
+                })
             });
 
 
