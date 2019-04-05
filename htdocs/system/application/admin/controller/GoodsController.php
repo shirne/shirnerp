@@ -220,14 +220,110 @@ class GoodsController extends BaseController
         }
     }
 
-    public function rank($start_time=0, $end_time=0)
+    public function rank($start_date='', $end_date='')
     {
+        $pmodel = Db::name('purchaseOrderGoods');
+        $smodel = Db::name('saleOrderGoods');
+        $start_time=0;
+        $end_time=0;
+        if($start_date) {
+            $start_time = strtotime($start_date);
+            if ($start_time) $start_date = date('Y-m-d H:i:s', $start_time);
+        }
+
+        if($end_date) {
+            $end_time = strtotime($end_date);
+            if ($end_time) $end_date = date('Y-m-d H:i:s', $end_time);
+        }
+
+        if($start_time){
+            if($end_time){
+                $pmodel->whereBetween('create_time',[$start_time,$end_time]);
+                $smodel->whereBetween('create_time',[$start_time,$end_time]);
+            }else{
+                $pmodel->where('create_time','>=',$start_time);
+                $smodel->where('create_time','>=',$start_time);
+            }
+        }elseif($end_time){
+            $pmodel->where('create_time','<=',$end_time);
+            $smodel->where('create_time','<=',$end_time);
+        }
+        $pdata = $pmodel->field('sum(count) as total_count,goods_id,goods_title,goods_unit')
+            ->group('goods_id')->order('total_count DESC')
+            ->select();
+        $sdata = $pmodel->field('sum(count) as total_count,goods_id,goods_title,goods_unit')
+            ->group('goods_id')->order('total_count DESC')
+            ->select();
+
+        $purchaseData=[];
+        foreach ($pdata as $k=>$row){
+            $purchaseData[]=[
+                'value'=> $row['total_count'],
+                'label'=> $row['goods_title'].'('.$row['goods_unit'].')'
+            ];
+        }
+
+        $saleData=[];
+        foreach ($sdata as $k=>$row){
+            $saleData[]=[
+                'value'=> $row['total_count'],
+                'label'=> $row['goods_title'].'('.$row['goods_unit'].')'
+            ];
+        }
+
+
+        $this->assign(compact('start_date','end_date'));
+        $this->assign('purchaseStatics',$purchaseData);
+        $this->assign('saleStatics',$saleData);
+
         return $this->fetch();
     }
 
-    public function statics($goods_id, $start_time=0, $end_time=0)
+    public function statics($goods_id, $start_date='', $end_date='')
     {
+        $format ="'%Y-%m-%d'";
+        $pmodel = Db::name('purchaseOrderGoods')->where('goods_id',$goods_id);
+        $smodel = Db::name('saleOrderGoods')->where('goods_id',$goods_id);
+        $start_time=0;
+        $end_time=0;
+        if($start_date) {
+            $start_time = strtotime($start_date);
+            if ($start_time) $start_date = date('Y-m-d H:i:s', $start_time);
+        }
 
+        if($end_date) {
+            $end_time = strtotime($end_date);
+            if ($end_time) $end_date = date('Y-m-d H:i:s', $end_time);
+        }
+
+        if($start_time){
+            if($end_time){
+                $pmodel->whereBetween('create_time',[$start_time,$end_time]);
+                $smodel->whereBetween('create_time',[$start_time,$end_time]);
+            }else{
+                $pmodel->where('create_time','>=',$start_time);
+                $smodel->where('create_time','>=',$start_time);
+            }
+        }elseif($end_time){
+            $pmodel->where('create_time','<=',$end_time);
+            $smodel->where('create_time','<=',$end_time);
+        }
+        $pdata = $pmodel->field('sum(count) as total_p_count,avg(base_price) as p_price,date_format(from_unixtime(create_time),'.$format. ') as awdate')
+            ->group('awdate')->order('awdate ASC')
+            ->select();
+        $sdata = $pmodel->field('sum(count) as total_s_count,avg(base_price) as s_price,date_format(from_unixtime(create_time),'.$format. ') as awdate')
+            ->group('awdate')->order('awdate ASC')
+            ->select();
+        $sdata = array_index($sdata,'awdate');
+
+        $statics = [];
+        foreach ($pdata as $row){
+            $srow = $sdata[$row['awdate']]?:['total_s_count'=>0,'s_price'=>0];
+            $statics[]=array_merge($row,$srow);
+        }
+
+        $this->assign(compact('start_date','end_date'));
+        $this->assign('statics',$statics);
 
         return $this->fetch();
     }

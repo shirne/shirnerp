@@ -31,8 +31,8 @@ class TransOrderModel extends BaseModel
                 'goods_no'=>$goods[$goods_id]['goods_no'],
                 'goods_unit'=>$goods[$goods_id]['unit'],
                 'count'=>$good['count'],
-                'price'=>$good['price'],
-                'amount'=>$good['count'] * $good['price']
+                //'price'=>$good['price'],
+                //'amount'=>$good['count'] * $good['price']
             ];
 
         }
@@ -42,6 +42,8 @@ class TransOrderModel extends BaseModel
         if($model->allowField(true)->save($order)) {
             foreach ($rows as &$row) {
                 $row['trans_order_id']=$model['id'];
+                $row['create_time']=$model['create_time'];
+                $row['update_time']=$model['update_time'];
             }
             Db::name('transOrderGoods')->insertAll($rows);
 

@@ -46,6 +46,8 @@ class SaleOrderModel extends BaseModel
         if($model->allowField(true)->save($order)) {
             foreach ($rows as &$row) {
                 $row['sale_order_id']=$model['id'];
+                $row['create_time']=$model['create_time'];
+                $row['update_time']=$model['update_time'];
             }
             Db::name('saleOrderGoods')->insertAll($rows);
 

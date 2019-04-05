@@ -6,7 +6,7 @@
     <div id="page-wrapper">
         <div class="row list-header">
             <div class="col-md-12">
-                <form action="{:url('financec/logs',searchKey('fromdate,todate',''))}" class="form-inline" method="post">
+                <form action="{:url('finance/logs',searchKey('fromdate,todate',''))}" class="form-inline" method="post">
                     <div class="input-group date-range">
                         <div class="input-group-prepend"><span class="input-group-text">时间范围</span></div>
                         <input type="text" class="form-control" name="fromdate" value="{$fromdate}">
