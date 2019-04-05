@@ -53,6 +53,7 @@
             <tr>
                 <th width="50">编号</th>
                 <th>订单</th>
+                <th>付款方式</th>
                 <th>金额</th>
                 <th>来源</th>
                 <th>时间</th>
@@ -78,8 +79,9 @@
                             {$v['order_id']}
                         </if>
                     </td>
+                    <td>{$v.pay_type|finance_type|raw}</td>
                     <td class="{$v['amount']>0?'text-success':'text-danger'}">
-                        {$v.pay_type|finance_type|raw}{$v.amount}
+                        <span class="badge badge-info">{$v.currency}</span> {$v.amount}
                     </td>
                     <td>
                         <if condition="$v['customer_id']">

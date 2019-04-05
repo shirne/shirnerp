@@ -26,6 +26,7 @@
             <tr>
                 <th width="50">编号</th>
                 <th>供应商</th>
+                <th>货币</th>
                 <th>应付</th>
                 <th>已付</th>
                 <th>未付</th>
@@ -34,11 +35,12 @@
             </tr>
             </thead>
             <tbody>
-            <php>$empty=list_empty(7);</php>
+            <php>$empty=list_empty(8);</php>
             <volist name="lists" id="v" empty="$empty">
                 <tr>
                     <td>{$v.id}</td>
                     <td>{$v.customer_title}</td>
+                    <td>{$v.currency}</td>
                     <td>{$v.amount}</td>
                     <td>{$v.payed_amount}</td>
                     <td>{$v['amount'] - $v['payed_amount']}</td>
