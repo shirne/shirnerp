@@ -77,4 +77,13 @@ function delete_image($images){
 function list_empty($col=5){
     return '<tr><td colspan="'.$col.'" class="text-center text-muted">暂时没有记录</td></tr>';
 }
+
+function show_finance($finance){
+    $items=[];
+    foreach ($finance as $c=>$item){
+        $items[]='<span class="badge badge-secondary">'.$c.'</span> '.$item;
+    }
+
+    return empty($items)?'-':implode("<br />",$items);
+}
 //end file

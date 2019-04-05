@@ -159,17 +159,17 @@
                     </tr>
                     <tr>
                         <td>应收账款</td>
-                        <td> {$finance.sales.total} </td>
-                        <td> {$finance.sales.in30days} </td>
-                        <td> {$finance.sales.in90days} </td>
-                        <td> {$finance.sales.out90days} </td>
+                        <td> {$finance.sales.total|show_finance|raw} </td>
+                        <td> {$finance.sales.in30days|show_finance|raw} </td>
+                        <td> {$finance.sales.in90days|show_finance|raw} </td>
+                        <td> {$finance.sales.out90days|show_finance|raw} </td>
                     </tr>
                     <tr>
                         <td>应付账款</td>
-                        <td> {$finance.purchases.total} </td>
-                        <td> {$finance.purchases.in30days} </td>
-                        <td> {$finance.purchases.in90days} </td>
-                        <td> {$finance.purchases.out90days} </td>
+                        <td> {$finance.purchases.total|show_finance|raw} </td>
+                        <td> {$finance.purchases.in30days|show_finance|raw} </td>
+                        <td> {$finance.purchases.in90days|show_finance|raw} </td>
+                        <td> {$finance.purchases.out90days|show_finance|raw} </td>
                     </tr>
                 </table>
             </div>
