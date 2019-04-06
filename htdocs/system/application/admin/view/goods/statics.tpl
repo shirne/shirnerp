@@ -21,17 +21,6 @@
                         <input type="text" class="form-control todate" name="end_date" placeholder="选择结束日期" value="{$end_date}">
                     </div>
                     <div class="form-group col">
-                        <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
-                            <label class="btn btn-outline-secondary {$static_type=='date'?'active':''}">
-                                <input type="radio" name="type" id="option1" value="date" autocomplete="off" checked> 按日
-                            </label>
-                            <label class="btn btn-outline-secondary {$static_type=='month'?'active':''}">
-                                <input type="radio" name="type" id="option2" value="month" autocomplete="off"> 按月
-                            </label>
-                            <label class="btn btn-outline-secondary {$static_type=='year'?'active':''}">
-                                <input type="radio" name="type" id="option3" value="year" autocomplete="off"> 按年
-                            </label>
-                        </div>
                         <input type="submit" class="btn btn-primary btn-sm btn-submit ml-2" value="确定"/>
                     </div>
                 </div>

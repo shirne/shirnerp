@@ -76,12 +76,12 @@ class PurchaseOrderController extends BaseController
     public function export($order_ids='',$key='',$status=''){
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('purchaseOrder','*')
-            ->view('supplier',['username','realname','avatar','level_id'],'supplier.id=order.supplier_id','LEFT')
+            ->view('supplier',['title'=>'supplier_title'],'supplier.id=purchaseOrder.supplier_id','LEFT')
             ->view('storage',['title'=>'storage_title'],'storage.id=purchaseOrder.storage_id','LEFT')
             ->where('purchaseOrder.delete_time',0);
         if(empty($order_ids)){
             if(!empty($key)){
-                $model->whereLike('purchaseOrder.order_no|supplier.title',"%$key%");
+                $model->whereLike('purchaseOrder.order_no|purchaseOrder.supplier_order_no|supplier.title',"%$key%");
             }
             if($status!==''){
                 $model->where('purchaseOrder.status',$status);
@@ -100,17 +100,16 @@ class PurchaseOrderController extends BaseController
 
         $excel=new Excel();
         $excel->setHeader(array(
-            '编号','状态','时间','会员ID','会员账号','购买产品','购买价格','收货人','电话','省','市','区','地址'
+            '订单号','日期','供应商','客户单号','币种','订单金额','已付金额','状态'
         ));
         $excel->setColumnType('A',DataType::TYPE_STRING);
         $excel->setColumnType('D',DataType::TYPE_STRING);
-        $excel->setColumnType('I',DataType::TYPE_STRING);
 
         foreach ($rows as $row){
-            $prodata = Db::name('purchaseOrderGoods')->where('order_id', $row['order_id'])->find();
+            //$prodata = Db::name('purchaseOrderGoods')->where('purchase_order_id', $row['order_id'])->find();
             $excel->addRow(array(
-                $row['id'],order_status($row['status'],false),date('Y/m/d H:i:s',$row['create_at']),$row['member_id'],$row['username'],
-                $prodata['product_title'],$row['payamount'],$row['recive_name'],$row['mobile'],$row['province'],$row['city'],$row['area'],$row['address']
+                $row['order_no'],date('Y/m/d H:i:s',$row['create_time']),$row['supplier_title'],$row['supplier_order_no'],
+                $row['currency'],$row['amount'],$row['payed_amount'],purchase_order_status($row['status'],false)
             ));
         }
 
@@ -120,9 +119,10 @@ class PurchaseOrderController extends BaseController
     /**
      * 订单详情
      * @param $id
+     * @param $is_print
      * @return \think\Response
      */
-    public function detail($id){
+    public function detail($id, $is_print=0){
         $model=Db::name('purchaseOrder')->where('id',$id)->find();
         if(empty($model))$this->error('订单不存在');
         $supplier=Db::name('supplier')->find($model['supplier_id']);
@@ -134,8 +134,43 @@ class PurchaseOrderController extends BaseController
         $this->assign('model',$model);
         $this->assign('supplier',$supplier);
         $this->assign('goods',$goods);
-        $this->assign('paylog',Db::name('financeLog')->where('type','purchase')->where('order_id',$id)->select());
-        return $this->fetch();
+        if(!$is_print) {
+            $this->assign('paylog', Db::name('financeLog')->where('type', 'purchase')->where('order_id', $id)->select());
+        }
+        return $is_print?$this->fetch('printOne'):$this->fetch();
+    }
+
+    public function exportOne($id){
+        $model=Db::name('purchaseOrder')->where('id',$id)->find();
+        if(empty($model))$this->error('订单不存在');
+        $customer=Db::name('customer')->find($model['customer_id']);
+        $goods = Db::view('purchaseOrderGoods','*')
+            ->view('storage',['title'=>'storage_title'],'storage.id=purchaseOrderGoods.storage_id','LEFT')
+            ->where('purchase_order_id',  $id)
+            ->order('purchaseOrderGoods.id ASC')->select();
+
+        $excel=new Excel();
+        $excel->setHeader(array(
+            '出货清单('.$customer['title'].')'
+        ));
+        $excel->setHeader(array(
+            '订单日期：'.date('Y-m-d',$model['create_time'])
+        ));
+
+        $excel->setHeader(array(
+            '品种','件数','单位','重量','单价','总价','出库仓','备注'
+        ));
+        $excel->setColumnType('B',DataType::TYPE_STRING);
+        $excel->setColumnType('D',DataType::TYPE_STRING);
+
+        foreach ($goods as $row){
+            $excel->addRow(array(
+                $row['goods_title'],$row['count'],$row['goods_unit'],
+                '',$row['price'],$row['amount'],$row['storage_title'],''
+            ));
+        }
+
+        $excel->output('订单['.$model['order_no'].']');
     }
 
     /**
@@ -155,7 +190,7 @@ class PurchaseOrderController extends BaseController
             'status'=>$status
         );
         $order->updateStatus($data);
-        user_log($this->mid,'auditpurchaseorder',1,'更新订单 '.$id .' '.$audit,'manager');
+        user_log($this->mid,'auditpurchaseorder',1,'更新订单 '.$id .' '.$status,'manager');
         $this->success('操作成功');
     }
 
