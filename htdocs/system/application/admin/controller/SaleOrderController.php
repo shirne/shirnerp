@@ -135,7 +135,7 @@ class SaleOrderController extends BaseController
         if(!$is_print) {
             $this->assign('paylog', Db::name('financeLog')->where('type', 'sale')->where('order_id', $id)->select());
         }
-        return $is_print?$this->fetch('printOne'):$this->fetch();
+        return $is_print?$this->fetch('print_one'):$this->fetch();
     }
 
     public function exportOne($id){

@@ -52,7 +52,8 @@
                         </if>
                     </td>
                     <td class="operations">
-
+                        <a class="btn btn-outline-primary" target="_blank" title="导出" href="{:url('purchaseOrder/exportOne',array('id'=>$v['id']))}" ><i class="ion-md-download"></i> </a>
+                        <a class="btn btn-outline-primary" target="_blank" title="打印" href="{:url('saleOrder/detail',array('id'=>$v['id'],'is_print'=>1))}" ><i class="ion-md-print"></i> </a>
                         <if condition="$v['status'] EQ 0">
                             <a class="btn btn-outline-primary link-confirm" title="入库" data-confirm="请确认商品已入库，操作不可撤销!" href="{:url('purchaseOrder/status',array('id'=>$v['id'],'status'=>1))}" ><i class="ion-md-filing"></i> </a>
                             <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('purchaseOrder/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>

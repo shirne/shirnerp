@@ -10,15 +10,15 @@
         </div>
     </div>
     <div id="page-wrapper" class="container m-auto">
+        <h3 class="text-center">{:getSetting('site-name')}</h3>
+        <h4 class="text-center">出货清单({$customer['title']})</h4>
+        <div class="row">
+            <div class="col text-left">下单日期：{$model['create_time']|showdate}</div>
+            <div class="col text-right"></div>
+        </div>
         <table class="table table-bordered">
+            <caption></caption>
             <thead>
-                <tr>
-                    <th rowspan="7">{:getSetting('site-name')}</th>
-                </tr>
-                <tr>
-                    <th rowspan="7">出货清单({$customer['title']})</th>
-                </tr>
-                <tr><th rowspan="4">下单日期：{$model['create_time']|showdate}</th><th></th></tr>
                 <tr>
                     <th>品种</th>
                     <th>件数</th>

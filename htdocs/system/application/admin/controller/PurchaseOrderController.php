@@ -137,7 +137,7 @@ class PurchaseOrderController extends BaseController
         if(!$is_print) {
             $this->assign('paylog', Db::name('financeLog')->where('type', 'purchase')->where('order_id', $id)->select());
         }
-        return $is_print?$this->fetch('printOne'):$this->fetch();
+        return $is_print?$this->fetch('print_one'):$this->fetch();
     }
 
     public function exportOne($id){
