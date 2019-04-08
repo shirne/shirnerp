@@ -15,6 +15,11 @@ class SaleOrderModel extends BaseModel
         if(empty($order['order_no'])){
             $order['order_no']=self::create_no();
         }
+        if($order['customer_time']){
+            $order['customer_time']=strtotime($order['customer_time']);
+        }else{
+            $order['customer_time']=0;
+        }
 
         $rows = [];
         $total_price=0;

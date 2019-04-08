@@ -166,6 +166,7 @@ CREATE TABLE `sa_purchase_order` (
   `payed_amount` DECIMAL(14,2) DEFAULT '0',
   `currency` VARCHAR(10) DEFAULT 'RMB',
   `base_amount` DECIMAL(14,2) DEFAULT '0',
+  `confirm_time` INT(11) DEFAULT '0',
   `delete_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
@@ -223,6 +224,7 @@ CREATE TABLE `sa_customer` (
 DROP TABLE IF EXISTS `sa_sale_order`;
 CREATE TABLE `sa_sale_order` (
   `id` INT NOT NULL AUTO_INCREMENT,
+  `manager_id` INT(11) NOT NULL,
   `customer_id` INT(11) NOT NULL,
   `storage_id` INT(11) NOT NULL,
   `order_no` VARCHAR(30) NOT NULL,
@@ -234,6 +236,8 @@ CREATE TABLE `sa_sale_order` (
   `currency` VARCHAR(10) DEFAULT 'RMB',
   `base_amount` DECIMAL(14,2) DEFAULT '0',
   `delete_time` INT(11) DEFAULT '0',
+  `customer_time` INT(11) DEFAULT '0',
+  `confirm_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`),

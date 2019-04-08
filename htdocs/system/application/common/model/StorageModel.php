@@ -15,7 +15,7 @@ class StorageModel extends BaseModel
      * @return bool
      */
     public static function updateGoods($storage_id, $goods, $type='+'){
-
+        if(!$storage_id)return false;
         $storages = Db::name('goodsStorage')->where('storage_id',$storage_id)
             ->whereIn('goods_id',array_column($goods,'goods_id'))->select();
         $storages=array_index($storages,'goods_id');

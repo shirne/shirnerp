@@ -31,7 +31,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-4 mt-3">
+                            <div class="col mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">仓库</span></div>
                                     <select class="form-control" v-model="order.storage_id">
@@ -40,7 +40,13 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-4 mt-3">
+                            <div class="col-3 mt-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">交货时间</span></div>
+                                    <input type="text" class="form-control customer_date" data-format="YYYY-MM-DD hh:mm"  name="customer_time" v-model="order.customer_time"/>
+                                </div>
+                            </div>
+                            <div class="col mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">货币</span></div>
                                     <select class="form-control" v-model="order.currency">
@@ -50,7 +56,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-4 mt-3">
+                            <div class="col mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">状态</span></div>
                                     <select name="status" class="form-control" v-model="order.status">
@@ -156,6 +162,7 @@
                     customer_id:0,
                     storage_id:0,
                     currency:'{:current($currencies)['key']}',
+                    customer_time:'',
                     status:0,
                     order_no:'',
                     customer_order_no:''
@@ -190,6 +197,18 @@
                 }
             },
             mounted:function(){
+                var config=$.extend({
+                    tooltips:tooltips,
+                    format: 'YYYY-MM-DD',
+                    locale: 'zh-cn',
+                    showClear:true,
+                    showTodayButton:true,
+                    showClose:true,
+                    keepInvalid:true
+                },transOption($('.customer_date').data()));
+
+                $('.customer_date').datetimepicker(config);
+
                 this.addRow();
                 this.loadStorages();
             },

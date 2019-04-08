@@ -41,21 +41,7 @@ class UtilController extends Controller
 
     public function updatedb()
     {
-        $sqls = ["ALTER TABLE `sa_currency` ADD `is_base` tinyint(11) DEFAULT 0 COMMENT '基准货币' AFTER `icon`,
-ADD `exchange_rate` DECIMAL(10,4) DEFAULT 1 COMMENT '汇率' AFTER `is_base`;",
-            "ALTER TABLE `sa_purchase_order` ADD `base_amount` DECIMAL(14,2) DEFAULT '0' AFTER `currency`;",
-            "ALTER TABLE `sa_sale_order` ADD `base_amount` DECIMAL(14,2) DEFAULT '0' AFTER `currency`;",
-            "ALTER TABLE `sa_purchase_order_goods` ADD `base_price` DECIMAL(14,2) DEFAULT '0' AFTER `price`;",
-            "ALTER TABLE `sa_sale_order_goods` ADD `base_price` DECIMAL(14,2) DEFAULT '0' AFTER `price`;",
-            "ALTER TABLE `sa_finance_log` ADD `base_amount` DECIMAL(14,2) DEFAULT '0' AFTER `currency`;",
-            "CREATE TABLE `sa_currency_rate` (
-  `id` bigint(11) NOT NULL AUTO_INCREMENT,
-  `currency` varchar(20) DEFAULT NULL COMMENT '币种编码',
-  `exchange_rate` DECIMAL(10,4) DEFAULT 1 COMMENT '汇率',
-  `create_time` int(11) DEFAULT 0 COMMENT '时间',
-  PRIMARY KEY (`id`),
-  KEY `currency` (`currency`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;"];
+        $sqls = [];
         foreach ($sqls as $sql){
             Db::execute($sql);
         }
