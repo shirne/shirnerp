@@ -114,7 +114,7 @@
 				</div>
 				<select name="cate_id" id="goods-cate" class="form-control">
 					<foreach name="categories" item="v">
-						<option value="{$v.id}" {$goods['cate_id'] == $v['id']?'selected="selected"':""}>{$v.html} {$v.title}</option>
+						<option value="{$v.id}" >{$v.html} {$v.title}</option>
 					</foreach>
 				</select>
 			</div>
@@ -126,8 +126,19 @@
 				</div>
 				<select name="unit" class="form-control">
 					<foreach name="units" item="v">
-						<option value="{$v.key}" {$goods['unit'] == $v['key']?'selected="selected"':""}>{$v.key}</option>
+						<option value="{$v.key}" >{$v.key}</option>
 					</foreach>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<label class="input-group-text">计价方式</label>
+				</div>
+				<select name="price_type" id="price_type" class="form-control">
+					<option value="0">单位计价</option>
+					<option value="1">重量计价</option>
 				</select>
 			</div>
 		</div>
@@ -139,7 +150,7 @@
 		</div>
 		<div class="form-group">
 			<label for="description">商品摘要</label>
-			<textarea name="description" class="form-control" >{$goods.description}</textarea>
+			<textarea name="description" class="form-control" ></textarea>
 		</div>
 	</script>
 	<script type="text/html" id="batchAddTpl">

@@ -130,6 +130,44 @@ class StorageController extends BaseController
         return $this->fetch();
     }
 
+    public function createInventory($storage_id){
+
+        $storage = Db::name('storage')->where('id',$storage_id)->find();
+        if($this->request->isPost()){
+
+        }
+        $this->assign('storage',$storage);
+        return $this->fetch();
+    }
+
+    public function inventory($storage_id){
+
+        $storage = Db::name('storage')->where('id',$storage_id)->find();
+        $lists = Db::view('storageInventory','*')
+            ->view('storage',['title'=>'storage_title'],'storage.id=storageInventory.storage_id')
+            ->order('storageInventory.create_time DESC')
+            ->paginate(10);
+
+        $this->assign('lists',$lists);
+        $this->assign('storage',$storage);
+        $this->assign('storage_id',$storage_id);
+        return $this->fetch();
+    }
+
+    /**
+     * @param $id
+     * @param int $is_edit
+     * @return mixed
+     */
+    public function inventoryDetail($id, $is_edit=0){
+        $inventory = Db::name('storageInventory')->where('id',$id)->find();
+        $storage = Db::name('storage')->where('id',$inventory['storage_id'])->find();
+
+        $this->assign('inventory',$inventory);
+        $this->assign('storage',$storage);
+        return $is_edit?$this->fetch('inventory_detail'):$this->fetch();
+    }
+
     public function goods($id){
         $goods = Db::view('goodsStorage','*')
             ->view('goods','*','goods.id=goodsStorage.goods_id','LEFT')

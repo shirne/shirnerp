@@ -33,6 +33,7 @@ class PurchaseOrderModel extends BaseModel
                 'goods_unit'=>$goods[$goods_id]['unit'],
                 'storage_id'=>$good['storage_id']?:$order['storage_id'],
                 'count'=>$good['count'],
+                'price_type'=>$good['price_type'],
                 'price'=>$good['price'],
                 'base_price'=>CurrencyModel::exchange($good['price'],$order['currency']),
                 'amount'=>$good['count'] * $good['price']
@@ -41,7 +42,7 @@ class PurchaseOrderModel extends BaseModel
         }
 
         $model = new static();
-        $order['amount']=$total_price;
+        $order['amount']=$total_price + $order['freight'];
         $order['base_amount']=CurrencyModel::exchange($order['amount'],$order['currency']);
         if($model->allowField(true)->save($order)) {
             foreach ($rows as &$row) {

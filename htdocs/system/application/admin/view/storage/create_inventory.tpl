@@ -2,61 +2,45 @@
 
 <block name="body">
 
-    <include file="public/bread" menu="purchase_order_index" title="采购入库" />
+    <include file="public/bread" menu="trans_order_index" title="商品转库" />
 
     <div id="page-wrapper">
-        <div class="page-header">采购入库</div>
+        <div class="page-header">商品转库</div>
         <div class="page-content">
             <form method="post" action="" enctype="multipart/form-data" @submit="onSubmit">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-6 mt-3">
+                            <div class="col">
                                 <div class="input-group">
-                                    <div class="input-group-prepend"><span class="input-group-text">供应商</span></div>
-                                    <input type="text" class="form-control" @focus="showSupplier" @blur="hideSupplier" v-model="cKey"/>
-                                </div>
-                            </div>
-                            <div class="col-3 mt-3">
-                                <div class="input-group">
-                                    <div class="input-group-prepend"><span class="input-group-text">客户单号</span></div>
-                                    <input type="text" class="form-control" name="supplier_order_no" v-model="order.supplier_order_no"/>
-                                </div>
-                            </div>
-                            <div class="col-3 mt-3">
-                                <div class="input-group">
-                                    <div class="input-group-prepend"><span class="input-group-text">单号</span></div>
-                                    <input type="text" class="form-control" placeholder="不填写将由系统自动生成" name="order_no" v-model="order.order_no"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-4 mt-3">
-                                <div class="input-group">
-                                    <div class="input-group-prepend"><span class="input-group-text">仓库</span></div>
-                                    <select class="form-control" v-model="order.storage_id">
+                                    <div class="input-group-prepend"><span class="input-group-text">来源仓库</span></div>
+                                    <select class="form-control" @change="checkStorage" v-model="order.from_storage_id">
                                         <option :value="0">请选择仓库</option>
                                         <option v-for="storage in storages" :key="storage.id" :value="storage.id">[{{storage.storage_no}}]{{storage.title}}</option>
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="col-4 mt-3">
+                            <div class="col">
                                 <div class="input-group">
-                                    <div class="input-group-prepend"><span class="input-group-text">货币</span></div>
-                                    <select class="form-control" v-model="order.curency">
-                                        <volist name="currencies" id="cur">
-                                            <option value="{$cur.key}">[{$cur.key}]{$cur.title}</option>
-                                        </volist>
+                                    <div class="input-group-prepend"><span class="input-group-text">去向仓库</span></div>
+                                    <select class="form-control" @change="checkStorage" v-model="order.storage_id">
+                                        <option :value="0">请选择仓库</option>
+                                        <option v-for="storage in storages" :key="storage.id" :value="storage.id">[{{storage.storage_no}}]{{storage.title}}</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-4 mt-3">
+                            <div class="col">
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">单号</span></div>
+                                    <input type="text" class="form-control" placeholder="不填写将由系统自动生成" name="order_no" v-model="order.order_no"/>
+                                </div>
+                            </div>
+                            <div class="col">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">状态</span></div>
                                     <select name="status" class="form-control" v-model="order.status">
-                                        <option :value="0" >待入库</option>
-                                        <option :value="1" >已入库</option>
+                                        <option :value="0" >待转</option>
+                                        <option :value="1" >已转</option>
                                     </select>
                                 </div>
                             </div>
@@ -68,9 +52,6 @@
                             <th>产品</th>
                             <th>库存</th>
                             <th>数量</th>
-                            <th>重量</th>
-                            <th>单价</th>
-                            <th>总价</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -80,57 +61,29 @@
                             <td>{{good.storage}}</td>
                             <td class="counttd">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.count"/>
+                                    <input type="text" class="form-control" v-model="good.count"/>
                                     <div class="input-group-append"><span class="input-group-text">{{good.unit}}</span></div>
                                 </div>
                             </td>
-                            <td>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" v-model="good.weight"/>
-                                    <div class="input-group-append"><span class="input-group-text">Kg</span></div>
-                                </div>
-                            </td>
-                            <td><input type="text" class="form-control" @change="updateRow(idx)" v-model="good.price"/> </td>
-                            <td>{{good.total_price}} </td>
-                            <td><a href="javascript:" class="btn btn-sm btn-outline-danger" title="删除" @click="delGoods(idx)"><i class="ion-md-close "></i> </a> </td>
+                            <td><a href="javascript:" class="btn btn-outline-primary" @click="delGoods(idx)">删除</a> </td>
                         </tr>
                         </tbody>
                         <tfoot>
                         <tr>
-                            <th>汇总</th>
-                            <td></td>
-                            <td>{{total.count}}</td>
-                            <td></td>
-                            <td></td>
-                            <td>{{total.price}}</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td colspan="3"><a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-addrow">添加行</a> </td>
-                            <td colspan="4" class="text-right">
-                                <div class="input-group">
-                                    <div class="input-group-prepend"><span class="input-group-text">运费</span></div>
-                                    <input type="text" class="form-control" v-model="order.freight"/>
-                                </div>
-                            </td>
+                            <td colspan="4"><a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-addrow">添加行</a> </td>
                         </tr>
                         </tfoot>
                     </table>
                     <div class="card-footer">
-                        <a href="javascript:" :class="'btn btn-primary'+(ajaxing?' disabled':'')" @click="onSubmit">提交保存</a>
+                        <a href="javascript:" class="btn btn-primary" @click="onSubmit">提交保存</a>
                     </div>
                 </div>
             </form>
         </div>
 
-        <ul class="list-group auto-complete goods-complete" :style="listStyle">
+        <ul class="list-group auto-complete" :style="listStyle">
             <li class="list-group-item" v-for="(good,idx) in listGoods" :data-idx="idx" :key="good.id" @click="selectThis" @mouseenter="activeThis">
                 [{{good.goods_no}}]{{good.title}}
-            </li>
-        </ul>
-        <ul class="list-group auto-complete supplier-complete" :style="supplierStyle">
-            <li class="list-group-item" v-for="(supplier,idx) in suppliers" :data-idx="idx" :key="supplier.id" @click="selectThisSupplier" @mouseenter="activeThisSupplier">
-                [{{supplier.id}}]{{supplier.title}}
             </li>
         </ul>
     </div>
@@ -140,7 +93,6 @@
     <script type="text/javascript">
         var hideTimeout=0;
         var currentInput=null;
-        var hideSupplierTimeout=0;
         var app = new Vue({
             el: '#page-wrapper',
             data: {
@@ -152,42 +104,30 @@
                     top:0,
                     width:0
                 },
-                supplierStyle:{
-                    display:'none',
-                    position:'absolute',
-                    left:0,
-                    top:0,
-                    width:0
-                },
                 order:{
-                    supplier_id:0,
                     storage_id:0,
-                    currency:"{:current($currencies)['key']}",
                     status:0,
-                    order_no:'',
-                    freight:0,
-                    supplier_order_no:''
+                    order_no:''
                 },
-                cKey:'',
-                suppliers:[],
                 storages:[],
                 emptyGoods:[],
                 key:'',
-                listGoods:[],
-                total:{
-                    count:0,
-                    price:0
-                },
-                ajaxing:false
+                listGoods:[]
+            },
+            computed:{
+                goods_ids:function () {
+                    var ids=[];
+                    for(var i=0;i<this.goods.length;i++){
+                        if(this.goods[i].goods_id)ids.push(this.goods[i].goods_id);
+                    }
+                    return ids;
+                }
             },
             watch:{
-                'order.storage_id':function (val, oVal) {
+                'order.from_storage_id':function (val, oVal) {
                     this.listGoods=[];
                     this.emptyGoods=[];
                     this.updateStorage();
-                },
-                cKey:function (val, oVal) {
-                    this.getSupplierList();
                 }
             },
             mounted:function(){
@@ -211,6 +151,15 @@
                         }
                     })
                 },
+                checkStorage:function (e) {
+                    if(this.order.from_storage_id && this.order.storage_id){
+                        if(this.order.from_storage_id == this.order.storage_id){
+
+                            dialog.alert('出仓与入仓不能相同');
+                            this.order.storage_id = 0;
+                        }
+                    }
+                },
                 addRow:function(){
                     this.goods.push({
                         id:0,
@@ -218,14 +167,11 @@
                         orig_title:'',
                         count:'',
                         unit:'',
-                        price_type:0,
-                        weight:0,
-                        price:0,
-                        total_price:0
+                        weight:0
                     });
                 },
                 updateStorage:function(){
-                    if(this.order.storage_id){
+                    if(this.order.from_storage_id){
                         var goods_ids=[];
                         for(var i=0;i<this.goods.length;i++){
                             goods_ids.push(this.goods[i].goods_id);
@@ -236,7 +182,7 @@
                             type:'GET',
                             dataType:'JSON',
                             data:{
-                                storage_id:self.order.storage_id,
+                                storage_id:self.order.from_storage_id,
                                 goods_id:goods_ids.join(',')
                             },
                             success:function (json) {
@@ -254,22 +200,6 @@
                         }
                     }
                 },
-                updateRow:function (idx) {
-                    var good = this.goods[idx];
-                    this.goods[idx].total_price=(good.price_type==1?(good.weight * good.price):(good.count * good.price)).format(2);
-                    this.totalPrice();
-                },
-                totalPrice:function () {
-                    this.total.count=0;
-                    this.total.price=0;
-                    for(var i=0;i<this.goods.length;i++){
-                        if(this.goods[i].count)this.total.count+=parseFloat(this.goods[i].count);
-                        if(this.goods[i].total_price)this.total.price+=parseFloat(this.goods[i].total_price);
-                    }
-                    this.total.price = this.total.price.format(2);
-                },
-
-                //============= goods autocomplete
                 showGoods:function (e) {
                     clearTimeout(hideTimeout);
                     var target=e.target;
@@ -313,8 +243,8 @@
                     self.addClass('hover');
                 },
                 listenKeyup:function (e) {
-                    var lists=$('.goods-complete .list-group-item');
-                    var idx=lists.index($('.goods-complete .hover'));
+                    var lists=$('.auto-complete .list-group-item');
+                    var idx=lists.index($('.auto-complete .hover'));
 
                     switch (e.keyCode){
                         case 40://down
@@ -343,7 +273,7 @@
                     }
                 },
                 selectGoods:function () {
-                    var hover=$('.goods-complete .hover');
+                    var hover=$('.auto-complete .hover');
                     if(hover.length>0 && currentInput){
                         var idx=hover.data('idx');
                         var good = this.listGoods[idx];
@@ -354,7 +284,6 @@
                             this.goods[idx].orig_title=good.title;
                             this.goods[idx].storage=good.storage?good.storage:0;
                             this.goods[idx].unit=good.unit;
-                            this.goods[idx].price_type=good.price_type;
                             $(currentInput).parents('tr').find('.counttd input').focus();
                             return true;
                         }
@@ -373,7 +302,7 @@
                             dataType: 'JSON',
                             data: {
                                 key: key,
-                                storage_id:this.order.storage_id
+                                storage_id:this.order.from_storage_id
                             },
                             success: function (json) {
                                 if (json.code == 1) {
@@ -386,124 +315,13 @@
                         });
                     }
                 },
-
-                //====================== supplier autocomplete
-                showSupplier:function (e) {
-                    clearTimeout(hideSupplierTimeout);
-                    var target=e.target;
-                    var offset=$(target).offset();
-                    var width=$(target).outerWidth();
-                    var height=$(target).outerHeight();
-                    this.supplierStyle.top=(offset.top+height)+'px';
-                    this.supplierStyle.left=offset.left+'px';
-                    this.supplierStyle.width=width+'px';
-                    this.supplierStyle.display='block';
-                    //this.cKey = $(e.target).val();
-                    $(document.body).on('keyup',this.listenSupplierKeyup);
-                    this.getSupplierList(e);
-                },
-                hideSupplier:function (e) {
-                    if(e){
-                        if(this.cKey != this.order.supplier_title) {
-                            this.cKey = this.order.supplier_title;
-                        }
-                    }
-                    var self=this;
-                    clearTimeout(hideSupplierTimeout);
-                    hideSupplierTimeout=setTimeout(function () {
-                        $(document.body).off('keyup',self.listenSupplierKeyup);
-                        self.supplierStyle.display='none';
-                    },500);
-                },
-                /*loadSupplier:function (e) {
-                    //var ckey = $(e.target).val();
-                    if(ckey == this.cKey)return;
-                    this.cKey = ckey;
-                    this.getSupplierList(e);
-                },*/
-                activeThisSupplier:function (e) {
-                    var self=$(e.target);
-                    var parent=self.parents('.list-group').eq(0);
-                    parent.find('.list-group-item').removeClass('hover');
-                    self.addClass('hover');
-                },
-                listenSupplierKeyup:function (e) {
-                    var lists=$('.supplier-complete .list-group-item');
-                    var idx=lists.index($('.supplier-complete .hover'));
-
-                    switch (e.keyCode){
-                        case 40://down
-                            if(idx < lists.length-1){
-                                idx++;
-                                lists.removeClass('hover').eq(idx).addClass('hover');
-                            }
-                            break;
-                        case 38://up
-                            if(idx > 0){
-                                idx--;
-                            }
-                            lists.removeClass('hover').eq(idx).addClass('hover');
-
-                            break;
-                        case 13://enter
-                            if(this.selectSupplier()) {
-                                this.hideSupplier();
-                            }
-                            break;
-                    }
-                },
-                selectThisSupplier:function (e) {
-                    if(this.selectSupplier()) {
-                        this.hideSupplier();
-                    }
-                },
-                selectSupplier:function () {
-                    var hover=$('.supplier-complete .hover');
-                    if(hover.length>0){
-                        var idx=hover.data('idx');
-                        var supplier = this.suppliers[idx];
-                        if(supplier){
-                            this.order.supplier_id=supplier.id;
-                            this.order.supplier_title=supplier.title;
-                            this.cKey = supplier.title;
-                            return true;
-                        }
-                    }
-                    return false;
-                },
-                getSupplierList:function (e) {
-                    var self=this;
-                    var ckey = this.cKey;
-
-                    $.ajax({
-                        url: '{:url("supplier/search")}',
-                        type: 'GET',
-                        dataType: 'JSON',
-                        data: {
-                            key: ckey
-                        },
-                        success: function (json) {
-                            if (json.code == 1) {
-                                self.suppliers = json.data;
-                            }
-                        }
-                    });
-                },
-
-                //======================
                 onSubmit:function(e){
                     e.preventDefault();
-                    if(this.ajaxing)return false;
                     if(!this.order.storage_id){
-                        dialog.error('请选择仓库');
+                        dialog.error('请选择入库仓');
                         return false;
                     }
-                    if(!this.order.supplier_id){
-                        dialog.error('请选择客户');
-                        return false;
-                    }
-                    var self=this;
-                    this.ajaxing=true;
+
                     $.ajax({
                         url:'',
                         type:"POST",
@@ -513,7 +331,6 @@
                             goods:this.goods
                         },
                         success:function (json) {
-                            self.ajaxing=false;
                             if(json.code==1){
                                 dialog.success('开单成功！');
                                 location.reload();
@@ -521,7 +338,7 @@
                                 dialog.error(json.msg);
                             }
                         }
-                    });
+                    })
 
                     return false;
                 },

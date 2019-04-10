@@ -20,7 +20,7 @@ class GoodsController extends BaseController
             $model->whereIn('cate_id',GoodsCategoryFacade::getSubCateIds($cate));
         }
 
-        $lists=$model->field('id,title,goods_no,cate_id,unit,image,description,create_time')
+        $lists=$model->field('id,title,goods_no,cate_id,unit,price_type,image,description,create_time')
             ->order('id ASC')->limit(10)->select();
 
         if(!empty($storage_id)){

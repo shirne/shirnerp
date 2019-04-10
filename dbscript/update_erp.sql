@@ -54,6 +54,7 @@ CREATE TABLE `sa_goods` (
   `alianames` VARCHAR(200) DEFAULT '',
   `goods_no` VARCHAR(30) DEFAULT '',
   `cate_id` INT(11) DEFAULT 0 COMMENT '排序',
+  `price_type` TINYINT(4) DEFAULT '0',
   `unit` VARCHAR(5) DEFAULT '斤',
   `image` VARCHAR(150) DEFAULT '',
   `description` VARCHAR(500) DEFAULT '',
@@ -94,6 +95,36 @@ CREATE TABLE `sa_goods_storage` (
   PRIMARY KEY (`id`),
   KEY `goods_id` (`goods_id`),
   KEY `storage_id` (`storage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `sa_storage_inventory`;
+CREATE TABLE `sa_storage_inventory` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `storage_id` INT(4) NOT NULL,
+  `order_no` VARCHAR(30) NOT NULL,
+  `status` TINYINT(4) NOT NULL,
+  `inventory_time` INT(11) DEFAULT '0',
+  `delete_time` INT(11) DEFAULT '0',
+  `create_time` INT(11) DEFAULT '0',
+  `update_time` INT(11) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `storage_id` (`storage_id`) ,
+  UNIQUE KEY `order_no` (`order_no`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `sa_storage_inventory_goods`;
+CREATE TABLE `sa_storage_inventory_goods` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `inventory_id` INT(11) NOT NULL,
+  `goods_id` INT(11) NOT NULL,
+  `count` DECIMAL(14,2) DEFAULT '0',
+  `new_count` DECIMAL(14,2) DEFAULT '0',
+  `delete_time` INT(11) DEFAULT '0',
+  `create_time` INT(11) DEFAULT '0',
+  `update_time` INT(11) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `goods_id` (`goods_id`),
+  KEY `inventory_id` (`inventory_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `sa_trans_order`;
@@ -166,6 +197,7 @@ CREATE TABLE `sa_purchase_order` (
   `payed_amount` DECIMAL(14,2) DEFAULT '0',
   `currency` VARCHAR(10) DEFAULT 'RMB',
   `base_amount` DECIMAL(14,2) DEFAULT '0',
+  `freight` DECIMAL(14,2) DEFAULT '0',
   `confirm_time` INT(11) DEFAULT '0',
   `delete_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
@@ -185,7 +217,9 @@ CREATE TABLE `sa_purchase_order_goods` (
   `goods_title` VARCHAR(50) NOT NULL,
   `goods_no` VARCHAR(30) DEFAULT '',
   `goods_unit` VARCHAR(5) DEFAULT '斤',
+  `price_type` TINYINT(4) DEFAULT '0',
   `count` DECIMAL(14,2) DEFAULT '0',
+  `weight` DECIMAL(14,4) DEFAULT '0',
   `price` DECIMAL(14,2) DEFAULT '0',
   `base_price` DECIMAL(14,2) DEFAULT '0',
   `amount` DECIMAL(14,2) DEFAULT '0',
@@ -235,6 +269,7 @@ CREATE TABLE `sa_sale_order` (
   `payed_amount` DECIMAL(14,2) DEFAULT '0',
   `currency` VARCHAR(10) DEFAULT 'RMB',
   `base_amount` DECIMAL(14,2) DEFAULT '0',
+  `freight` DECIMAL(14,2) DEFAULT '0',
   `delete_time` INT(11) DEFAULT '0',
   `customer_time` INT(11) DEFAULT '0',
   `confirm_time` INT(11) DEFAULT '0',
@@ -254,7 +289,9 @@ CREATE TABLE `sa_sale_order_goods` (
   `goods_title` VARCHAR(50) NOT NULL,
   `goods_no` VARCHAR(30) DEFAULT '',
   `goods_unit` VARCHAR(5) DEFAULT '斤',
+  `price_type` TINYINT(4) DEFAULT '0',
   `count` DECIMAL(14,2) DEFAULT '0',
+  `weight` DECIMAL(14,4) DEFAULT '0',
   `price` DECIMAL(14,2) DEFAULT '0',
   `base_price` DECIMAL(14,2) DEFAULT '0',
   `amount` DECIMAL(14,2) DEFAULT '0',

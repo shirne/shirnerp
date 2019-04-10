@@ -73,7 +73,7 @@
                             <th>产品</th>
                             <th>库存</th>
                             <th>数量</th>
-                            <th>单位</th>
+                            <th>重量</th>
                             <th>单价</th>
                             <th>总价</th>
                             <th>出库仓</th>
@@ -84,8 +84,18 @@
                             <tr v-for="(good,idx) in goods" :key="idx">
                                 <td><input type="text" class="form-control" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
                                 <td>{{good.storage}}</td>
-                                <td class="counttd"><input type="text" class="form-control" @change="updateRow(idx)" v-model="good.count"/> </td>
-                                <td>{{good.unit}} </td>
+                                <td class="counttd">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.count"/>
+                                        <div class="input-group-append"><span class="input-group-text">{{good.unit}}</span></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" v-model="good.weight"/>
+                                        <div class="input-group-append"><span class="input-group-text">Kg</span></div>
+                                    </div>
+                                </td>
                                 <td><input type="text" class="form-control" @change="updateRow(idx)" v-model="good.price"/> </td>
                                 <td>{{good.total_price}} </td>
                                 <td>
@@ -111,7 +121,13 @@
                             <td></td>
                         </tr>
                         <tr>
-                            <td colspan="8"><a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-addrow">添加行</a> </td>
+                            <td colspan="4"><a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-addrow">添加行</a> </td>
+                            <td colspan="4" class="text-right">
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">运费</span></div>
+                                    <input type="text" class="form-control" v-model="order.freight"/>
+                                </div>
+                            </td>
                         </tr>
                         </tfoot>
                     </table>
@@ -165,6 +181,7 @@
                     customer_time:'',
                     status:0,
                     order_no:'',
+                    freight:0,
                     customer_order_no:''
                 },
                 cKey:'',
@@ -236,7 +253,9 @@
                         orig_title:'',
                         storage_id:this.order.storage_id,
                         count:'',
+                        price_type:0,
                         unit:'',
+                        weight:0,
                         price:0,
                         total_price:0
                     });
@@ -273,7 +292,7 @@
                 },
                 updateRow:function (idx) {
                     var good = this.goods[idx];
-                    this.goods[idx].total_price=(good.count * good.price ).format(2);
+                    this.goods[idx].total_price=(good.price_type==1?(good.weight * good.price):(good.count * good.price)).format(2);
                     this.totalPrice();
                 },
                 totalPrice:function () {
@@ -371,6 +390,7 @@
                             this.goods[idx].orig_title=good.title;
                             this.goods[idx].storage=good.storage?good.storage:0;
                             this.goods[idx].unit=good.unit;
+                            this.goods[idx].price_type=good.price_type;
                             $(currentInput).parents('tr').find('.counttd input').focus();
                             return true;
                         }
