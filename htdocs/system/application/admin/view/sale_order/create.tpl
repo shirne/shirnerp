@@ -92,8 +92,8 @@
                                 </td>
                                 <td>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" v-model="good.weight"/>
-                                        <div class="input-group-append"><span class="input-group-text">Kg</span></div>
+                                        <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.weight"/>
+                                        <div class="input-group-append"><span class="input-group-text">{:getSetting('weight_unit')}</span></div>
                                     </div>
                                 </td>
                                 <td><input type="text" class="form-control" @change="updateRow(idx)" v-model="good.price"/> </td>

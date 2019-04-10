@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 
 use app\common\model\PurchaseOrderModel;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use shirne\excel\Excel;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use think\Db;
@@ -143,7 +144,7 @@ class PurchaseOrderController extends BaseController
     public function exportOne($id){
         $model=Db::name('purchaseOrder')->where('id',$id)->find();
         if(empty($model))$this->error('订单不存在');
-        $customer=Db::name('customer')->find($model['customer_id']);
+        $supplier=Db::name('supplier')->find($model['supplier_id']);
         $goods = Db::view('purchaseOrderGoods','*')
             ->view('storage',['title'=>'storage_title'],'storage.id=purchaseOrderGoods.storage_id','LEFT')
             ->where('purchase_order_id',  $id)
@@ -151,22 +152,38 @@ class PurchaseOrderController extends BaseController
 
         $excel=new Excel();
         $excel->setHeader(array(
-            '出货清单('.$customer['title'].')'
+            '入库清单('.$supplier['title'].')'
         ));
+        $excel->merge('A1','H1');
+        $style = $excel->getCell('A1')->getStyle();
+        $style->getFont()->setSize(20);
+        $style->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
         $excel->setHeader(array(
-            '订单日期：'.date('Y-m-d',$model['create_time'])
+            '订单日期：'.date('Y-m-d H:i',$model['create_time']),'','','',
+            '收货日期：'.date('Y-m-d H:i',$model['confirm_time'])
         ));
+        $excel->merge('A2','D2');
+        $excel->merge('E2','H2');
+        $style = $excel->getCell('E2')->getStyle();
+        $style->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
         $excel->setHeader(array(
             '品种','件数','单位','重量','单价','总价','出库仓','备注'
         ));
+        $style = $excel->getCell('A3')->getStyle();
+        $style->getFont()->setBold(true);
+        $excel->getSheet()->duplicateStyle($style,'B3:H3');
+
         $excel->setColumnType('B',DataType::TYPE_STRING);
         $excel->setColumnType('D',DataType::TYPE_STRING);
+        $excel->setColumnType('F',DataType::TYPE_FORMULA);
 
         foreach ($goods as $row){
+            $rownum = $excel->getRownum();
             $excel->addRow(array(
                 $row['goods_title'],$row['count'],$row['goods_unit'],
-                '',$row['price'],$row['amount'],$row['storage_title'],''
+                $row['weight'],$row['price'],$row['price_type']=='1'?"=D{$rownum}*E{$rownum}":"=B{$rownum}*E{$rownum}",$row['storage_title'],''
             ));
         }
 

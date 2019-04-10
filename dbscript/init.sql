@@ -82,7 +82,8 @@ VALUES
   ( 'kd_apikey', '快递鸟API Key', 'text', 'third', '0',1, '', '', ''),
   ( 'm_invite', '邀请注册', 'radio', 'member', '0',1, '1', '', '0:关闭\r\n1:启用\r\n2:强制'),
   ( 'm_register', '强制注册', 'radio', 'member', '0',1, '1', '', '0:关闭\r\n1:启用'),
-  ( 'm_checkcode', '验证码', 'radio', 'member', '0',1, '1', '', '0:关闭\r\n1:启用');
+  ( 'm_checkcode', '验证码', 'radio', 'member', '0',1, '1', '', '0:关闭\r\n1:启用'),
+  ( 'weight_unit', '重量单位', 'text', 'advance', '0',0, '司码', '', '');
 
 
 TRUNCATE TABLE `sa_member_level`;
