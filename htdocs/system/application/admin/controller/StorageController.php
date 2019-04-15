@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 
 use app\admin\validate\StorageValidate;
+use app\common\model\StorageInventoryModel;
 use app\common\model\TransOrderModel;
 use shirne\excel\Excel;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
@@ -134,8 +135,28 @@ class StorageController extends BaseController
 
         $storage = Db::name('storage')->where('id',$storage_id)->find();
         if($this->request->isPost()){
+            $order = $this->request->put('order');
+            $goods = $this->request->put('goods');
+            $exists = StorageInventoryModel::where('storage_id',$order['storage_id'])
+                ->where('delete_time',0)
+                ->where('status',0)
+                ->find();
 
+            if(!empty($exists)){
+                $this->error('该仓库正在盘点中.');
+            }
+
+            $result = StorageInventoryModel::createOrder($order,$goods);
+            if($result){
+                $this->success('创建盘点数据成功！');
+            }else{
+                $this->error('创建失败');
+            }
         }
+        $goods = Db::view('goodsStorage','*')
+            ->view('goods',['title','unit'],'goodsStorage.goods_id = goods.id','LEFT')
+            ->where('goodsStorage.storage_id',$storage_id)->select();
+        $this->assign('goods',$goods);
         $this->assign('storage',$storage);
         return $this->fetch();
     }
@@ -145,6 +166,7 @@ class StorageController extends BaseController
         $storage = Db::name('storage')->where('id',$storage_id)->find();
         $lists = Db::view('storageInventory','*')
             ->view('storage',['title'=>'storage_title'],'storage.id=storageInventory.storage_id')
+            ->where('storageInventory.delete_time',0)
             ->order('storageInventory.create_time DESC')
             ->paginate(10);
 
@@ -160,12 +182,46 @@ class StorageController extends BaseController
      * @return mixed
      */
     public function inventoryDetail($id, $is_edit=0){
-        $inventory = Db::name('storageInventory')->where('id',$id)->find();
+        $inventory = Db::name('storageInventory')->where('id',$id)->where('delete_time',0)->find();
         $storage = Db::name('storage')->where('id',$inventory['storage_id'])->find();
+        $goods = Db::name('storageInventoryGoods')->where('inventory_id',$id)->select();
+        if($this->request->isPost()){
+            $goods = $this->request->put('goods');
+            $status = $this->request->put('status');
+            foreach ($goods as $good) {
+
+                Db::name('storageInventoryGoods')->where('id',$id)->where('goods_id',$good['goods_id'])
+                    ->update(['new_count'=>$good['new_count']]);
+            }
+            if($status == 1) {
+                $data = array(
+                    'status' => $status,
+                    'confirm_time' => time()
+                );
+
+                $order = StorageInventoryModel::get($id);
+                $order->updateStatus($data);
+            }
+            $this->success('处理成功！');
+        }
 
         $this->assign('inventory',$inventory);
+        $this->assign('goods',$goods);
         $this->assign('storage',$storage);
-        return $is_edit?$this->fetch('inventory_detail'):$this->fetch();
+        return $is_edit?$this->fetch('inventory_edit'):$this->fetch();
+    }
+
+    public function deleteInventory($id, $storage_id){
+        $model = Db::name('storageInventory');
+
+        $result = $model->whereIn("id",idArr($id))->where('status',0)->useSoftDelete('delete_time',time())->delete();
+        if($result){
+            Db::name('storageInventoryGoods')->whereIn("inventory_id",idArr($id))->useSoftDelete('delete_time',time())->delete();
+            user_log($this->mid,'deleteinventory',1,'删除盘点 '.$id ,'manager');
+            $this->success(lang('Delete success!'), url('storage/inventory',['storage_id'=>$storage_id]));
+        }else{
+            $this->error(lang('Delete failed!'));
+        }
     }
 
     public function goods($id){

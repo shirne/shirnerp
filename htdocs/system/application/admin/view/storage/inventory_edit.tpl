@@ -14,7 +14,10 @@
                             <div class="col">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">仓库</span></div>
-                                    <span class="form-control">{{storage.title}}</span>
+                                    <select class="form-control" v-model="order.storage_id">
+                                        <option :value="0">请选择仓库</option>
+                                        <option v-for="storage in storages" :key="storage.id" :value="storage.id">[{{storage.storage_no}}]{{storage.title}}</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col">
@@ -46,10 +49,10 @@
                         <tbody>
                         <tr v-for="(good,idx) in goods" :key="idx">
                             <td><input type="text" class="form-control" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
-                            <td>{{good.count}}</td>
+                            <td>{{good.storage}}</td>
                             <td class="counttd">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" v-model="good.new_count"/>
+                                    <input type="text" class="form-control" v-model="good.count"/>
                                     <div class="input-group-append"><span class="input-group-text">{{good.unit}}</span></div>
                                 </div>
                             </td>
@@ -93,18 +96,14 @@
                     width:0
                 },
                 order:{
-                    storage_id:'{$storage.id}',
+                    storage_id:0,
                     status:0,
                     order_no:''
                 },
                 storages:[],
                 emptyGoods:[],
                 key:'',
-                listGoods:[],
-                storage:{
-                    'id':'{$storage.id}',
-                    'title':'{$storage.title}'
-                }
+                listGoods:[]
             },
             computed:{
                 goods_ids:function () {
@@ -116,24 +115,10 @@
                 }
             },
             mounted:function(){
-                this.initData();
                 this.addRow();
                 this.loadStorages();
             },
             methods:{
-                initData:function () {
-                    var goods={$goods|json_encode|raw};
-                    for(var i=0;i<goods.length;i++){
-                        this.goods.push({
-                            goods_id:goods[i].goods_id,
-                            title:goods[i].title,
-                            orig_title:goods[i].title,
-                            count:goods[i].count,
-                            new_count:goods[i].count,
-                            unit:goods[i].unit
-                        });
-                    }
-                },
                 loadStorages:function () {
                     var self=this;
                     $.ajax({
@@ -152,16 +137,16 @@
                 },
                 addRow:function(){
                     this.goods.push({
-                        goods_id:0,
+                        id:0,
                         title:'',
                         orig_title:'',
                         count:'',
-                        new_count:'',
-                        unit:''
+                        unit:'',
+                        weight:0
                     });
                 },
                 updateStorage:function(){
-                    if(this.order.storage_id){
+                    if(this.order.from_storage_id){
                         var goods_ids=[];
                         for(var i=0;i<this.goods.length;i++){
                             goods_ids.push(this.goods[i].goods_id);
@@ -172,7 +157,7 @@
                             type:'GET',
                             dataType:'JSON',
                             data:{
-                                storage_id:self.order.storage_id,
+                                storage_id:self.order.from_storage_id,
                                 goods_id:goods_ids.join(',')
                             },
                             success:function (json) {

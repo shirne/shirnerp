@@ -23,6 +23,10 @@ class StorageModel extends BaseModel
             $count=$good['count'];
 
             if(isset($storages[$good['goods_id']])){
+                if($count<0){
+                    $count = abs($count);
+                    $type = $type=='+'?'-':'+';
+                }
                 if($type=='-'){
                     Db::name('goodsStorage')->where('storage_id', $storage_id)
                         ->where('goods_id', $good['goods_id'])

@@ -206,6 +206,9 @@ class PurchaseOrderController extends BaseController
         $data=array(
             'status'=>$status
         );
+        if($status==1){
+            $data['confirm_time']=time();
+        }
         $order->updateStatus($data);
         user_log($this->mid,'auditpurchaseorder',1,'更新订单 '.$id .' '.$status,'manager');
         $this->success('操作成功');
