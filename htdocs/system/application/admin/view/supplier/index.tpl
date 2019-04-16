@@ -7,6 +7,7 @@
     <div class="row list-header">
         <div class="col-md-6">
             <a href="{:url('supplier/add')}" class="btn btn-outline-primary btn-sm btn-add-supplier"><i class="ion-md-add"></i> 添加供应商</a>
+            <a href="{:url('supplier/import')}" class="btn btn-outline-primary btn-sm btn-import"><i class="ion-md-cloud-upload"></i> 导入供应商</a>
         </div>
         <div class="col-md-6">
             <form action="{:url('supplier/index')}" method="post">
@@ -86,6 +87,11 @@
             $('.btn-edit-supplier').click(function (e) {
                 e.preventDefault();
                 editSupplier($(this).data('id'));
+            });
+
+            $('.btn-import').click(function (e) {
+                e.preventDefault();
+                importExcel('导入客户',$(this).attr('href'));
             });
 
             var supplierTpl = $('#supplierEdit').html();

@@ -44,6 +44,33 @@ class SupplierController extends BaseController
         return $this->fetch();
     }
 
+    public function import($file='',$sheet=''){
+        $datas = $this->uploadImport($file,$sheet);
+        if(empty($datas)){
+            $this->error('没有读取到数据');
+        }
+        $datas = $this->transData($datas,[
+            'title'=>'供应商名称,名称',
+            'short'=>'供应商简称,简称',
+            'province'=>'所在省份,省份',
+            'city'=>'所在城市,城市',
+            'area'=>'所在地区,地区',
+            'address'=>'详细地址,地址',
+            'phone'=>'联系电话,电话号码,电话,手机号码,手机',
+            'website'=>'供应商网站,网站',
+            'email'=>'供应商邮箱,邮箱,Email',
+            'fax'=>'供应商传真,传真'
+        ]);
+        if(empty($datas)){
+            $this->error('没有匹配到数据');
+        }
+
+        $model=new SupplierModel();
+        $model->saveAll($datas);
+
+        $this->success('处理成功','',['success'=>1]);
+    }
+
     /**
      * 添加供应商
      * @return mixed

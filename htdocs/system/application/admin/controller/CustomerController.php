@@ -46,16 +46,30 @@ class CustomerController extends BaseController
     }
 
     public function import($file='',$sheet=''){
-        if($this->request->isPost()){
-            $uploaded=$this->upload('excel','file');
-            if(!empty($uploaded)){
-                $file = $uploaded['url'];
-            }else{
-                $this->error('文件上传失败:'.$this->uploadError);
-            }
+        $datas = $this->uploadImport($file,$sheet);
+        if(empty($datas)){
+            $this->error('没有读取到数据');
         }
-        $excel = new Excel();
-        $excel->load('.'.$file);
+        $datas = $this->transData($datas,[
+            'title'=>'客户名称,名称',
+            'short'=>'客户简称,简称',
+            'province'=>'所在省份,省份',
+            'city'=>'所在城市,城市',
+            'area'=>'所在地区,地区',
+            'address'=>'详细地址,地址',
+            'phone'=>'联系电话,电话号码,电话,手机号码,手机',
+            'website'=>'客户网站,网站',
+            'email'=>'客户邮箱,邮箱,Email',
+            'fax'=>'客户传真,传真'
+        ]);
+        if(empty($datas)){
+            $this->error('没有匹配到数据');
+        }
+
+        $model=new CustomerModel();
+        $model->saveAll($datas);
+
+        $this->success('处理成功','',['success'=>1]);
     }
 
     /**

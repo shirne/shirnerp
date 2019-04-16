@@ -3,6 +3,7 @@
 namespace app\admin\controller;
 
 use extcore\traits\Upload;
+use shirne\excel\Excel;
 use think\Controller;
 use think\Db;
 use think\facade\Env;
@@ -138,5 +139,64 @@ class BaseController extends Controller {
         }
 
         return $this->view->fetch($template, $vars, $config);
+    }
+
+    protected function uploadImport($file='',$sheet='')
+    {
+        if($this->request->isPost()){
+            $uploaded=$this->uploadFile('excel','uploadFile');
+            if(!empty($uploaded)){
+                if(!in_array(strtolower($uploaded['extension']),['xls','xlsx'])){
+                    $this->error('请上传Excel文件');
+                }
+                $file = $uploaded['url'];
+            }else{
+                $this->error('文件上传失败:'.$this->uploadError);
+            }
+        }
+
+        $extension = substr($file,strrpos('.',$file)+1);
+        $excel = new Excel($extension=='xls'?'Xls':'Xlsx');
+        $excel->load('.'.$file);
+        $names = $excel->getSheets();
+        if(count($names) == 1)$sheet=$names[0];
+        if(empty($sheet)){
+            $this->result(['file'=>$file,'sheets'=>$excel->getSheets()],1);
+        }
+
+        $excel->setSheet($sheet);
+        $data = $excel->read();
+
+        return $data;
+    }
+
+    protected function transData($datas,$headers){
+        $rows=[];
+        $headermap=[];
+        foreach ($datas as $i=>$item){
+            if(empty($headermap)){
+                foreach ($item as $k=>$v){
+                    foreach ($headers as $key=>$match){
+                        if(in_array($key,$headermap))continue;
+                        if(in_array($v,explode(',',$match))){
+                            $headermap[$k]=$key;
+                            break;
+                        }
+                    }
+                }
+                if($i>10){
+                    return false;
+                }
+            }else{
+                $row=[];
+                foreach ($item as $k=>$v) {
+                    if(isset($headermap[$k])) {
+                        $row[$headermap[$k]] = $v;
+                    }
+                }
+                $rows[]=$row;
+            }
+        }
+        return $rows;
     }
 }

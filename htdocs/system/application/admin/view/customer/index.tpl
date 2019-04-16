@@ -7,7 +7,7 @@
     <div class="row list-header">
         <div class="col-md-6">
             <a href="{:url('customer/add')}" class="btn btn-outline-primary btn-sm btn-add-customer"><i class="ion-md-add"></i> 添加客户</a>
-            <a href="{:url('customer/import')}" class="btn btn-outline-primary btn-sm btn-import"><i class="ion-md-add"></i> 添加客户</a>
+            <a href="{:url('customer/import')}" class="btn btn-outline-primary btn-sm btn-import"><i class="ion-md-cloud-upload"></i> 导入客户</a>
         </div>
         <div class="col-md-6">
             <form action="{:url('customer/index')}" method="post">
@@ -88,6 +88,12 @@
                 editCustomer($(this).data('id'));
             });
 
+
+            $('.btn-import').click(function (e) {
+                e.preventDefault();
+                importExcel('导入客户',$(this).attr('href'));
+            });
+
             var customerTpl = $('#customerEdit').html();
             var customerUrl = '{:url("customer/edit",['id'=>'__ID__'])}';
             function editCustomer(id) {
@@ -139,6 +145,7 @@
                     }
                 }).show(customerTpl,id>0?'编辑客户':'添加客户');
             }
+
 
         })
 
