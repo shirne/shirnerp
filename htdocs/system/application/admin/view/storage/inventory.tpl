@@ -34,9 +34,9 @@
                     <td>{$v.create_time|showdate}</td>
                     <td>
                         <if condition="$v['status'] EQ 1">
-                            <span class="badge badge-success">已盘点</span>
+                            <span class="badge badge-secondary">已盘点</span>
                             <else/>
-                            <span class="badge badge-success">待盘点</span>
+                            <span class="badge badge-warning">待盘点</span>
                         </if>
                     </td>
                     <td class="operations">

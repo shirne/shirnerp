@@ -348,6 +348,12 @@
                         var idx=hover.data('idx');
                         var good = this.listGoods[idx];
                         if(good){
+                            for(var i=0;i<this.goods.length;i++){
+                                if(this.goods[i].goods_id == good.id){
+                                    dialog.alert('商品重复');
+                                    return false;
+                                }
+                            }
                             idx = $(currentInput).data('idx');
                             this.goods[idx].goods_id=good.id;
                             this.goods[idx].title=good.title;

@@ -28,9 +28,7 @@ class StorageInventoryModel extends BaseModel
             $rows[] = [
                 'goods_id'=>$goods_id,
                 'count'=>$good['count'],
-                'new_count'=>$good['count'],
-                //'price'=>$good['price'],
-                //'amount'=>$good['count'] * $good['price']
+                'new_count'=>$good['count']
             ];
 
         }
@@ -51,6 +49,33 @@ class StorageInventoryModel extends BaseModel
         }
         return false;
     }
+
+    public function updateOrder($goods, $status=0){
+        foreach ($goods as $good) {
+            if($good['id']) {
+                Db::name('storageInventoryGoods')->where('id', $good['id'])->where('goods_id', $good['goods_id'])
+                    ->update(['new_count' => $good['new_count']]);
+            }else{
+                Db::name('storageInventoryGoods')->insert([
+                    'goods_id'=>$good['goods_id'],
+                    'count'=>$good['count'],
+                    'new_count'=>$good['new_count'],
+                    'inventory_id'=>$this->id,
+                    'create_time'=>time(),
+                    'update_time'=>time()
+                ]);
+            }
+        }
+
+        if($status){
+            $this->updateStatus([
+                'status' => $status,
+                'inventory_time' => time()
+            ]);
+        }
+        return true;
+    }
+
     protected function triggerStatus($item,$status)
     {
         if($status>$item['status']){

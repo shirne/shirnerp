@@ -14,16 +14,13 @@
                             <div class="col">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">仓库</span></div>
-                                    <select class="form-control" v-model="order.storage_id">
-                                        <option :value="0">请选择仓库</option>
-                                        <option v-for="storage in storages" :key="storage.id" :value="storage.id">[{{storage.storage_no}}]{{storage.title}}</option>
-                                    </select>
+                                    <span class="form-control">{{storage.title}}</span>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">单号</span></div>
-                                    <input type="text" class="form-control" placeholder="不填写将由系统自动生成" name="order_no" v-model="order.order_no"/>
+                                    <span class="form-control">{{order.order_no}}</span>
                                 </div>
                             </div>
                             <div class="col">
@@ -49,10 +46,10 @@
                         <tbody>
                         <tr v-for="(good,idx) in goods" :key="idx">
                             <td><input type="text" class="form-control" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
-                            <td>{{good.storage}}</td>
+                            <td>{{good.count}}</td>
                             <td class="counttd">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" v-model="good.count"/>
+                                    <input type="text" class="form-control" v-model="good.new_count"/>
                                     <div class="input-group-append"><span class="input-group-text">{{good.unit}}</span></div>
                                 </div>
                             </td>
@@ -95,15 +92,15 @@
                     top:0,
                     width:0
                 },
-                order:{
-                    storage_id:0,
-                    status:0,
-                    order_no:''
-                },
+                order:{$inventory|json_encode|raw},
                 storages:[],
                 emptyGoods:[],
                 key:'',
-                listGoods:[]
+                listGoods:[],
+                storage:{
+                    'id':'{$storage.id}',
+                    'title':'{$storage.title}'
+                }
             },
             computed:{
                 goods_ids:function () {
@@ -115,10 +112,25 @@
                 }
             },
             mounted:function(){
+                this.initData();
                 this.addRow();
                 this.loadStorages();
             },
             methods:{
+                initData:function () {
+                    var goods={$goods|json_encode|raw};
+                    for(var i=0;i<goods.length;i++){
+                        this.goods.push({
+                            id:goods[i].id,
+                            goods_id:goods[i].goods_id,
+                            title:goods[i].title,
+                            orig_title:goods[i].title,
+                            count:goods[i].count,
+                            new_count:goods[i].new_count,
+                            unit:goods[i].unit
+                        });
+                    }
+                },
                 loadStorages:function () {
                     var self=this;
                     $.ajax({
@@ -137,16 +149,16 @@
                 },
                 addRow:function(){
                     this.goods.push({
-                        id:0,
+                        goods_id:0,
                         title:'',
                         orig_title:'',
                         count:'',
-                        unit:'',
-                        weight:0
+                        new_count:'',
+                        unit:''
                     });
                 },
                 updateStorage:function(){
-                    if(this.order.from_storage_id){
+                    if(this.order.storage_id){
                         var goods_ids=[];
                         for(var i=0;i<this.goods.length;i++){
                             goods_ids.push(this.goods[i].goods_id);
@@ -157,7 +169,7 @@
                             type:'GET',
                             dataType:'JSON',
                             data:{
-                                storage_id:self.order.from_storage_id,
+                                storage_id:self.order.storage_id,
                                 goods_id:goods_ids.join(',')
                             },
                             success:function (json) {
@@ -253,11 +265,18 @@
                         var idx=hover.data('idx');
                         var good = this.listGoods[idx];
                         if(good){
+                            for(var i=0;i<this.goods.length;i++){
+                                if(this.goods[i].goods_id == good.id){
+                                    dialog.alert('商品重复');
+                                    return false;
+                                }
+                            }
                             idx = $(currentInput).data('idx');
                             this.goods[idx].goods_id=good.id;
                             this.goods[idx].title=good.title;
                             this.goods[idx].orig_title=good.title;
-                            this.goods[idx].storage=good.storage?good.storage:0;
+                            this.goods[idx].count=good.storage?good.storage:0;
+                            this.goods[idx].new_count=this.goods[idx].count;
                             this.goods[idx].unit=good.unit;
                             $(currentInput).parents('tr').find('.counttd input').focus();
                             return true;
@@ -277,7 +296,7 @@
                             dataType: 'JSON',
                             data: {
                                 key: key,
-                                storage_id:this.order.from_storage_id
+                                storage_id:this.order.storage_id
                             },
                             success: function (json) {
                                 if (json.code == 1) {
@@ -302,13 +321,13 @@
                         type:"POST",
                         dataType:'JSON',
                         data:{
-                            order:this.order,
+                            status:this.order.status,
                             goods:this.goods
                         },
                         success:function (json) {
                             if(json.code==1){
-                                dialog.success('开单成功！');
-                                location.reload();
+                                dialog.success('保存成功！');
+                                location.href=json.url;
                             }else{
                                 dialog.error(json.msg);
                             }

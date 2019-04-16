@@ -8,44 +8,46 @@
 
         <div class="row list-header">
             <div class="col-6">
-                <a href="{:url('storage/createInventory',['storage_id'=>$storage_id])}" class="btn btn-outline-primary btn-sm btn-add-storage"><i class="ion-md-add"></i> 新建盘点单</a>
+                <a href="{:url('storage/inventory',['storage_id'=>$storage_id])}" class="btn btn-outline-primary btn-sm btn-add-storage"><i class="ion-md-arrow-back"></i> 返回</a>
             </div>
             <div class="col-6">
             </div>
+        </div>
+        <div class="row">
+            <div class="col">仓库：{$storage.title}</div>
+            <div class="col">单号：{$inventory.order_no}</div>
+            <div class="col">盘点日期：{$inventory.inventory_time|showdate}</div>
         </div>
         <table class="table table-hover table-striped">
             <thead>
             <tr>
                 <th width="50">编号</th>
-                <th>单号</th>
-                <th>仓库</th>
-                <th>日期</th>
-                <th>状态</th>
+                <th>品名</th>
+                <th>初始库存</th>
+                <th>盘点库存</th>
+                <th>盈亏</th>
                 <th width="160">&nbsp;</th>
             </tr>
             </thead>
             <tbody>
             <php>$empty=list_empty(6);</php>
-            <volist name="lists" id="v" empty="$empty">
+            <volist name="goods" id="v" empty="$empty">
                 <tr>
                     <td>{$v.id}</td>
-                    <td>{$v.order_no}</td>
-                    <td>{$v.storage_title}</td>
-                    <td>{$v.create_time|showdate}</td>
+                    <td>{$v.title}</td>
+                    <td>{$v.count}</td>
+                    <td>{$v.new_count}</td>
                     <td>
-                        <if condition="$v['status'] EQ 1">
-                            <span class="badge badge-success">已盘点</span>
+                        <if condition="$v['new_count'] GT $v['count']">
+                            <span class="badge badge-success">+ {$v['new_count']-$v['count']}</span>
+                            <elseif condition="$v['new_count'] LT $v['count']" />
+                            <span class="badge badge-error">- {$v['count']-$v['new_count']}</span>
                             <else/>
-                            <span class="badge badge-success">待盘点</span>
+                            <span class="badge badge-secondary"> - </span>
                         </if>
                     </td>
                     <td class="operations">
-                        <if condition="$v['status'] EQ 1">
-                            <a class="btn btn-outline-primary btn-edit-storage" data-id="{$v.id}" title="详情" href="{:url('storage/inventoryDetail',array('id'=>$v['id']))}"><i class="ion-md-document"></i> </a>
-                            <else/>
-                            <a class="btn btn-outline-primary" title="盘点" href="{:url('storage/inventoryDetail',array('id'=>$v['id'],'is_edit'=>1))}"><i class="ion-md-today"></i> </a>
-                            <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('storage/delete_inventory',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
-                        </if>
+
                     </td>
                 </tr>
             </volist>

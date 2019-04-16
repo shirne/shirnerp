@@ -268,11 +268,18 @@
                         var idx=hover.data('idx');
                         var good = this.listGoods[idx];
                         if(good){
+                            for(var i=0;i<this.goods.length;i++){
+                                if(this.goods[i].goods_id == good.id){
+                                    dialog.alert('商品重复');
+                                    return false;
+                                }
+                            }
                             idx = $(currentInput).data('idx');
                             this.goods[idx].goods_id=good.id;
                             this.goods[idx].title=good.title;
                             this.goods[idx].orig_title=good.title;
-                            this.goods[idx].storage=good.storage?good.storage:0;
+                            this.goods[idx].count=good.storage?good.storage:0;
+                            this.goods[idx].new_count=this.goods[idx].count;
                             this.goods[idx].unit=good.unit;
                             $(currentInput).parents('tr').find('.counttd input').focus();
                             return true;
@@ -292,7 +299,7 @@
                             dataType: 'JSON',
                             data: {
                                 key: key,
-                                storage_id:this.order.from_storage_id
+                                storage_id:this.order.storage_id
                             },
                             success: function (json) {
                                 if (json.code == 1) {
@@ -322,8 +329,8 @@
                         },
                         success:function (json) {
                             if(json.code==1){
-                                dialog.success('开单成功！');
-                                location.reload();
+                                dialog.success('创建成功！');
+                                location.href=json.url;
                             }else{
                                 dialog.error(json.msg);
                             }

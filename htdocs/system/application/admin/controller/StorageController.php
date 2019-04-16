@@ -148,7 +148,7 @@ class StorageController extends BaseController
 
             $result = StorageInventoryModel::createOrder($order,$goods);
             if($result){
-                $this->success('创建盘点数据成功！');
+                $this->success('创建盘点数据成功！',url('inventory',['storage_id'=>$storage_id]));
             }else{
                 $this->error('创建失败');
             }
@@ -183,27 +183,32 @@ class StorageController extends BaseController
      */
     public function inventoryDetail($id, $is_edit=0){
         $inventory = Db::name('storageInventory')->where('id',$id)->where('delete_time',0)->find();
+        if(empty($inventory)){
+            $this->error('盘点单不存在');
+        }
         $storage = Db::name('storage')->where('id',$inventory['storage_id'])->find();
-        $goods = Db::name('storageInventoryGoods')->where('inventory_id',$id)->select();
+
+
         if($this->request->isPost()){
+            if($inventory['status'] == 1){
+                $this->error('盘点单已提交');
+            }
             $goods = $this->request->put('goods');
             $status = $this->request->put('status');
-            foreach ($goods as $good) {
 
-                Db::name('storageInventoryGoods')->where('id',$id)->where('goods_id',$good['goods_id'])
-                    ->update(['new_count'=>$good['new_count']]);
-            }
+            $order = StorageInventoryModel::get($id);
+
+            $url = url('inventoryDetail',['id'=>$id,'is_edit'=>$is_edit]);
+            $order->updateOrder($goods,$status);
             if($status == 1) {
-                $data = array(
-                    'status' => $status,
-                    'confirm_time' => time()
-                );
-
-                $order = StorageInventoryModel::get($id);
-                $order->updateStatus($data);
+                $url = url('inventoryDetail',['id'=>$id]);
             }
-            $this->success('处理成功！');
+
+            $this->success('处理成功！',$url);
         }
+        $goods = Db::view('storageInventoryGoods','*')
+            ->view('goods',['title','unit'],'goods.id=storageInventoryGoods.goods_id','LEFT')
+            ->where('inventory_id',$id)->select();
 
         $this->assign('inventory',$inventory);
         $this->assign('goods',$goods);
