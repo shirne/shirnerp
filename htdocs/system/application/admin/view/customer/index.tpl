@@ -7,6 +7,7 @@
     <div class="row list-header">
         <div class="col-md-6">
             <a href="{:url('customer/add')}" class="btn btn-outline-primary btn-sm btn-add-customer"><i class="ion-md-add"></i> 添加客户</a>
+            <a href="{:url('customer/import')}" class="btn btn-outline-primary btn-sm btn-import"><i class="ion-md-add"></i> 添加客户</a>
         </div>
         <div class="col-md-6">
             <form action="{:url('customer/index')}" method="post">

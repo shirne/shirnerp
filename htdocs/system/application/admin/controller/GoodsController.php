@@ -132,22 +132,34 @@ class GoodsController extends BaseController
         foreach ($titles as $title){
             if(strpos($title,':')>0){
                 $titlesubs=explode(':',$title,2);
-                $datas[] = [
+                $row = [
                     'title' => $titlesubs[1],
-                    'fullname' => $title,
+                    'fullname' => $titlesubs[1],
                     'goods_no'=> $titlesubs[0],
                     'cate_id' => $data['cate_id'],
-                    'unit' => $data['unit']
+                    'unit' => $data['unit'],
+                    'price_type' => $data['price_type']
                 ];
             }else {
-                $datas[] = [
+                $row = [
                     'title' => $title,
                     'fullname' => $title,
                     'goods_no'=> $title,
                     'cate_id' => $data['cate_id'],
-                    'unit' => $data['unit']
+                    'unit' => $data['unit'],
+                    'price_type' => $data['price_type']
                 ];
             }
+
+            $exists = Db::name('goods')->where('title',$row['title'])
+                ->whereOr('fullname',$row['fullname'])
+                ->whereOr('goods_no',$row['goods_no'])
+                ->find();
+
+            if(!empty($exists)){
+                $this->error('商品 '.$title.' 重复');
+            }
+            $datas[]=$row;
         }
         $model=new GoodsModel();
         $model->saveAll($datas);

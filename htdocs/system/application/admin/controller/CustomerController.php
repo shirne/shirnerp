@@ -5,6 +5,7 @@ namespace app\admin\controller;
 
 use app\admin\validate\CustomerValidate;
 use app\common\model\CustomerModel;
+use shirne\excel\Excel;
 use think\Db;
 
 class CustomerController extends BaseController
@@ -42,6 +43,19 @@ class CustomerController extends BaseController
         $this->assign('lists',$lists);
         $this->assign('page',$lists->render());
         return $this->fetch();
+    }
+
+    public function import($file='',$sheet=''){
+        if($this->request->isPost()){
+            $uploaded=$this->upload('excel','file');
+            if(!empty($uploaded)){
+                $file = $uploaded['url'];
+            }else{
+                $this->error('文件上传失败:'.$this->uploadError);
+            }
+        }
+        $excel = new Excel();
+        $excel->load('.'.$file);
     }
 
     /**

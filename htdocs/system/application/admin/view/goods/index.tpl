@@ -186,6 +186,17 @@
 				</select>
 			</div>
 		</div>
+		<div class="form-group">
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<label class="input-group-text">计价方式</label>
+				</div>
+				<select name="price_type" id="price_type" class="form-control">
+					<option value="0">单位计价</option>
+					<option value="1">重量计价</option>
+				</select>
+			</div>
+		</div>
 	</script>
 	<script type="text/javascript">
 		(function(w){
