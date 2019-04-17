@@ -401,7 +401,7 @@
                     e.preventDefault();
 
                     var self=this;
-                    importExcel('导入订单',$(e.target).attr('href'),function (data) {
+                    importExcel('导入采购订单',$(e.target).attr('href'),function (data) {
                         if(data.errors && data.errors.length){
                             dialog.alert(data.errors.join("<br />"));
                         }

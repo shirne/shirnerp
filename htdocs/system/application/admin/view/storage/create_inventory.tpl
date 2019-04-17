@@ -58,7 +58,7 @@
                         </tbody>
                         <tfoot>
                         <tr>
-                            <td colspan="4"><a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-sm btn-addrow">添加行</a> </td>
+                            <td colspan="4"><a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-sm btn-addrow"><i class="ion-md-add"></i> 添加行</a> </td>
                         </tr>
                         </tfoot>
                     </table>
