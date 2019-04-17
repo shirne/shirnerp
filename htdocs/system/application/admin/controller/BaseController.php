@@ -170,6 +170,23 @@ class BaseController extends Controller {
         return $data;
     }
 
+    protected function isMatchHeader($v,$rule){
+        $v = trim($v);
+
+        if(is_array($rule)){
+            foreach ($rule as $srule){
+                if(strpos($v, $srule)!==false)return true;
+            }
+        }else if(strpos($rule,',')>0){
+            return $this->isMatchHeader($v,explode(',',$rule));
+        }else if(strpos($rule,'|')>0){
+            return preg_match("/$rule/i",$v);
+        }else{
+            return strpos($v, $rule)!==false;
+        }
+        return false;
+    }
+
     protected function transData($datas,$headers,$required='',$syncs=[]){
         $rows=[];
         $headermap=[];
@@ -179,7 +196,7 @@ class BaseController extends Controller {
                 foreach ($item as $k=>$v){
                     foreach ($headers as $key=>$match){
                         if(in_array($key,$headermap))continue;
-                        if(in_array($v,explode(',',$match))){
+                        if($this->isMatchHeader($v, $match)){
                             $headermap[$k]=$key;
                             break;
                         }
@@ -203,11 +220,12 @@ class BaseController extends Controller {
                 foreach ($required as $field){
                     if($field && empty($row[$field])){
                         //忽略行
-                        continue;
+                        $row=[];
+                        break;
                     }
                 }
 
-                $rows[]=$row;
+                if(!empty($row))$rows[]=$row;
             }
         }
         return $rows;

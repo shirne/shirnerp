@@ -8,6 +8,7 @@ use app\admin\validate\ImagesValidate;
 use app\common\facade\GoodsCategoryFacade;
 use app\common\model\GoodsCategoryModel;
 use app\common\model\GoodsModel;
+use shirne\common\Notation;
 use think\Db;
 
 class GoodsController extends BaseController
@@ -39,6 +40,133 @@ class GoodsController extends BaseController
         }
 
         return json(['data'=>$lists,'code'=>1]);
+    }
+
+    //从订单中导入
+    public function importOrder($file='',$sheet=''){
+        $datas = $this->uploadImport($file,$sheet);
+        if(empty($datas)){
+            $this->error('没有读取到数据');
+        }
+
+        $headers = [
+            'title'=>'品种,品名,产品',
+            'count'=>'件数',
+            'weight'=>'重量',
+            'price'=>'单价',
+            'amount'=>'金额',
+            'remark'=>'备注'
+        ];
+
+        $headermap=[];
+        $rows=[];
+
+        $price_column = '';
+        $weight_column = '';
+        $count_column = '';
+        foreach ($datas as $i=>$data){
+            if(empty($headermap)){
+                if($i>10){
+                    return false;
+                }
+                $countidx=-1;
+                foreach ($data as $k=>$v){
+                    foreach ($headers as $key=>$match){
+                        if(in_array($key,$headermap))continue;
+                        if($this->isMatchHeader($v, $match)){
+                            $headermap[$k]=$key;
+                            if($key=='count'){
+                                $countidx = $k;
+                                $count_column = chr(64+$k);
+                            }
+                            if($key=='weight'){
+                                $weight_column = chr(64+$k);
+                            }
+                            if($key=='price'){
+                                $price_column = chr(64+$k);
+                            }
+                            break;
+                        }
+                    }
+                }
+                if($countidx>-1 && !isset($headermap[$countidx+1])){
+                    $headermap[$countidx+1]='unit';
+                }
+            }else{
+                $row=['row_index'=>$i+1];
+                foreach ($headermap as $rowidx=>$field){
+                    if($field!= 'remark' && empty($data[$rowidx])){
+                        //忽略行
+                        $row=[];
+                        break;
+                    }
+                    $row[$field] = $data[$rowidx];
+                }
+
+                if(!empty($row))$rows[]=$row;
+            }
+        }
+        if(empty($rows)){
+            $this->error('没有匹配到数据');
+        }
+
+        $unitDatas = getGoodsUnits();
+        $goods = array_column($rows,'title');
+        $hasGoods = Db::name('goods')->whereIn('title',$goods)->select();
+        $hasGoods = array_index($hasGoods,'title');
+        $unitUpdated=false;
+
+        $errors=[];
+        foreach ($rows as $idx=>&$row){
+            $price_type = 0;
+
+            //判断计价方式
+            if(strpos($row['amount'], $weight_column.$row['row_index'])>0){
+                $price_type=1;
+            }
+            if(!isset($hasGoods[$row['title']])){
+                if(!isset($unitDatas[$row['unit']])){
+                    $unitUpdated=true;
+                    $unitDatas[$row['unit']]=Db::name('unit')->insert([
+                        'key'=>$row['unit'],
+                        'description'=>'',
+                        'sort'=>99
+                    ],false,true);
+                }
+                $data = [
+                    'title'=>$row['title'],
+                    'fullname'=>$row['title'],
+                    'goods_no'=>$row['title'],
+                    'cate_id'=>0,
+                    'price_type'=>$price_type,
+                    'unit'=>$row['unit'],
+                    'image'=>'',
+                    'description'=>''
+                ];
+
+
+
+                $hasGoods[$row['title']]=GoodsModel::create($data);
+            }
+
+            if(strpos('=',$row['weight'])==0){
+                $row['weight'] = Notation::calculate(substr($row['weight'],1));
+            }
+
+            $row['goods_id']=$hasGoods[$row['title']]['id'];
+            $row['price_type']=$price_type;
+            if($row['price_type'] != $hasGoods[$row['title']]['price_type']){
+                $errors[]="【{$row['title']}】的计价方式与商品数据中的计价方式不一致！";
+            }
+            if($row['unit']!= $hasGoods[$row['title']]['unit']){
+                $errors[]="【{$row['title']}】的单位与商品数据中的单位不一致！";
+            }
+            //unset($row['amount']);
+        }
+
+        if($unitUpdated)getGoodsUnits(true);
+
+        $this->success('处理成功','',['success'=>1,'goods'=>$rows,'errors'=>$errors]);
     }
 
     /**
@@ -192,11 +320,11 @@ class GoodsController extends BaseController
             if($row['unit']){
                 if(!isset($unitDatas[$row['unit']])){
                     $unitUpdated=true;
-                    Db::name('unit')->insert([
+                    $unitDatas[$row['unit']]=Db::name('unit')->insert([
                         'key'=>$row['unit'],
                         'description'=>'',
                         'sort'=>99
-                    ]);
+                    ],false,true);
                 }
             }
             if(!empty($row['cate_id'])) {

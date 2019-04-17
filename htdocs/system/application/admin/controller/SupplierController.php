@@ -16,7 +16,7 @@ class SupplierController extends BaseController
         }
 
         $lists=$model->field('id,title,short,phone,create_time')
-            ->order('id ASC')->limit(20)->select();
+            ->order('id ASC')->limit(10)->select();
 
 
         return json(['data'=>$lists,'code'=>1]);

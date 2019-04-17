@@ -47,7 +47,7 @@
                     <td>{$v.create_time|showdate}</td>
                     <td class="operations">
                         <a href="javascript:" title="入账" data-id="{$v.id}" data-amount="{$v['amount'] - $v['payed_amount']}" class="btn btn-outline-primary finance-btn"><i class="ion-md-list-box"></i> </a>
-                        <a class="btn btn-outline-primary" title="明细" href="{:url('finance/payableDetail',array('id'=>$v['id']))}"><i class="ion-md-document"></i> </a>
+                        <a class="btn btn-outline-primary" rel="ajax" title="明细" href="{:url('PurchaseOrder/detail',array('id'=>$v['id']))}"><i class="ion-md-document"></i> </a>
                     </td>
                 </tr>
             </volist>

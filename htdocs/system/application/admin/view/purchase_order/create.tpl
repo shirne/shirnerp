@@ -106,7 +106,10 @@
                             <td></td>
                         </tr>
                         <tr>
-                            <td colspan="3"><a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-addrow">添加行</a> </td>
+                            <td colspan="3">
+                                <a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-sm btn-addrow"><i class="ion-md-add"></i> 添加行</a>
+                                <a href="{:url('goods/importOrder')}" @click="importOrder" class="btn btn-outline-primary btn-sm btn-import"><i class="ion-md-cloud-upload"></i> 导入订单</a>
+                            </td>
                             <td colspan="4" class="text-right">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">运费</span></div>
@@ -214,6 +217,7 @@
                 addRow:function(){
                     this.goods.push({
                         id:0,
+                        goods_id:0,
                         title:'',
                         orig_title:'',
                         count:'',
@@ -391,6 +395,46 @@
                             }
                         });
                     }
+                },
+
+                importOrder:function (e) {
+                    e.preventDefault();
+
+                    var self=this;
+                    importExcel('导入订单',$(e.target).attr('href'),function (data) {
+                        if(data.errors && data.errors.length){
+                            dialog.alert(data.errors.join("<br />"));
+                        }
+                        for(var j=0;j<data.goods.length;j++) {
+                            var good = data.goods[j];
+                            var is_break=false;
+                            for (var i = 0; i < self.goods.length; i++) {
+                                if (self.goods[i].goods_id == good.goods_id) {
+                                    dialog.warning('商品【'+good.title+'】重复');
+                                    is_break=true;
+                                    break;
+                                }
+                            }
+                            if(is_break)continue;
+                            self.goods.push({
+                                id:0,
+                                goods_id:good.goods_id,
+                                title:good.title,
+                                orig_title:good.title,
+                                count:good.count,
+                                unit:good.unit,
+                                price_type:good.price_type,
+                                weight:good.weight,
+                                price:good.price,
+                                total_price:0
+                            });
+                            self.updateRow(self.goods.length-1);
+                        }
+
+                        self.totalPrice();
+                        self.updateStorage();
+
+                    });
                 },
 
                 //====================== supplier autocomplete

@@ -121,7 +121,7 @@
                             <td></td>
                         </tr>
                         <tr>
-                            <td colspan="4"><a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-addrow">添加行</a> </td>
+                            <td colspan="4"><a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-sm btn-addrow">添加行</a> </td>
                             <td colspan="4" class="text-right">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">运费</span></div>

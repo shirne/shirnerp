@@ -35,7 +35,7 @@ var excelTpl = '<form method="POST" enctype="multipart/form-data">' +
     '  </div>' +
     '</div>' +
     '</form>';
-function importExcel(title, url) {
+function importExcel(title, url, callback) {
     var file='',sheet='';
     var dlg=new Dialog({
         onshown:function (body) {
@@ -45,7 +45,7 @@ function importExcel(title, url) {
                 dataType: 'JSON',
                 success: function (json) {
                     window.stop_ajax=false;
-                    console.log(json)
+                    //console.log(json)
                     
                     if (json.code == 1) {
                         if(json.data.success==1){
@@ -66,8 +66,11 @@ function importExcel(title, url) {
                                         success:function (json) {
                                             if (json.code == 1) {
                                                 if (json.data.success == 1) {
-                                                    dialog.success('导入成功');
-                                                    location.reload();
+                                                    dialog.success(json.msg);
+                                                    callback?callback(json.data):setTimeout(function () {
+                                                        if(json.url)location.href=json.url;
+                                                        else location.reload();
+                                                    },800);
                                                 }
                                             }else{
                                                 dialog.warning(json.msg);
