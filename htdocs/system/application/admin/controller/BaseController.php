@@ -170,9 +170,10 @@ class BaseController extends Controller {
         return $data;
     }
 
-    protected function transData($datas,$headers){
+    protected function transData($datas,$headers,$required='',$syncs=[]){
         $rows=[];
         $headermap=[];
+        if(!is_array($required))$required = explode(',',$required);
         foreach ($datas as $i=>$item){
             if(empty($headermap)){
                 foreach ($item as $k=>$v){
@@ -194,6 +195,18 @@ class BaseController extends Controller {
                         $row[$headermap[$k]] = $v;
                     }
                 }
+                foreach ($syncs as $field=>$from){
+                    if(empty($row[$field]) && !empty($row[$from])){
+                        $row[$field] = $row[$from];
+                    }
+                }
+                foreach ($required as $field){
+                    if($field && empty($row[$field])){
+                        //忽略行
+                        continue;
+                    }
+                }
+
                 $rows[]=$row;
             }
         }

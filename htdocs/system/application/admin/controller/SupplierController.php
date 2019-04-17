@@ -60,7 +60,7 @@ class SupplierController extends BaseController
             'website'=>'供应商网站,网站',
             'email'=>'供应商邮箱,邮箱,Email',
             'fax'=>'供应商传真,传真'
-        ]);
+        ],'title',['short'=>'title']);
         if(empty($datas)){
             $this->error('没有匹配到数据');
         }

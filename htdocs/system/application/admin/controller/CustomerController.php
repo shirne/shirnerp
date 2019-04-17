@@ -61,7 +61,7 @@ class CustomerController extends BaseController
             'website'=>'客户网站,网站',
             'email'=>'客户邮箱,邮箱,Email',
             'fax'=>'客户传真,传真'
-        ]);
+        ],'title',['short'=>'title']);
         if(empty($datas)){
             $this->error('没有匹配到数据');
         }

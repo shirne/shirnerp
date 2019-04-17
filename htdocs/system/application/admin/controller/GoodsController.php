@@ -180,7 +180,7 @@ class GoodsController extends BaseController
             'cate_id'=>'商品分类,分类',
             'price_type'=>'计价方式',
             'description'=>'商品介绍'
-        ]);
+        ],'title,goods_no,unit',['fullname'=>'title','goods_no'=>'title']);
         if(empty($datas)){
             $this->error('没有匹配到数据');
         }
