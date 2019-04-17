@@ -33,7 +33,7 @@ class CategoryModel extends BaseModel
     public function findCategory($idorname){
         $this->getCategories();
         foreach ($this->data as $cate){
-            if($cate['id']==$idorname || $cate['name']==$idorname){
+            if($cate['id']==$idorname || $cate['name']==$idorname || $cate['title']==$idorname){
                 return $cate;
             }
         }

@@ -6,6 +6,7 @@ namespace app\admin\controller;
 use app\admin\validate\GoodsValidate;
 use app\admin\validate\ImagesValidate;
 use app\common\facade\GoodsCategoryFacade;
+use app\common\model\GoodsCategoryModel;
 use app\common\model\GoodsModel;
 use think\Db;
 
@@ -164,6 +165,70 @@ class GoodsController extends BaseController
         $model=new GoodsModel();
         $model->saveAll($datas);
         $this->success('保存成功！');
+    }
+
+    public function import($file='',$sheet=''){
+        $datas = $this->uploadImport($file,$sheet);
+        if(empty($datas)){
+            $this->error('没有读取到数据');
+        }
+        $datas = $this->transData($datas,[
+            'title'=>'品种,品名,商品,名称,商品名称',
+            'fullname'=>'全称,商品全称,完整名称',
+            'goods_no'=>'编号,编码,商品编码,商品编号',
+            'unit'=>'商品单位,单位',
+            'cate_id'=>'商品分类,分类',
+            'price_type'=>'计价方式',
+            'description'=>'商品介绍'
+        ]);
+        if(empty($datas)){
+            $this->error('没有匹配到数据');
+        }
+        $unitDatas = getGoodsUnits();
+        $unitUpdated=false;
+        $cateUpdated=false;
+        foreach ($datas as &$row){
+            $row['price_type']=$row['price_type']=='单位'?0:1;
+            if($row['unit']){
+                if(!isset($unitDatas[$row['unit']])){
+                    $unitUpdated=true;
+                    Db::name('unit')->insert([
+                        'key'=>$row['unit'],
+                        'description'=>'',
+                        'sort'=>99
+                    ]);
+                }
+            }
+            if(!empty($row['cate_id'])) {
+                $cate_title = $row['cate_id'];
+                $cate_id = GoodsCategoryFacade::getCategoryId($cate_title);
+                if($cate_id) {
+                    $row['cate_id'] = $cate_id;
+                }else{
+                    $cate = GoodsCategoryModel::create([
+                        'title'=>$cate_title,
+                        'short'=>$cate_title,
+                        'name'=>$cate_title,
+                        'sort'=>0,
+                        'image'=>''
+                    ]);
+                    $row['cate_id'] = $cate['id'];
+                    $cateUpdated=true;
+                }
+            }else{
+                $row['cate_id'] = 0;
+            }
+
+        }
+
+        if($unitUpdated)getGoodsUnits(true);
+        if($cateUpdated)GoodsCategoryFacade::clearCache();
+
+
+        $model=new GoodsModel();
+        $model->saveAll($datas);
+
+        $this->success('处理成功','',['success'=>1]);
     }
 
     /**

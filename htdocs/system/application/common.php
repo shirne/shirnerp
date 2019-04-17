@@ -647,12 +647,16 @@ function get_translate($table,$key,$field='',$lang=''){
     return \app\common\facade\TranslateFacade::get_trans($table,$key,$field,$lang);
 }
 
-function getGoodsUnits()
+function getGoodsUnits($force=false)
 {
     static $units;
-    if (empty($currencies)) {
+    if($force){
+        $units=[];
+        cache('units',null);
+    }
+    if (empty($units)) {
         $units = cache('units');
-        if (empty($levels)) {
+        if (empty($units)) {
             $data =  Db::name('unit')->order('sort ASC,id ASC')->select();
             $units=array_index($data,'key');
             cache('units', $units);
@@ -661,9 +665,9 @@ function getGoodsUnits()
     return $units;
 }
 
-function getCurrencies()
+function getCurrencies($force=false)
 {
-    return \app\common\model\CurrencyModel::getCurrencies();
+    return \app\common\model\CurrencyModel::getCurrencies($force);
 }
 
 function getLevelConfig($levels){

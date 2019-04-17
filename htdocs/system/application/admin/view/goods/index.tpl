@@ -16,6 +16,7 @@
 				</div>
 				<a href="{:url('goods/add')}" class="btn btn-outline-primary btn-sm action-btn mr-2" data-needchecks="false" data-action="add"><i class="ion-md-add"></i> 添加商品</a>
 				<a href="javascript:" class="btn btn-outline-primary btn-sm action-btn mr-2" data-needchecks="false" data-action="batchadd"><i class="ion-md-add"></i> 批量添加</a>
+				<a href="{:url('goods/import')}" class="btn btn-outline-primary btn-sm mr-2 btn-import"><i class="ion-md-cloud-upload"></i> 导入商品</a>
 				<a href="{:url('rank')}" class="btn btn-outline-primary btn-sm"><i class="ion-md-stats"></i> 商品统计</a>
 			</div>
 		</div>
@@ -254,6 +255,11 @@
                     });
                 });
             };
+            $('.btn-import').click(function (e) {
+                e.preventDefault();
+                importExcel('导入商品',$(this).attr('href'));
+            });
+
             var addTpl = $('#addTpl').html();
             var addUrl = '{:url("goods/add")}';
             var editUrl = '{:url("goods/edit",['id'=>'__ID__'])}';
