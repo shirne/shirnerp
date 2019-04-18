@@ -13,10 +13,14 @@ use app\common\validate\BaseUniqueValidate;
 class CustomerValidate extends BaseUniqueValidate
 {
     protected $rule=array(
-        'title'=>'require|unique:customer,%id%'
+        'title'=>'require|unique:customer,%id%',
+        'short'=>'require|unique:customer,%id%'
     );
     protected $message=array(
-        'title.require'=>'请填写供应商名称'
+        'title.require'=>'请填写客户名称',
+        'title.unique'=>'客户名称不可重复',
+        'short.require'=>'请填写客户简称',
+        'short.unique'=>'客户简称不可重复'
     );
 
 }

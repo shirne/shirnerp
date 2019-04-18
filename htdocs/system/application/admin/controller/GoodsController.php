@@ -209,6 +209,8 @@ class GoodsController extends BaseController
     public function add($cid=0){
         if ($this->request->isPost()) {
             $data = $this->request->post();
+            if(empty($goods['fullname']))$goods['fullname']=$goods['title'];
+            if(empty($goods['goods_no']))$goods['goods_no']=$goods['title'];
             $validate = new GoodsValidate();
             $validate->setId(0);
             if (!$validate->check($data)) {
@@ -370,6 +372,8 @@ class GoodsController extends BaseController
 
         if ($this->request->isPost()) {
             $data=$this->request->post();
+            if(empty($goods['fullname']))$goods['fullname']=$goods['title'];
+            if(empty($goods['goods_no']))$goods['goods_no']=$goods['title'];
             $validate=new GoodsValidate();
             $validate->setId($id);
             if (!$validate->check($data)) {

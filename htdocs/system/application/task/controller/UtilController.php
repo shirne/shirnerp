@@ -48,6 +48,14 @@ class UtilController extends Controller
         exit;
     }
 
+    public function truncate(){
+        exit;
+        $tables=['customer','supplier'];
+        foreach ($tables as $table) {
+            Db::query('TRUNCATE TABLE `'.config('database.prefix').$table.'`');
+        }
+    }
+
     public function daily()
     {
         # code...

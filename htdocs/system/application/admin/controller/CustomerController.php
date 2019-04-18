@@ -80,6 +80,7 @@ class CustomerController extends BaseController
         if ($this->request->isPost()) {
             //如果用户提交数据
             $data = $this->request->post();
+            if(empty($data['short']))$data['short']=$data['title'];
             $validate=new CustomerValidate();
             $validate->setId(0);
             if (!$validate->check($data)) {
@@ -116,6 +117,7 @@ class CustomerController extends BaseController
         if ($this->request->isPost()) {
             //如果用户提交数据
             $data = $this->request->post();
+            if(empty($data['short']))$data['short']=$data['title'];
             $validate=new CustomerValidate();
             $validate->setId($id);
             if (!$validate->check($data)) {
