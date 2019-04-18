@@ -120,12 +120,28 @@ class PurchaseOrderController extends BaseController
     /**
      * 订单详情
      * @param $id
-     * @param $is_print
+     * @param $mode
      * @return \think\Response
      */
-    public function detail($id, $is_print=0){
-        $model=Db::name('purchaseOrder')->where('id',$id)->find();
+    public function detail($id, $mode=0){
+        $model=PurchaseOrderModel::get($id);
         if(empty($model))$this->error('订单不存在');
+        if($this->request->isPost()){
+            //编辑订单
+            if($model['status'] == 1){
+                $this->error('订单已提交，不可修改');
+            }
+            $goods = $this->request->put('goods');
+            $order = $this->request->put('order');
+
+            $url = url('detail',['id'=>$id,'mode'=>$mode]);
+            $model->updateOrder($goods,$order);
+            if($order['status'] == 1) {
+                $url = url('index');
+            }
+
+            $this->success('处理成功！',$url);
+        }
         $supplier=Db::name('supplier')->find($model['supplier_id']);
         $goods = Db::view('purchaseOrderGoods','*')
             ->view('storage',['title'=>'storage_title'],'storage.id=purchaseOrderGoods.storage_id','LEFT')
@@ -135,10 +151,37 @@ class PurchaseOrderController extends BaseController
         $this->assign('model',$model);
         $this->assign('supplier',$supplier);
         $this->assign('goods',$goods);
-        if(!$is_print) {
+        $this->assign('currencies',getCurrencies());
+        if($mode==0) {
             $this->assign('paylog', Db::name('financeLog')->where('type', 'purchase')->where('order_id', $id)->select());
         }
-        return $is_print?$this->fetch('print_one'):$this->fetch();
+        return $mode?$this->fetch($mode==2?'edit':'print_one'):$this->fetch();
+    }
+
+    /**
+     * 退货
+     * @param $id
+     * @return mixed
+     */
+    public function back($id){
+        $model=Db::name('purchaseOrder')->where('id',$id)->find();
+        if(empty($model))$this->error('订单不存在');
+        if($this->request->isPost()){
+            //编辑订单
+
+        }
+        $supplier=Db::name('supplier')->find($model['supplier_id']);
+        $goods = Db::view('purchaseOrderGoods','*')
+            ->view('storage',['title'=>'storage_title'],'storage.id=purchaseOrderGoods.storage_id','LEFT')
+            ->where('purchase_order_id',  $id)
+            ->order('purchaseOrderGoods.id ASC')->select();
+
+        $this->assign('model',$model);
+        $this->assign('supplier',$supplier);
+        $this->assign('goods',$goods);
+        $this->assign('currencies',getCurrencies());
+
+        return $this->fetch();
     }
 
     public function exportOne($id){

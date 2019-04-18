@@ -96,7 +96,15 @@
                                         <div class="input-group-append"><span class="input-group-text">{:getSetting('weight_unit')}</span></div>
                                     </div>
                                 </td>
-                                <td><input type="text" class="form-control" @change="updateRow(idx)" v-model="good.price"/> </td>
+                                <td>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.price"/>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" v-if="good.price_type">/{:getSetting('weight_unit')}</span>
+                                            <span class="input-group-text" v-else>/{{good.unit}}</span>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td>{{good.total_price}} </td>
                                 <td>
                                     <select class="form-control" v-model="good.storage_id">

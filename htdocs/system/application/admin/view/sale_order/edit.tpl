@@ -2,10 +2,10 @@
 
 <block name="body">
 
-    <include file="public/bread" menu="purchase_order_index" title="采购入库" />
+    <include file="public/bread" menu="sale_order_index" title="销售开单" />
 
     <div id="page-wrapper">
-        <div class="page-header">采购入库</div>
+        <div class="page-header">销售开单</div>
         <div class="page-content">
             <form method="post" action="" enctype="multipart/form-data" @submit="onSubmit">
                 <div class="card">
@@ -13,25 +13,25 @@
                         <div class="row">
                             <div class="col-6 mt-3">
                                 <div class="input-group">
-                                    <div class="input-group-prepend"><span class="input-group-text">供应商</span></div>
-                                    <input type="text" class="form-control" @focus="showSupplier" @blur="hideSupplier" v-model="cKey"/>
+                                    <div class="input-group-prepend"><span class="input-group-text">客户</span></div>
+                                    <input type="text" class="form-control" @focus="showCustomer" @blur="hideCustomer" v-model="cKey"/>
                                 </div>
                             </div>
                             <div class="col-3 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">客户单号</span></div>
-                                    <input type="text" class="form-control" name="supplier_order_no" v-model="order.supplier_order_no"/>
+                                    <input type="text" class="form-control" name="customer_order_no" v-model="order.customer_order_no"/>
                                 </div>
                             </div>
                             <div class="col-3 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">单号</span></div>
-                                    <input type="text" class="form-control" placeholder="不填写将由系统自动生成" name="order_no" v-model="order.order_no"/>
+                                    <span class="form-control">{{order.order_no}}</span>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-4 mt-3">
+                            <div class="col mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">仓库</span></div>
                                     <select class="form-control" v-model="order.storage_id">
@@ -40,8 +40,13 @@
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="col-4 mt-3">
+                            <div class="col-3 mt-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">交货时间</span></div>
+                                    <input type="text" class="form-control customer_date" data-format="YYYY-MM-DD hh:mm"  name="customer_time" v-model="order.customer_time"/>
+                                </div>
+                            </div>
+                            <div class="col mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">货币</span></div>
                                     <select class="form-control" v-model="order.currency">
@@ -51,12 +56,12 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-4 mt-3">
+                            <div class="col mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">状态</span></div>
                                     <select name="status" class="form-control" v-model="order.status">
-                                        <option :value="0" >待入库</option>
-                                        <option :value="1" >已入库</option>
+                                        <option :value="0" >待出库</option>
+                                        <option :value="1" >已出库</option>
                                     </select>
                                 </div>
                             </div>
@@ -71,37 +76,44 @@
                             <th>重量</th>
                             <th>单价</th>
                             <th>总价</th>
+                            <th>出库仓</th>
                             <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="(good,idx) in goods" :key="idx">
-                            <td><input type="text" class="form-control" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
-                            <td>{{good.storage}}</td>
-                            <td class="counttd">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.count"/>
-                                    <div class="input-group-append"><span class="input-group-text">{{good.unit}}</span></div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.weight"/>
-                                    <div class="input-group-append"><span class="input-group-text">{:getSetting('weight_unit')}</span></div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.price"/>
-                                    <div class="input-group-append">
-                                        <span class="input-group-text" v-if="good.price_type">/{:getSetting('weight_unit')}</span>
-                                        <span class="input-group-text" v-else>/{{good.unit}}</span>
+                            <tr v-for="(good,idx) in goods" :key="idx">
+                                <td><input type="text" class="form-control" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
+                                <td>{{good.storage}}</td>
+                                <td class="counttd">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.count"/>
+                                        <div class="input-group-append"><span class="input-group-text">{{good.unit}}</span></div>
                                     </div>
-                                </div>
-                            </td>
-                            <td>{{good.total_price}} </td>
-                            <td><a href="javascript:" class="btn btn-sm btn-outline-danger" title="删除" @click="delGoods(idx)"><i class="ion-md-close "></i> </a> </td>
-                        </tr>
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.weight"/>
+                                        <div class="input-group-append"><span class="input-group-text">{:getSetting('weight_unit')}</span></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.price"/>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" v-if="good.price_type">/{:getSetting('weight_unit')}</span>
+                                            <span class="input-group-text" v-else>/{{good.unit}}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{good.total_price}} </td>
+                                <td>
+                                    <select class="form-control" v-model="good.storage_id">
+                                        <option :value="0">请选择仓库</option>
+                                        <option v-for="storage in storages" :key="storage.id" :value="storage.id">[{{storage.storage_no}}]{{storage.title}}</option>
+                                    </select>
+                                </td>
+                                <td><a href="javascript:" class="btn btn-outline-primary" @click="delGoods(idx)">删除</a> </td>
+                            </tr>
                         </tbody>
                         <tfoot>
                         <tr>
@@ -111,10 +123,13 @@
                             <td></td>
                             <td></td>
                             <td>{{total.price}}</td>
+                            <td>
+
+                            </td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td colspan="3">
+                            <td colspan="4">
                                 <a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-sm btn-addrow"><i class="ion-md-add"></i> 添加行</a>
                                 <a href="{:url('goods/importOrder')}" @click="importOrder" class="btn btn-outline-primary btn-sm btn-import"><i class="ion-md-cloud-upload"></i> 导入订单</a>
                             </td>
@@ -128,7 +143,7 @@
                         </tfoot>
                     </table>
                     <div class="card-footer">
-                        <a href="javascript:" :class="'btn btn-primary'+(ajaxing?' disabled':'')" @click="onSubmit">提交保存</a>
+                        <a href="javascript:" class="btn btn-primary" @click="onSubmit">提交保存</a>
                     </div>
                 </div>
             </form>
@@ -139,9 +154,9 @@
                 [{{good.goods_no}}]{{good.title}}
             </li>
         </ul>
-        <ul class="list-group auto-complete supplier-complete" :style="supplierStyle">
-            <li class="list-group-item" v-for="(supplier,idx) in suppliers" :data-idx="idx" :key="supplier.id" @click="selectThisSupplier" @mouseenter="activeThisSupplier">
-                [{{supplier.id}}]{{supplier.title}}
+        <ul class="list-group auto-complete customer-complete" :style="customerStyle">
+            <li class="list-group-item" v-for="(customer,idx) in customers" :data-idx="idx" :key="customer.id" @click="selectThisCustomer" @mouseenter="activeThisCustomer">
+                [{{customer.id}}]{{customer.title}}
             </li>
         </ul>
     </div>
@@ -151,7 +166,7 @@
     <script type="text/javascript">
         var hideTimeout=0;
         var currentInput=null;
-        var hideSupplierTimeout=0;
+        var hideCustomerTimeout=0;
         var app = new Vue({
             el: '#page-wrapper',
             data: {
@@ -163,24 +178,16 @@
                     top:0,
                     width:0
                 },
-                supplierStyle:{
+                customerStyle:{
                     display:'none',
                     position:'absolute',
                     left:0,
                     top:0,
                     width:0
                 },
-                order:{
-                    supplier_id:0,
-                    storage_id:0,
-                    currency:"{:current($currencies)['key']}",
-                    status:0,
-                    order_no:'',
-                    freight:0,
-                    supplier_order_no:''
-                },
+                order:{$model|json_encode|raw},
                 cKey:'',
-                suppliers:[],
+                customers:[],
                 storages:[],
                 emptyGoods:[],
                 key:'',
@@ -195,14 +202,33 @@
                 'order.storage_id':function (val, oVal) {
                     this.listGoods=[];
                     this.emptyGoods=[];
+                    if(val){
+                        for(var i=0;i<this.goods.length;i++){
+                            if(!this.goods[i].storage_id){
+                                this.goods[i].storage_id = val;
+                            }
+                        }
+                    }
                     this.updateStorage();
                 },
                 cKey:function (val, oVal) {
-                    this.getSupplierList();
+                    this.getCustomerList();
                 }
             },
             mounted:function(){
-                this.addRow();
+                var config=$.extend({
+                    tooltips:tooltips,
+                    format: 'YYYY-MM-DD',
+                    locale: 'zh-cn',
+                    showClear:true,
+                    showTodayButton:true,
+                    showClose:true,
+                    keepInvalid:true
+                },transOption($('.customer_date').data()));
+
+                $('.customer_date').datetimepicker(config);
+
+                this.initData();
                 this.loadStorages();
             },
             methods:{
@@ -222,15 +248,37 @@
                         }
                     })
                 },
+                initData:function () {
+                    var customer={$customer|json_encode|raw};
+                    var goods={$goods|json_encode|raw};
+                    this.cKey=this.order.customer_title=customer.title;
+                    for(var i=0;i<goods.length;i++){
+                        this.goods.push({
+                            id:goods[i].id,
+                            goods_id:goods[i].goods_id,
+                            title:goods[i].goods_title,
+                            orig_title:goods[i].goods_title,
+                            storage_id:goods[i].storage_id,
+                            price_type:goods[i].price_type,
+                            count:goods[i].count,
+                            weight:goods[i].weight,
+                            unit:goods[i].goods_unit,
+                            price:goods[i].price,
+                            total_price:goods[i].amount
+                        });
+                    }
+                    this.updateStorage();
+                    this.totalPrice();
+                },
                 addRow:function(){
                     this.goods.push({
                         id:0,
-                        goods_id:0,
                         title:'',
                         orig_title:'',
+                        storage_id:this.order.storage_id,
                         count:'',
-                        unit:'',
                         price_type:0,
+                        unit:'',
                         weight:0,
                         price:0,
                         total_price:0
@@ -391,7 +439,7 @@
                             dataType: 'JSON',
                             data: {
                                 key: key,
-                                storage_id:this.order.storage_id
+                                storage_id:this.order.from_storage_id
                             },
                             success: function (json) {
                                 if (json.code == 1) {
@@ -409,7 +457,7 @@
                     e.preventDefault();
 
                     var self=this;
-                    importExcel('导入采购订单',$(e.target).attr('href'),function (data) {
+                    importExcel('导入销售订单',$(e.target).attr('href'),function (data) {
                         if(data.errors && data.errors.length){
                             dialog.alert(data.errors.join("<br />"));
                         }
@@ -427,6 +475,7 @@
                             self.goods.push({
                                 id:0,
                                 goods_id:good.goods_id,
+                                storage_id:self.order.storage_id,
                                 title:good.title,
                                 orig_title:good.title,
                                 count:good.count,
@@ -445,49 +494,49 @@
                     });
                 },
 
-                //====================== supplier autocomplete
-                showSupplier:function (e) {
-                    clearTimeout(hideSupplierTimeout);
+                //====================== customer autocomplete
+                showCustomer:function (e) {
+                    clearTimeout(hideCustomerTimeout);
                     var target=e.target;
                     var offset=$(target).offset();
                     var width=$(target).outerWidth();
                     var height=$(target).outerHeight();
-                    this.supplierStyle.top=(offset.top+height)+'px';
-                    this.supplierStyle.left=offset.left+'px';
-                    this.supplierStyle.width=width+'px';
-                    this.supplierStyle.display='block';
-                    //this.cKey = $(e.target).val();
-                    $(document.body).on('keyup',this.listenSupplierKeyup);
-                    this.getSupplierList(e);
+                    this.customerStyle.top=(offset.top+height)+'px';
+                    this.customerStyle.left=offset.left+'px';
+                    this.customerStyle.width=width+'px';
+                    this.customerStyle.display='block';
+                    this.cKey = $(e.target).val();
+                    $(document.body).on('keyup',this.listenCustomerKeyup);
+                    this.getCustomerList(e);
                 },
-                hideSupplier:function (e) {
+                hideCustomer:function (e) {
                     if(e){
-                        if(this.cKey != this.order.supplier_title) {
-                            this.cKey = this.order.supplier_title;
+                        if(this.cKey != this.order.customer_title) {
+                            this.cKey = this.order.customer_title;
                         }
                     }
                     var self=this;
-                    clearTimeout(hideSupplierTimeout);
-                    hideSupplierTimeout=setTimeout(function () {
-                        $(document.body).off('keyup',self.listenSupplierKeyup);
-                        self.supplierStyle.display='none';
+                    clearTimeout(hideCustomerTimeout);
+                    hideCustomerTimeout=setTimeout(function () {
+                        $(document.body).off('keyup',self.listenCustomerKeyup);
+                        self.customerStyle.display='none';
                     },500);
                 },
-                /*loadSupplier:function (e) {
-                    //var ckey = $(e.target).val();
+                /*loadCustomer:function (e) {
+                    var ckey = $(e.target).val();
                     if(ckey == this.cKey)return;
                     this.cKey = ckey;
-                    this.getSupplierList(e);
+                    this.getCustomerList(e);
                 },*/
-                activeThisSupplier:function (e) {
+                activeThisCustomer:function (e) {
                     var self=$(e.target);
                     var parent=self.parents('.list-group').eq(0);
                     parent.find('.list-group-item').removeClass('hover');
                     self.addClass('hover');
                 },
-                listenSupplierKeyup:function (e) {
-                    var lists=$('.supplier-complete .list-group-item');
-                    var idx=lists.index($('.supplier-complete .hover'));
+                listenCustomerKeyup:function (e) {
+                    var lists=$('.customer-complete .list-group-item');
+                    var idx=lists.index($('.customer-complete .hover'));
 
                     switch (e.keyCode){
                         case 40://down
@@ -504,37 +553,37 @@
 
                             break;
                         case 13://enter
-                            if(this.selectSupplier()) {
-                                this.hideSupplier();
+                            if(this.selectCustomer()) {
+                                this.hideCustomer();
                             }
                             break;
                     }
                 },
-                selectThisSupplier:function (e) {
-                    if(this.selectSupplier()) {
-                        this.hideSupplier();
+                selectThisCustomer:function (e) {
+                    if(this.selectCustomer()) {
+                        this.hideCustomer();
                     }
                 },
-                selectSupplier:function () {
-                    var hover=$('.supplier-complete .hover');
+                selectCustomer:function () {
+                    var hover=$('.customer-complete .hover');
                     if(hover.length>0){
                         var idx=hover.data('idx');
-                        var supplier = this.suppliers[idx];
-                        if(supplier){
-                            this.order.supplier_id=supplier.id;
-                            this.order.supplier_title=supplier.title;
-                            this.cKey = supplier.title;
+                        var customer = this.customers[idx];
+                        if(customer){
+                            this.order.customer_id=customer.id;
+                            this.order.customer_title=customer.title;
+                            this.cKey = customer.title;
                             return true;
                         }
                     }
                     return false;
                 },
-                getSupplierList:function (e) {
+                getCustomerList:function (e) {
                     var self=this;
                     var ckey = this.cKey;
 
                     $.ajax({
-                        url: '{:url("supplier/search")}',
+                        url: '{:url("customer/search")}',
                         type: 'GET',
                         dataType: 'JSON',
                         data: {
@@ -542,7 +591,7 @@
                         },
                         success: function (json) {
                             if (json.code == 1) {
-                                self.suppliers = json.data;
+                                self.customers = json.data;
                             }
                         }
                     });
@@ -551,17 +600,15 @@
                 //======================
                 onSubmit:function(e){
                     e.preventDefault();
-                    if(this.ajaxing)return false;
                     if(!this.order.storage_id){
                         dialog.error('请选择仓库');
                         return false;
                     }
-                    if(!this.order.supplier_id){
+                    if(!this.order.customer_id){
                         dialog.error('请选择客户');
                         return false;
                     }
-                    var self=this;
-                    this.ajaxing=true;
+
                     $.ajax({
                         url:'',
                         type:"POST",
@@ -571,7 +618,6 @@
                             goods:this.goods
                         },
                         success:function (json) {
-                            self.ajaxing=false;
                             if(json.code==1){
                                 dialog.success('开单成功！');
                                 location.reload();
@@ -579,7 +625,7 @@
                                 dialog.error(json.msg);
                             }
                         }
-                    });
+                    })
 
                     return false;
                 },

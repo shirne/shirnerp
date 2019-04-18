@@ -119,12 +119,28 @@ class SaleOrderController extends BaseController
     /**
      * 订单详情
      * @param $id
-     * @param $is_print
+     * @param $mode
      * @return \think\Response
      */
-    public function detail($id, $is_print=0){
-        $model=Db::name('saleOrder')->where('id',$id)->find();
+    public function detail($id, $mode=0){
+        $model=SaleOrderModel::get($id);
         if(empty($model))$this->error('订单不存在');
+        if($this->request->isPost()){
+            //编辑订单
+            if($model['status'] == 1){
+                $this->error('订单已提交，不可修改');
+            }
+            $goods = $this->request->put('goods');
+            $order = $this->request->put('order');
+
+            $url = url('detail',['id'=>$id,'mode'=>$mode]);
+            $model->updateOrder($goods,$order);
+            if($order['status'] == 1) {
+                $url = url('index');
+            }
+
+            $this->success('处理成功！',$url);
+        }
         $customer=Db::name('customer')->find($model['customer_id']);
         $goods = Db::view('saleOrderGoods','*')
             ->view('storage',['title'=>'storage_title'],'storage.id=saleOrderGoods.storage_id','LEFT')
@@ -133,10 +149,11 @@ class SaleOrderController extends BaseController
         $this->assign('model',$model);
         $this->assign('customer',$customer);
         $this->assign('goods',$goods);
-        if(!$is_print) {
+        $this->assign('currencies',getCurrencies());
+        if($mode==0) {
             $this->assign('paylog', Db::name('financeLog')->where('type', 'sale')->where('order_id', $id)->select());
         }
-        return $is_print?$this->fetch('print_one'):$this->fetch();
+        return $mode?$this->fetch($mode==2?'edit':'print_one'):$this->fetch();
     }
 
     public function exportOne($id){

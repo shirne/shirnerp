@@ -60,6 +60,50 @@ class PurchaseOrderModel extends BaseModel
         return false;
     }
 
+    public function updateOrder($goods, $order){
+        if($this->status != 0){
+            throw new Exception('订单已提交，不能修改');
+        }
+
+        $igoods_ids = array_column($goods,'id');
+        Db::name('purchaseOrderGoods')->whereNotIn('id', $igoods_ids)
+            ->where('purchase_order_id',$this->id)->delete();
+
+        $time = time();
+        foreach ($goods as $good) {
+            $row = [
+                'goods_id'=>$good['goods_id'],
+                'goods_title'=>$good['title'],
+                'goods_no'=>$good['goods_no'],
+                'goods_unit'=>$good['unit'],
+                'price_type'=>$good['price_type'],
+                'storage_id'=>$good['storage_id']?:$this->storage_id,
+                'count'=>$good['count'],
+                'price'=>$good['price'],
+                'base_price'=>CurrencyModel::exchange($good['price'],$this->currency),
+                'amount'=>$good['count'] * $good['price'],
+                'update_time'=>$time
+            ];
+            if($good['id']) {
+                Db::name('saleOrderGoods')->where('id', $good['id'])->where('purchase_order_id', $this->id)
+                    ->update($row);
+            }else{
+                $row['purchase_order_id'] = $this->id;
+                $row['create_time'] = $time;
+                Db::name('saleOrderGoods')->insert($row);
+            }
+        }
+
+
+        if($order['status']){
+            $order['confirm_time']=$time;
+            $this->updateStatus($order);
+        }else{
+            $this->save($order);
+        }
+        return true;
+    }
+
     protected function triggerStatus($item,$status)
     {
         if($status>$item['status']){

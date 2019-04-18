@@ -417,7 +417,7 @@ class GoodsController extends BaseController
         $model = Db::name('goods');
         $result = $model->whereIn("id",idArr($id))->delete();
         if($result){
-            Db::name('goodsImages')->whereIn("goods_id",idArr($id))->delete();
+            //Db::name('goodsImages')->whereIn("goods_id",idArr($id))->delete();
             user_log($this->mid,'deletegoods',1,'删除商品 '.$id ,'manager');
             $this->success(lang('Delete success!'), url('Goods/index'));
         }else{

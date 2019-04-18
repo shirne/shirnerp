@@ -26,7 +26,7 @@
                             <div class="col-3 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">单号</span></div>
-                                    <input type="text" class="form-control" placeholder="不填写将由系统自动生成" name="order_no" v-model="order.order_no"/>
+                                    <span class="form-control">{{order.order_no}}</span>
                                 </div>
                             </div>
                         </div>
@@ -170,15 +170,7 @@
                     top:0,
                     width:0
                 },
-                order:{
-                    supplier_id:0,
-                    storage_id:0,
-                    currency:"{:current($currencies)['key']}",
-                    status:0,
-                    order_no:'',
-                    freight:0,
-                    supplier_order_no:''
-                },
+                order:{$model|json_encode|raw},
                 cKey:'',
                 suppliers:[],
                 storages:[],
@@ -202,7 +194,7 @@
                 }
             },
             mounted:function(){
-                this.addRow();
+                this.initData();
                 this.loadStorages();
             },
             methods:{
@@ -221,6 +213,27 @@
                             }
                         }
                     })
+                },
+                initData:function () {
+                    var supplier={$supplier|json_encode|raw};
+                    var goods={$goods|json_encode|raw};
+                    this.cKey=this.order.supplier_title=supplier.title;
+                    for(var i=0;i<goods.length;i++){
+                        this.goods.push({
+                            id:goods[i].id,
+                            goods_id:goods[i].goods_id,
+                            title:goods[i].goods_title,
+                            orig_title:goods[i].goods_title,
+                            price_type:goods[i].price_type,
+                            count:goods[i].count,
+                            weight:goods[i].weight,
+                            unit:goods[i].goods_unit,
+                            price:goods[i].price,
+                            total_price:goods[i].amount
+                        });
+                    }
+                    this.updateStorage();
+                    this.totalPrice();
                 },
                 addRow:function(){
                     this.goods.push({
@@ -573,8 +586,11 @@
                         success:function (json) {
                             self.ajaxing=false;
                             if(json.code==1){
-                                dialog.success('开单成功！');
-                                location.reload();
+                                dialog.success('保存成功！');
+                                setTimeout(function () {
+                                    if(json.url)location.href=json.url;
+                                    else location.reload();
+                                },1000)
                             }else{
                                 dialog.error(json.msg);
                             }

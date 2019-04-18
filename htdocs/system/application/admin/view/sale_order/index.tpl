@@ -41,7 +41,7 @@
                 <th>日期</th>
                 <th>金额</th>
                 <th>状态</th>
-                <th width="160">&nbsp;</th>
+                <th width="200">&nbsp;</th>
             </tr>
             </thead>
             <tbody>
@@ -65,9 +65,11 @@
                         <a class="btn btn-outline-primary" target="_blank" title="导出" href="{:url('saleOrder/exportOne',array('id'=>$v['id']))}" ><i class="ion-md-download"></i> </a>
                         <a class="btn btn-outline-primary" target="_blank" title="打印" href="{:url('saleOrder/detail',array('id'=>$v['id'],'is_print'=>1))}" ><i class="ion-md-print"></i> </a>
                         <if condition="$v['status'] EQ 0">
-                            <a class="btn btn-outline-primary link-confirm" title="出库" data-confirm="请确认商品已出库，操作不可撤销!" href="{:url('saleOrder/status',array('id'=>$v['id'],'status'=>1))}" ><i class="ion-md-filing"></i> </a>
+                            <a class="btn btn-outline-success link-confirm" title="出库" data-confirm="请确认商品已出库，操作不可撤销!" href="{:url('saleOrder/status',array('id'=>$v['id'],'status'=>1))}" ><i class="ion-md-filing"></i> </a>
+                            <a class="btn btn-outline-primary" title="编辑" href="{:url('saleOrder/detail',array('id'=>$v['id'],'mode'=>2))}" ><i class="ion-md-create"></i> </a>
                             <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('saleOrder/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
                             <else/>
+                            <a class="btn btn-outline-warning d-none" title="退货" href="{:url('purchaseOrder/back',array('id'=>$v['id']))}" ><i class="ion-md-undo"></i> </a>
                             <a class="btn btn-outline-primary link-detail" title="详情" href="{:url('saleOrder/detail',array('id'=>$v['id']))}" ><i class="ion-md-document"></i> </a>
                         </if>
                     </td>

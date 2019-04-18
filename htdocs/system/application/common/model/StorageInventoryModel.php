@@ -51,6 +51,14 @@ class StorageInventoryModel extends BaseModel
     }
 
     public function updateOrder($goods, $status=0){
+        if($this->status != 0){
+            throw new Exception('订单已提交，不能修改');
+        }
+
+        $igoods_ids = array_column($goods,'id');
+        Db::name('storageInventoryGoods')->whereNotIn('id', $igoods_ids)
+            ->where('inventory_id',$this->id)->delete();
+
         foreach ($goods as $good) {
             if($good['id']) {
                 Db::name('storageInventoryGoods')->where('id', $good['id'])->where('goods_id', $good['goods_id'])
