@@ -61,6 +61,7 @@
             </volist>
             </tbody>
         </table>
+        <div class="clearfix"></div>
         {$page|raw}
     </div>
 </block>
