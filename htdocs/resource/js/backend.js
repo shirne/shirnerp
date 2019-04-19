@@ -48,11 +48,10 @@ function importExcel(title, url, callback) {
                     //console.log(json)
                     
                     if (json.code == 1) {
+                        dlg.close();
                         if(json.data.success==1){
-                            dialog.success('导入成功');
-                            location.reload();
+                            importResult(json,callback);
                         }else{
-                            dlg.close();
                             var sheets=json.data.sheets;
                             var file = json.data.file;
                             dialog.action(sheets,function (idx) {
@@ -64,17 +63,7 @@ function importExcel(title, url, callback) {
                                             sheet:sheets[idx]
                                         },
                                         success:function (json) {
-                                            if (json.code == 1) {
-                                                if (json.data.success == 1) {
-                                                    dialog.success(json.msg);
-                                                    callback?callback(json.data):setTimeout(function () {
-                                                        if(json.url)location.href=json.url;
-                                                        else location.reload();
-                                                    },800);
-                                                }
-                                            }else{
-                                                dialog.warning(json.msg);
-                                            }
+                                            importResult(json,callback);
                                         }
                                     })
                                 }
@@ -124,6 +113,33 @@ function importExcel(title, url, callback) {
             return false;
         }
     }).show(excelTpl,title);
+}
+
+function importResult(json,callback) {
+    if (json.code == 1) {
+        if (json.data.success == 1) {
+            if(callback){
+                callback(json.data)
+            }else{
+                var errors=json.data.errors;
+                if(errors.length>5){
+                    errors.splice(5);
+                    errors.push('...');
+                }
+                if(errors && errors.length){
+                    dialog.alert(json.msg+"<br />"+errors.join('<br />'),'warning');
+                }else {
+                    dialog.success(json.msg);
+                    setTimeout(function () {
+                        if(json.url)location.href=json.url;
+                        else location.reload();
+                    },800)
+                }
+            }
+        }
+    }else{
+        dialog.warning(json.msg);
+    }
 }
 
 

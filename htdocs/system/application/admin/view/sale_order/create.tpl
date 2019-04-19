@@ -43,7 +43,7 @@
                             <div class="col-3 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">交货时间</span></div>
-                                    <input type="text" class="form-control customer_date" data-format="YYYY-MM-DD hh:mm"  name="customer_time" v-model="order.customer_time"/>
+                                    <input type="text" class="form-control customer_date" @blur="setDate" data-format="YYYY-MM-DD hh:mm"  name="customer_time" v-model="order.customer_time"/>
                                 </div>
                             </div>
                             <div class="col mt-3">
@@ -300,6 +300,9 @@
                             this.goods[i].storage=0;
                         }
                     }
+                },
+                setDate:function (e) {
+                    this.order.customer_time= e.target.value;
                 },
                 updateRow:function (idx) {
                     var good = this.goods[idx];

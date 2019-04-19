@@ -260,6 +260,7 @@ class GoodsController extends BaseController
         }
         $titles = preg_split('/[\r\n]+/s',$titles);
         $datas = [];
+
         foreach ($titles as $title){
             if(strpos($title,':')>0){
                 $titlesubs=explode(':',$title,2);
@@ -280,6 +281,10 @@ class GoodsController extends BaseController
                     'unit' => $data['unit'],
                     'price_type' => $data['price_type']
                 ];
+            }
+            if(in_array($row['title'],array_column($datas,'title'))
+            || in_array($row['goods_no'],array_column($datas,'goods_no'))){
+                $this->error('提交的数据中 '.$title.' 重复');
             }
 
             $exists = Db::name('goods')->where('title',$row['title'])
@@ -313,6 +318,42 @@ class GoodsController extends BaseController
         ],'title,goods_no,unit',['fullname'=>'title','goods_no'=>'title']);
         if(empty($datas)){
             $this->error('没有匹配到数据');
+        }
+
+        $errors=[];
+
+        $titles = array_column($datas,'title');
+        $goods_nos = array_column($datas,'goods_no');
+        $title_has=Db::name('goods')->whereIn('title',$titles)->field('id,title')->select();
+        $title_has=array_index($title_has,'title');
+        $goods_no_has=Db::name('goods')->whereIn('goods_no',$goods_nos)->field('id,goods_no')->select();
+        $goods_no_has=array_index($goods_no_has,'goods_no');
+        $titles=[];
+        $goods_nos=[];
+        foreach ($datas as $k=>$row){
+            if(isset($title_has[$row['title']])){
+                $errors[]="【{$row['title']}】商品资料已存在";
+                unset($datas[$k]);
+                continue;
+            }
+            if(isset($goods_no_has[$row['goods_no']])){
+                $errors[]="【{$row['title']}】商品编号已存在";
+                unset($datas[$k]);
+                continue;
+            }
+
+            if(in_array($row['title'],$titles)){
+                $errors[]="提交的资料【{$row['title']}】重复";
+                unset($datas[$k]);
+                continue;
+            }
+            if(in_array($row['goods_no'],$goods_nos)){
+                $errors[]="提交的资料【{$row['title']}】编号重复";
+                unset($datas[$k]);
+                continue;
+            }
+            $titles[]=$row['title'];
+            $goods_nos[]=$row['goods_no'];
         }
         $unitDatas = getGoodsUnits();
         $unitUpdated=false;
@@ -358,7 +399,7 @@ class GoodsController extends BaseController
         $model=new GoodsModel();
         $model->saveAll($datas);
 
-        $this->success('处理成功','',['success'=>1]);
+        $this->success('处理成功','',['success'=>1,'errors'=>$errors]);
     }
 
     /**
