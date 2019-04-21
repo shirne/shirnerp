@@ -30,7 +30,10 @@ class SaleOrderModel extends BaseModel
             if(!$good['goods_id'])continue;
             $goods_id=$good['goods_id'];
             if(!$goods[$goods_id]) throw new Exception('订单中商品未找到');
-            $total_price +=  $good['count'] * $good['price'];
+            $good['weight']=intval($good['weight']);
+            $good['count']=intval($good['count']);
+            $amount = $good['price_type']==1?($good['weight'] * $good['price']):($good['count'] * $good['price']);
+            $total_price +=  $amount;
             $rows[] = [
                 'goods_id'=>$goods_id,
                 'goods_title'=>$goods[$goods_id]['title'],
@@ -41,7 +44,7 @@ class SaleOrderModel extends BaseModel
                 'count'=>$good['count'],
                 'price'=>$good['price'],
                 'base_price'=>CurrencyModel::exchange($good['price'],$order['currency']),
-                'amount'=>$good['count'] * $good['price'],
+                'amount'=>$amount,
             ];
 
         }
@@ -74,7 +77,12 @@ class SaleOrderModel extends BaseModel
             ->where('sale_order_id',$this->id)->delete();
 
         $time = time();
+        $total_price=0;
         foreach ($goods as $good) {
+            $good['weight']=intval($good['weight']);
+            $good['count']=intval($good['count']);
+            $amount = $good['price_type']==1?($good['weight'] * $good['price']):($good['count'] * $good['price']);
+            $total_price+=$amount;
             $row = [
                 'goods_id'=>$good['goods_id'],
                 'goods_title'=>$good['title'],
@@ -85,7 +93,7 @@ class SaleOrderModel extends BaseModel
                 'count'=>$good['count'],
                 'price'=>$good['price'],
                 'base_price'=>CurrencyModel::exchange($good['price'],$this->currency),
-                'amount'=>$good['count'] * $good['price'],
+                'amount'=>$amount,
                 'update_time'=>$time
             ];
             if($good['id']) {
@@ -98,7 +106,8 @@ class SaleOrderModel extends BaseModel
             }
         }
 
-
+        $order['amount']=$total_price + intval($order['freight']);
+        $order['base_amount']=CurrencyModel::exchange($order['amount'],$order['currency']);
         if($order['status']){
             $order['confirm_time']=$time;
             $this->updateStatus($order);
