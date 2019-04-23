@@ -36,6 +36,7 @@ class PurchaseOrderModel extends BaseModel
                 'goods_unit'=>$goods[$goods_id]['unit'],
                 'storage_id'=>$good['storage_id']?:$order['storage_id'],
                 'count'=>$good['count'],
+                'weight'=>$good['weight'],
                 'price_type'=>$good['price_type'],
                 'price'=>$good['price'],
                 'base_price'=>CurrencyModel::exchange($good['price'],$order['currency']),
@@ -87,18 +88,19 @@ class PurchaseOrderModel extends BaseModel
                 'price_type'=>$good['price_type'],
                 'storage_id'=>$good['storage_id']?:$this->storage_id,
                 'count'=>$good['count'],
+                'weight'=>$good['weight'],
                 'price'=>$good['price'],
                 'base_price'=>CurrencyModel::exchange($good['price'],$this->currency),
                 'amount'=>$amount,
                 'update_time'=>$time
             ];
             if($good['id']) {
-                Db::name('saleOrderGoods')->where('id', $good['id'])->where('purchase_order_id', $this->id)
+                Db::name('purchaseOrderGoods')->where('id', $good['id'])->where('purchase_order_id', $this->id)
                     ->update($row);
             }else{
                 $row['purchase_order_id'] = $this->id;
                 $row['create_time'] = $time;
-                Db::name('saleOrderGoods')->insert($row);
+                Db::name('purchaseOrderGoods')->insert($row);
             }
         }
 

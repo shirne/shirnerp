@@ -22,6 +22,7 @@
                 <th>品名</th>
                 <th>数量</th>
                 <th>单位</th>
+                <th>重量</th>
                 <th>单价</th>
                 <th>总价</th>
                 <th>仓库</th>
@@ -33,7 +34,8 @@
                         <td><span class="badge badge-success">{$p.goods_no}</span> {$p.goods_title}</td>
                         <td>{$p.count}</td>
                         <td>{$p.unit}</td>
-                        <td>{$p.price}</td>
+                        <td>{$p.weight}</td>
+                        <td>{$p.price}/{$p['price_type']?getSetting('weight_unit'):$p['unit']}</td>
                         <td>{$p.total_price}</td>
                         <td>{$p.storage_title}</td>
                     </tr>

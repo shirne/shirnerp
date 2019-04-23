@@ -16,6 +16,7 @@ class FinanceController extends BaseController
         $last90day=strtotime('today -90 days');
 
         $saleFinance = Db::name('saleOrder')
+            ->where('delete_time',0)
             ->whereExp('amount',' > payed_amount')
             ->field('sum(amount - payed_amount) as unpayed_amount,currency,date_format(from_unixtime(create_time),'.$format. ') as awdate')
             ->group('awdate,currency')
@@ -39,6 +40,7 @@ class FinanceController extends BaseController
         }
 
         $purchaseFinance = Db::name('purchaseOrder')
+            ->where('delete_time',0)
             ->whereExp('amount',' > payed_amount')
             ->field('sum(amount - payed_amount) as unpayed_amount,date_format(from_unixtime(create_time),'.$format. ') as awdate')
             ->group('awdate,currency')
@@ -71,6 +73,7 @@ class FinanceController extends BaseController
         }
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('saleOrder','*')
+            ->where('delete_time',0)
             ->view('customer',['title'=>'customer_title','short','phone','province','city','area'],'customer.id=saleOrder.customer_id','LEFT')
             ->whereExp('saleOrder.amount',' > saleOrder.payed_amount')
             ->where('saleOrder.delete_time',0);
@@ -134,6 +137,7 @@ class FinanceController extends BaseController
         }
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('purchaseOrder','*')
+            ->where('delete_time',0)
             ->view('supplier',['title'=>'supplier_title','phone','province','city','area'],'supplier.id=purchaseOrder.supplier_id','LEFT')
             ->whereExp('purchaseOrder.amount',' > purchaseOrder.payed_amount')
             ->where('purchaseOrder.delete_time',0);

@@ -43,12 +43,14 @@ class IndexController extends BaseController{
         $saleOrders = Db::name('saleOrder')
             ->field('count(id) as order_count,sum(base_amount) as order_amount,date_format(from_unixtime(create_time),' . $format . ') as awdate')
             ->where('create_time','GT',strtotime('today -6 days'))
+            ->where('delete_time',0)
             ->group('awdate')->select();
         $this->assign('saleOrders',$saleOrders);
 
         $purchaseOrders = Db::name('purchaseOrder')
             ->field('count(id) as order_count,sum(base_amount) as order_amount,date_format(from_unixtime(create_time),' . $format . ') as awdate')
             ->where('create_time','GT',strtotime('today -6 days'))
+            ->where('delete_time',0)
             ->group('awdate')->select();
         $this->assign('purchaseOrders',$purchaseOrders);
 
@@ -57,6 +59,7 @@ class IndexController extends BaseController{
         $last90day=strtotime('today -90 days');
 
         $saleFinance = Db::name('saleOrder')
+            ->where('delete_time',0)
             ->whereExp('amount',' > payed_amount')
             ->field('sum(amount - payed_amount) as unpayed_amount,currency,date_format(from_unixtime(create_time),'.$format. ') as awdate')
             ->group('awdate,currency')
@@ -80,6 +83,7 @@ class IndexController extends BaseController{
         }
 
         $purchaseFinance = Db::name('purchaseOrder')
+            ->where('delete_time',0)
             ->whereExp('amount',' > payed_amount')
             ->field('sum(amount - payed_amount) as unpayed_amount,date_format(from_unixtime(create_time),'.$format. ') as awdate')
             ->group('awdate,currency')
