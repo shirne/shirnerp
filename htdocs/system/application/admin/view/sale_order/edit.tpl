@@ -71,12 +71,12 @@
                         <thead>
                         <tr>
                             <th>产品</th>
-                            <th>库存</th>
-                            <th>数量</th>
-                            <th>重量</th>
-                            <th>单价</th>
-                            <th>总价</th>
-                            <th>出库仓</th>
+                            <th width="100">库存</th>
+                            <th width="160">数量</th>
+                            <th width="160">重量</th>
+                            <th width="200">单价</th>
+                            <th width="160">总价</th>
+                            <th width="160">出库仓</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -99,20 +99,34 @@
                                 <td>
                                     <div class="input-group">
                                         <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.price"/>
-                                        <div class="input-group-append">
-                                            <span class="input-group-text" v-if="good.price_type">/{:getSetting('weight_unit')}</span>
-                                            <span class="input-group-text" v-else>/{{good.unit}}</span>
+                                        <div class="input-group-middle">
+                                            <span class="input-group-text" >/</span>
                                         </div>
+                                        <select v-model="good.price_type" @change="updateRow(idx)" class="form-control">
+                                            <option :value="0">{{good.unit}}</option>
+                                            <option :value="1">{:getSetting('weight_unit')}</option>
+                                        </select>
                                     </div>
                                 </td>
-                                <td>{{good.total_price}} </td>
+                                <td>
+                                    <div class="input-group input-group-sm" v-if="good.diy_price">
+                                        <input type="text" v-model="good.total_price" @change="totalPrice" class="form-control" />
+                                        <div class="input-group-append">
+                                            <a href="javascript:" class="btn btn-outline-primary" @click="changePricetype(idx,0)" title="自动计算"><i class="ion-md-undo"></i> </a>
+                                        </div>
+                                    </div>
+                                    <div v-else>
+                                        {{good.total_price}}
+                                        <a href="javascript:" @click="changePricetype(idx,1)" title="改价"><i class="ion-md-create"></i> </a>
+                                    </div>
+                                </td>
                                 <td>
                                     <select class="form-control" v-model="good.storage_id">
                                         <option :value="0">请选择仓库</option>
                                         <option v-for="storage in storages" :key="storage.id" :value="storage.id">[{{storage.storage_no}}]{{storage.title}}</option>
                                     </select>
                                 </td>
-                                <td><a href="javascript:" class="btn btn-outline-primary" @click="delGoods(idx)">删除</a> </td>
+                                <td class="operations"><a href="javascript:" class="btn btn-sm btn-outline-danger" title="删除" @click="delGoods(idx)"><i class="ion-md-close "></i> </a> </td>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -122,19 +136,30 @@
                             <td>{{total.count}}</td>
                             <td></td>
                             <td></td>
-                            <td>{{total.price}}</td>
+                            <td>
+                                <div class="input-group input-group-sm" v-if="order.diy_price">
+                                    <input type="text" v-model="total.price" class="form-control" />
+                                    <div class="input-group-append">
+                                        <a href="javascript:" class="btn btn-outline-primary" @click="changeOrderPricetype(0)" title="自动计算"><i class="ion-md-undo"></i> </a>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    {{total.price}}
+                                    <a href="javascript:" @click="changeOrderPricetype(1)" title="改价"><i class="ion-md-create"></i> </a>
+                                </div>
+                            </td>
                             <td>
 
                             </td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td colspan="4">
+                            <td colspan="5">
                                 <a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-sm btn-addrow"><i class="ion-md-add"></i> 添加行</a>
                                 <a href="{:url('goods/importOrder')}" @click="importOrder" class="btn btn-outline-primary btn-sm btn-import"><i class="ion-md-cloud-upload"></i> 导入订单</a>
                             </td>
-                            <td colspan="4" class="text-right">
-                                <div class="input-group">
+                            <td colspan="3" class="text-right">
+                                <div class="input-group input-group-sm">
                                     <div class="input-group-prepend"><span class="input-group-text">运费</span></div>
                                     <input type="text" class="form-control" v-model="order.freight"/>
                                 </div>
@@ -229,6 +254,9 @@
                 $('.customer_date').datetimepicker(config);
 
                 this.initData();
+                if(this.order.diy_price){
+                    this.total.price = this.order.amount;
+                }
                 this.loadStorages();
             },
             methods:{
@@ -259,6 +287,7 @@
                             title:goods[i].goods_title,
                             orig_title:goods[i].goods_title,
                             storage_id:goods[i].storage_id,
+                            diy_price:goods[i].diy_price,
                             price_type:goods[i].price_type,
                             count:goods[i].count,
                             weight:goods[i].weight,
@@ -276,6 +305,7 @@
                         title:'',
                         orig_title:'',
                         storage_id:this.order.storage_id,
+                        diy_price:0,
                         count:'',
                         price_type:0,
                         unit:'',
@@ -316,17 +346,35 @@
                 },
                 updateRow:function (idx) {
                     var good = this.goods[idx];
-                    this.goods[idx].total_price=(good.price_type==1?(good.weight * good.price):(good.count * good.price)).format(2);
-                    this.totalPrice();
+                    if(good.diy_price==0) {
+                        this.goods[idx].total_price = (good.price_type == 1 ? (good.weight * good.price) : (good.count * good.price)).format(2);
+                        this.totalPrice();
+                    }
+                },
+                changePricetype:function (idx, type) {
+                    var good = this.goods[idx];
+                    this.goods[idx].diy_price=type;
+                    if(type==0){
+                        this.updateRow(idx);
+                    }
+                },
+                changeOrderPricetype:function (type) {
+
+                    this.order.diy_price=type;
+                    if(type==0){
+                        this.totalPrice();
+                    }
                 },
                 totalPrice:function () {
-                    this.total.count=0;
-                    this.total.price=0;
-                    for(var i=0;i<this.goods.length;i++){
-                        if(this.goods[i].count)this.total.count+=parseFloat(this.goods[i].count);
-                        if(this.goods[i].total_price)this.total.price+=parseFloat(this.goods[i].total_price);
+                    if(this.order.diy_price==0) {
+                        this.total.count = 0;
+                        this.total.price = 0;
+                        for (var i = 0; i < this.goods.length; i++) {
+                            if (this.goods[i].count) this.total.count += parseFloat(this.goods[i].count);
+                            if (this.goods[i].total_price) this.total.price += parseFloat(this.goods[i].total_price.toString().replace(',', ''));
+                        }
+                        this.total.price = this.total.price.format(2);
                     }
-                    this.total.price = this.total.price.format(2);
                 },
 
                 //============= goods autocomplete
@@ -615,7 +663,8 @@
                         dataType:'JSON',
                         data:{
                             order:this.order,
-                            goods:this.goods
+                            goods:this.goods,
+                            total:this.total
                         },
                         success:function (json) {
                             if(json.code==1){

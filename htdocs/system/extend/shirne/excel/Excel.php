@@ -153,10 +153,14 @@ class Excel {
     public function addRow($row){
         $i=0;
         foreach ($row as $key => $value) {
-            if(isset($this->columntype[$this->columnmap[$i]])){
-                $this->sheet->setCellValueExplicit($this->columnmap[$i].$this->rownum,$value,$this->columntype[$this->columnmap[$i]]);
-            }else{
-                $this->sheet->setCellValue($this->columnmap[$i].$this->rownum,$value);
+            if(is_array($value)){
+                $this->sheet->setCellValueExplicit($this->columnmap[$i] . $this->rownum, $value[0], $value[1]);
+            }else {
+                if (isset($this->columntype[$this->columnmap[$i]])) {
+                    $this->sheet->setCellValueExplicit($this->columnmap[$i] . $this->rownum, $value, $this->columntype[$this->columnmap[$i]]);
+                } else {
+                    $this->sheet->setCellValue($this->columnmap[$i] . $this->rownum, $value);
+                }
             }
             $i++;
         }

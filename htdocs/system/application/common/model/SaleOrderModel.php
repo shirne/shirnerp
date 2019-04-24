@@ -10,7 +10,7 @@ class SaleOrderModel extends BaseModel
 {
     protected $autoWriteTimestamp = true;
 
-    public static function createOrder($order, $orderGoods)
+    public static function createOrder($order, $orderGoods, $total)
     {
         if(empty($order['order_no'])){
             $order['order_no']=self::create_no();
@@ -32,8 +32,13 @@ class SaleOrderModel extends BaseModel
             if(!$goods[$goods_id]) throw new Exception('订单中商品未找到');
             $good['weight']=intval($good['weight']);
             $good['count']=intval($good['count']);
-            $amount = $good['price_type']==1?($good['weight'] * $good['price']):($good['count'] * $good['price']);
-            $total_price +=  $amount;
+            if($good['diy_price']==1){
+                $amount = tonumber($good['total_price']);
+            }else {
+                $amount = $good['price_type'] == 1 ? ($good['weight'] * $good['price']) : ($good['count'] * $good['price']);
+            }
+            $total_price += $amount;
+
             $rows[] = [
                 'goods_id'=>$goods_id,
                 'goods_title'=>$goods[$goods_id]['title'],
@@ -51,7 +56,15 @@ class SaleOrderModel extends BaseModel
         }
 
         $model = new static();
-        $order['amount']=$total_price + $order['freight'];
+        $total['price'] = tonumber($total['price']);
+        if($order['diy_price']==1) {
+            $order['amount'] = $total['price'];
+        }else{
+            $order['amount'] = $total_price + $order['freight'];
+            if($order['amount'] !== $total['price']){
+                throw new Exception('订单总价计算错误：'.$total['price'].',计算总价:'.$order['amount']);
+            }
+        }
         $order['base_amount']=CurrencyModel::exchange($order['amount'],$order['currency']);
         if($model->allowField(true)->save($order)) {
             foreach ($rows as &$row) {
@@ -68,7 +81,7 @@ class SaleOrderModel extends BaseModel
         return false;
     }
 
-    public function updateOrder($goods, $order){
+    public function updateOrder($goods, $order, $total){
         if($this->status != 0){
             throw new Exception('订单已提交，不能修改');
         }
@@ -82,8 +95,13 @@ class SaleOrderModel extends BaseModel
         foreach ($goods as $good) {
             $good['weight']=intval($good['weight']);
             $good['count']=intval($good['count']);
-            $amount = $good['price_type']==1?($good['weight'] * $good['price']):($good['count'] * $good['price']);
-            $total_price+=$amount;
+            if($good['diy_price']==1){
+                $amount = tonumber($good['total_price']);
+            }else {
+                $amount = $good['price_type']==1?($good['weight'] * $good['price']):($good['count'] * $good['price']);
+            }
+            $total_price += $amount;
+
             $row = [
                 'goods_id'=>$good['goods_id'],
                 'goods_title'=>$good['title'],
@@ -108,7 +126,14 @@ class SaleOrderModel extends BaseModel
             }
         }
 
-        $order['amount']=$total_price + intval($order['freight']);
+        if($order['diy_price']==1) {
+            $order['amount'] = tonumber($total['price']);
+        }else {
+            $order['amount'] = $total_price + intval($order['freight']);
+            if($order['amount'] !== $total['price']){
+                throw new Exception('订单总价计算错误：'.$total['price'].',计算总价:'.$order['amount']);
+            }
+        }
         $order['base_amount']=CurrencyModel::exchange($order['amount'],$order['currency']);
         if($order['status']){
             $order['confirm_time']=$time;

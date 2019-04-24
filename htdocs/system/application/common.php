@@ -254,6 +254,10 @@ function showmoney($amount){
     return number_format(round($amount/100,2),2);
 }
 
+function tonumber($money){
+    return floatval(str_replace([',',' '],'',$money));
+}
+
 /**
  * 显示卡号
  * @param $cardno

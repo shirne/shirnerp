@@ -56,7 +56,8 @@ class SaleOrderController extends BaseController
         if($this->request->isPost()){
             $order = $this->request->put('order');
             $goods = $this->request->put('goods');
-            $result = SaleOrderModel::createOrder($order,$goods);
+            $total = $this->request->put('total');
+            $result = SaleOrderModel::createOrder($order,$goods,$total);
             if($result){
                 $this->success('开单成功！');
             }else{
@@ -132,9 +133,10 @@ class SaleOrderController extends BaseController
             }
             $goods = $this->request->put('goods');
             $order = $this->request->put('order');
+            $total = $this->request->put('total');
 
             $url = url('detail',['id'=>$id,'mode'=>$mode]);
-            $model->updateOrder($goods,$order);
+            $model->updateOrder($goods,$order,$total);
             if($order['status'] == 1) {
                 $url = url('index');
             }
@@ -190,17 +192,38 @@ class SaleOrderController extends BaseController
         $style->getFont()->setBold(true);
         $excel->getSheet()->duplicateStyle($style,'B3:H3');
 
-        $excel->setColumnType('B',DataType::TYPE_STRING);
-        $excel->setColumnType('D',DataType::TYPE_STRING);
+        //$excel->setColumnType('B',DataType::TYPE_STRING);
+        //$excel->setColumnType('D',DataType::TYPE_STRING);
         $excel->setColumnType('F',DataType::TYPE_FORMULA);
-
+        $firstrow=0;
         foreach ($goods as $row){
             $rownum = $excel->getRownum();
+            if(!$firstrow)$firstrow=$rownum;
+            if($row['diy_price']==1){
+                $subtotal = $row['amount'];
+            }else {
+                $subtotal = $row['price_type']=='1'?"=D{$rownum}*E{$rownum}":"=B{$rownum}*E{$rownum}";
+            }
             $excel->addRow(array(
                 $row['goods_title'],$row['count'],$row['goods_unit'],
-                $row['weight'],$row['price'],$row['price_type']=='1'?"=D{$rownum}*E{$rownum}":"=B{$rownum}*E{$rownum}",$row['storage_title'],''
+                $row['weight'],$row['price'],
+                $subtotal,
+                $row['storage_title'],''
             ));
         }
+        $rownum = $excel->getRownum()-1;
+        if($model['diy_price']==1){
+            $total = $model['amount'];
+        }else {
+            $total = "=SUM(F{$firstrow}:F{$rownum})";
+        }
+
+        $excel->addRow(array(
+            '',["=SUM(B{$firstrow}:B{$rownum})",DataType::TYPE_FORMULA],'',
+            ["=SUM(D{$firstrow}:D{$rownum})",DataType::TYPE_FORMULA],'',
+            $total,
+            '',''
+        ));
 
         $excel->output('订单['.$model['order_no'].']');
     }

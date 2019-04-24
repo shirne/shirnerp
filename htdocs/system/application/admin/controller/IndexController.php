@@ -85,7 +85,7 @@ class IndexController extends BaseController{
         $purchaseFinance = Db::name('purchaseOrder')
             ->where('delete_time',0)
             ->whereExp('amount',' > payed_amount')
-            ->field('sum(amount - payed_amount) as unpayed_amount,date_format(from_unixtime(create_time),'.$format. ') as awdate')
+            ->field('sum(amount - payed_amount) as unpayed_amount,currency,date_format(from_unixtime(create_time),'.$format. ') as awdate')
             ->group('awdate,currency')
             ->select();
         $finance['purchases']=[

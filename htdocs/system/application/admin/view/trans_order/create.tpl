@@ -58,11 +58,13 @@
                         </thead>
                         <tbody>
                             <tr v-for="(good,idx) in goods" :key="idx">
-                                <td><input type="text" class="form-control" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
+                                <td><input type="text" class="form-control form-control-sm" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
                                 <td>{{good.storage}}</td>
-                                <td class="counttd"><input type="text" class="form-control" v-model="good.count"/> </td>
+                                <td class="counttd"><input type="text" class="form-control form-control-sm" v-model="good.count"/> </td>
                                 <td>{{good.unit}} </td>
-                                <td><a href="javascript:" class="btn btn-outline-primary" @click="delGoods(idx)">删除</a> </td>
+                                <td class="operations">
+                                    <a href="javascript:" class="btn btn-sm btn-outline-danger" @click="delGoods(idx)" title="删除"><i class="ion-md-close"></i> </a>
+                                </td>
                             </tr>
                         </tbody>
                         <tfoot>

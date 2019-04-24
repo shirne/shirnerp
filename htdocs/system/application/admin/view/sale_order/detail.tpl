@@ -33,10 +33,11 @@
                     <tr>
                         <td><span class="badge badge-success">{$p.goods_no}</span> {$p.goods_title}</td>
                         <td>{$p.count}</td>
-                        <td>{$p.unit}</td>
+                        <td>{$p.goods_unit}</td>
                         <td>{$p.weight}</td>
-                        <td>{$p.price}/{$p['price_type']?getSetting('weight_unit'):$p['unit']}</td>
-                        <td>{$p.total_price}</td>
+                        <td>{$p.price}/{$p['price_type']?getSetting('weight_unit'):$p['goods_unit']}</td>
+                        <td>{$p.amount}<if condition="$p['diy_price']"><span class="badge badge-secondary">已改价</span></if>
+                        </td>
                         <td>{$p.storage_title}</td>
                     </tr>
                 </volist>
@@ -57,6 +58,7 @@
                 <th >订单金额</th>
                 <td>
                     <span class="badge badge-info">{$model.currency}</span> {$model.amount}
+                    <if condition="$model['diy_price']"><span class="badge badge-secondary">已改价</span></if>
                 </td>
                 <th>已付款</th>
                 <td colspan="3">
