@@ -618,7 +618,7 @@
                         return false;
                     }
                     if(!this.order.supplier_id){
-                        dialog.error('请选择客户');
+                        dialog.error('请选择供应商');
                         return false;
                     }
                     var self=this;

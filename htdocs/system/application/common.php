@@ -258,6 +258,14 @@ function tonumber($money){
     return floatval(str_replace([',',' '],'',$money));
 }
 
+function transsymbol($number, $symbol){
+    if($symbol=='+' || $symbol==1){
+        return abs($number);
+    }else{
+        return -abs($number);
+    }
+}
+
 /**
  * 显示卡号
  * @param $cardno

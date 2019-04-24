@@ -118,6 +118,39 @@ class SaleOrderController extends BaseController
     }
 
     /**
+     * 退货
+     * @param $id
+     * @return mixed
+     */
+    public function back($id){
+        $model=Db::name('saleOrder')->where('id',$id)->find();
+        if(empty($model))$this->error('订单不存在');
+        if($this->request->isPost()){
+            $order = $this->request->put('order');
+            $goods = $this->request->put('goods');
+            $total = $this->request->put('total');
+            $result = SaleOrderModel::createOrder($order,$goods,$total);
+            if($result){
+                $this->success('开单成功！');
+            }else{
+                $this->error('开单失败');
+            }
+        }
+        $customer=Db::name('customer')->find($model['customer_id']);
+        $goods = Db::view('saleOrderGoods','*')
+            ->view('storage',['title'=>'storage_title'],'storage.id=saleOrderGoods.storage_id','LEFT')
+            ->where('sale_order_id',  $id)
+            ->order('saleOrderGoods.id ASC')->select();
+
+        $this->assign('model',$model);
+        $this->assign('customer',$customer);
+        $this->assign('goods',$goods);
+        $this->assign('currencies',getCurrencies());
+
+        return $this->fetch();
+    }
+
+    /**
      * 订单详情
      * @param $id
      * @param $mode
@@ -155,7 +188,7 @@ class SaleOrderController extends BaseController
         if($mode==0) {
             $this->assign('paylog', Db::name('financeLog')->where('type', 'sale')->where('order_id', $id)->select());
         }
-        return $mode?$this->fetch($mode==2?'edit':'print_one'):$this->fetch();
+        return $mode?$this->fetch($mode==2?($model['parent_order_id']?'back_edit':'edit'):'print_one'):$this->fetch();
     }
 
     public function exportOne($id){

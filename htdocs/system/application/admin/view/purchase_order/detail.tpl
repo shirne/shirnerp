@@ -4,7 +4,7 @@
             <tbody>
             <tr>
                 <td>订单号</td>
-                <td>{$model.order_no}</td>
+                <td>{$model.order_no}<if condition="$model['parent_order_id']"><span class="badge badge-warning">退货</span> </if></td>
                 <td>供应商</td>
                 <td>[{$supplier.id}]{$supplier.title}</td>
             </tr>

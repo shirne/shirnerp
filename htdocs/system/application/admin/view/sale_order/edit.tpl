@@ -669,7 +669,10 @@
                         success:function (json) {
                             if(json.code==1){
                                 dialog.success('开单成功！');
-                                location.reload();
+                                setTimeout(function () {
+                                    if(json.url)location.href=json.url;
+                                    else location.reload();
+                                },1000)
                             }else{
                                 dialog.error(json.msg);
                             }

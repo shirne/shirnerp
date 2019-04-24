@@ -157,7 +157,8 @@ class PurchaseOrderController extends BaseController
         if($mode==0) {
             $this->assign('paylog', Db::name('financeLog')->where('type', 'purchase')->where('order_id', $id)->select());
         }
-        return $mode?$this->fetch($mode==2?'edit':'print_one'):$this->fetch();
+
+        return $mode?$this->fetch($mode==2?($model['parent_order_id']?'back_edit':'edit'):'print_one'):$this->fetch();
     }
 
     /**
@@ -169,8 +170,15 @@ class PurchaseOrderController extends BaseController
         $model=Db::name('purchaseOrder')->where('id',$id)->find();
         if(empty($model))$this->error('订单不存在');
         if($this->request->isPost()){
-            //编辑订单
-
+            $order = $this->request->put('order');
+            $goods = $this->request->put('goods');
+            $total = $this->request->put('total');
+            $result = PurchaseOrderModel::createOrder($order,$goods,$total);
+            if($result){
+                $this->success('开单成功！');
+            }else{
+                $this->error('开单失败');
+            }
         }
         $supplier=Db::name('supplier')->find($model['supplier_id']);
         $goods = Db::view('purchaseOrderGoods','*')

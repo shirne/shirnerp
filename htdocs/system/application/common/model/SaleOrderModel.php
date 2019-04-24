@@ -20,6 +20,7 @@ class SaleOrderModel extends BaseModel
         }else{
             $order['customer_time']=0;
         }
+        $isback = $order['parent_order_id']>0;
 
         $rows = [];
         $total_price=0;
@@ -30,10 +31,10 @@ class SaleOrderModel extends BaseModel
             if(!$good['goods_id'])continue;
             $goods_id=$good['goods_id'];
             if(!$goods[$goods_id]) throw new Exception('订单中商品未找到');
-            $good['weight']=intval($good['weight']);
-            $good['count']=intval($good['count']);
+            $good['weight']=transsymbol(tonumber($good['weight']),$isback);
+            $good['count']=transsymbol(tonumber($good['count']),$isback);
             if($good['diy_price']==1){
-                $amount = tonumber($good['total_price']);
+                $amount = transsymbol(tonumber($good['total_price']),$isback);
             }else {
                 $amount = $good['price_type'] == 1 ? ($good['weight'] * $good['price']) : ($good['count'] * $good['price']);
             }
@@ -56,7 +57,7 @@ class SaleOrderModel extends BaseModel
         }
 
         $model = new static();
-        $total['price'] = tonumber($total['price']);
+        $total['price'] = transsymbol(tonumber($total['price']),$isback);
         if($order['diy_price']==1) {
             $order['amount'] = $total['price'];
         }else{
@@ -85,6 +86,7 @@ class SaleOrderModel extends BaseModel
         if($this->status != 0){
             throw new Exception('订单已提交，不能修改');
         }
+        $isback = $order['parent_order_id']>0;
 
         $igoods_ids = array_column($goods,'id');
         Db::name('saleOrderGoods')->whereNotIn('id', $igoods_ids)
@@ -93,10 +95,10 @@ class SaleOrderModel extends BaseModel
         $time = time();
         $total_price=0;
         foreach ($goods as $good) {
-            $good['weight']=intval($good['weight']);
-            $good['count']=intval($good['count']);
+            $good['weight']=transsymbol(tonumber($good['weight']),$isback);
+            $good['count']=transsymbol(tonumber($good['count']),$isback);
             if($good['diy_price']==1){
-                $amount = tonumber($good['total_price']);
+                $amount = transsymbol(tonumber($good['total_price']),$isback);
             }else {
                 $amount = $good['price_type']==1?($good['weight'] * $good['price']):($good['count'] * $good['price']);
             }
@@ -126,8 +128,9 @@ class SaleOrderModel extends BaseModel
             }
         }
 
+        $total['price']=transsymbol(tonumber($total['price']),$isback);
         if($order['diy_price']==1) {
-            $order['amount'] = tonumber($total['price']);
+            $order['amount'] = $total['price'];
         }else {
             $order['amount'] = $total_price + intval($order['freight']);
             if($order['amount'] !== $total['price']){

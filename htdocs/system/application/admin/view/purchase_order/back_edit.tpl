@@ -2,10 +2,10 @@
 
 <block name="body">
 
-    <include file="public/bread" menu="purchase_order_index" title="采购入库" />
+    <include file="public/bread" menu="purchase_order_index" title="采购退货" />
 
     <div id="page-wrapper">
-        <div class="page-header">采购入库</div>
+        <div class="page-header">采购退货</div>
         <div class="page-content">
             <form method="post" action="" enctype="multipart/form-data" @submit="onSubmit">
                 <div class="card">
@@ -14,7 +14,7 @@
                             <div class="col-6 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">供应商</span></div>
-                                    <input type="text" class="form-control" @focus="showSupplier" @blur="hideSupplier" v-model="cKey"/>
+                                    <span class="form-control" >{$supplier.title}</span>
                                 </div>
                             </div>
                             <div class="col-3 mt-3">
@@ -26,7 +26,7 @@
                             <div class="col-3 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">单号</span></div>
-                                    <input type="text" class="form-control" placeholder="不填写将由系统自动生成" name="order_no" v-model="order.order_no"/>
+                                    <span class="form-control">{{order.order_no}}</span>
                                 </div>
                             </div>
                         </div>
@@ -55,8 +55,8 @@
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">状态</span></div>
                                     <select name="status" class="form-control" v-model="order.status">
-                                        <option :value="0" >待入库</option>
-                                        <option :value="1" >已入库</option>
+                                        <option :value="0" >待出库</option>
+                                        <option :value="1" >已出库</option>
                                     </select>
                                 </div>
                             </div>
@@ -164,11 +164,6 @@
                 [{{good.goods_no}}]{{good.title}}
             </li>
         </ul>
-        <ul class="list-group auto-complete supplier-complete" :style="supplierStyle">
-            <li class="list-group-item" v-for="(supplier,idx) in suppliers" :data-idx="idx" :key="supplier.id" @click="selectThisSupplier" @mouseenter="activeThisSupplier">
-                [{{supplier.id}}]{{supplier.title}}
-            </li>
-        </ul>
     </div>
 </block>
 <block name="script">
@@ -188,24 +183,7 @@
                     top:0,
                     width:0
                 },
-                supplierStyle:{
-                    display:'none',
-                    position:'absolute',
-                    left:0,
-                    top:0,
-                    width:0
-                },
-                order:{
-                    supplier_id:0,
-                    storage_id:0,
-                    currency:"{:current($currencies)['key']}",
-                    status:0,
-                    diy_price:0,
-                    order_no:'',
-                    freight:0,
-                    supplier_order_no:''
-                },
-                cKey:'',
+                order:{$model|json_encode|raw},
                 suppliers:[],
                 storages:[],
                 emptyGoods:[],
@@ -222,13 +200,13 @@
                     this.listGoods=[];
                     this.emptyGoods=[];
                     this.updateStorage();
-                },
-                cKey:function (val, oVal) {
-                    this.getSupplierList();
                 }
             },
             mounted:function(){
-                this.addRow();
+                this.initData();
+                if(this.order.diy_price){
+                    this.total.price = this.order.amount;
+                }
                 this.loadStorages();
             },
             methods:{
@@ -248,6 +226,27 @@
                         }
                     })
                 },
+                initData:function () {
+                    var supplier={$supplier|json_encode|raw};
+                    var goods={$goods|json_encode|raw};
+                    for(var i=0;i<goods.length;i++){
+                        this.goods.push({
+                            id:goods[i].id,
+                            goods_id:goods[i].goods_id,
+                            title:goods[i].goods_title,
+                            orig_title:goods[i].goods_title,
+                            diy_price:goods[i].diy_price,
+                            price_type:goods[i].price_type,
+                            count:goods[i].count,
+                            weight:goods[i].weight,
+                            unit:goods[i].goods_unit,
+                            price:goods[i].price,
+                            total_price:goods[i].amount
+                        });
+                    }
+                    this.updateStorage();
+                    this.totalPrice();
+                },
                 addRow:function(){
                     this.goods.push({
                         id:0,
@@ -255,7 +254,7 @@
                         title:'',
                         orig_title:'',
                         count:'',
-                        unit:'单位',
+                        unit:'',
                         diy_price:0,
                         price_type:0,
                         weight:0,
@@ -297,8 +296,8 @@
                     var good = this.goods[idx];
                     if(good.diy_price==0) {
                         this.goods[idx].total_price = (good.price_type == 1 ? (good.weight * good.price) : (good.count * good.price)).format(2);
+                        this.totalPrice();
                     }
-                    this.totalPrice();
                 },
                 changePricetype:function (idx, type) {
                     var good = this.goods[idx];
@@ -490,108 +489,6 @@
                     });
                 },
 
-                //====================== supplier autocomplete
-                showSupplier:function (e) {
-                    clearTimeout(hideSupplierTimeout);
-                    var target=e.target;
-                    var offset=$(target).offset();
-                    var width=$(target).outerWidth();
-                    var height=$(target).outerHeight();
-                    this.supplierStyle.top=(offset.top+height)+'px';
-                    this.supplierStyle.left=offset.left+'px';
-                    this.supplierStyle.width=width+'px';
-                    this.supplierStyle.display='block';
-                    //this.cKey = $(e.target).val();
-                    $(document.body).on('keyup',this.listenSupplierKeyup);
-                    this.getSupplierList(e);
-                },
-                hideSupplier:function (e) {
-                    if(e){
-                        if(this.cKey != this.order.supplier_title) {
-                            this.cKey = this.order.supplier_title;
-                        }
-                    }
-                    var self=this;
-                    clearTimeout(hideSupplierTimeout);
-                    hideSupplierTimeout=setTimeout(function () {
-                        $(document.body).off('keyup',self.listenSupplierKeyup);
-                        self.supplierStyle.display='none';
-                    },500);
-                },
-                /*loadSupplier:function (e) {
-                    //var ckey = $(e.target).val();
-                    if(ckey == this.cKey)return;
-                    this.cKey = ckey;
-                    this.getSupplierList(e);
-                },*/
-                activeThisSupplier:function (e) {
-                    var self=$(e.target);
-                    var parent=self.parents('.list-group').eq(0);
-                    parent.find('.list-group-item').removeClass('hover');
-                    self.addClass('hover');
-                },
-                listenSupplierKeyup:function (e) {
-                    var lists=$('.supplier-complete .list-group-item');
-                    var idx=lists.index($('.supplier-complete .hover'));
-
-                    switch (e.keyCode){
-                        case 40://down
-                            if(idx < lists.length-1){
-                                idx++;
-                                lists.removeClass('hover').eq(idx).addClass('hover');
-                            }
-                            break;
-                        case 38://up
-                            if(idx > 0){
-                                idx--;
-                            }
-                            lists.removeClass('hover').eq(idx).addClass('hover');
-
-                            break;
-                        case 13://enter
-                            if(this.selectSupplier()) {
-                                this.hideSupplier();
-                            }
-                            break;
-                    }
-                },
-                selectThisSupplier:function (e) {
-                    if(this.selectSupplier()) {
-                        this.hideSupplier();
-                    }
-                },
-                selectSupplier:function () {
-                    var hover=$('.supplier-complete .hover');
-                    if(hover.length>0){
-                        var idx=hover.data('idx');
-                        var supplier = this.suppliers[idx];
-                        if(supplier){
-                            this.order.supplier_id=supplier.id;
-                            this.order.supplier_title=supplier.title;
-                            this.cKey = supplier.title;
-                            return true;
-                        }
-                    }
-                    return false;
-                },
-                getSupplierList:function (e) {
-                    var self=this;
-                    var ckey = this.cKey;
-
-                    $.ajax({
-                        url: '{:url("supplier/search")}',
-                        type: 'GET',
-                        dataType: 'JSON',
-                        data: {
-                            key: ckey
-                        },
-                        success: function (json) {
-                            if (json.code == 1) {
-                                self.suppliers = json.data;
-                            }
-                        }
-                    });
-                },
 
                 //======================
                 onSubmit:function(e){
@@ -599,10 +496,6 @@
                     if(this.ajaxing)return false;
                     if(!this.order.storage_id){
                         dialog.error('请选择仓库');
-                        return false;
-                    }
-                    if(!this.order.supplier_id){
-                        dialog.error('请选择供应商');
                         return false;
                     }
                     var self=this;
@@ -619,10 +512,11 @@
                         success:function (json) {
                             self.ajaxing=false;
                             if(json.code==1){
-                                dialog.success('开单成功！');
+                                dialog.success('保存成功！');
                                 setTimeout(function () {
-                                    location.href='{:url('index')}';
-                                },1000);
+                                    if(json.url)location.href=json.url;
+                                    else location.reload();
+                                },1000)
                             }else{
                                 dialog.error(json.msg);
                             }

@@ -49,27 +49,41 @@
             <volist name="lists" id="v" empty="$empty">
                 <tr>
                     <td><input type="checkbox" name="id" value="{$v.id}" /></td>
-                    <td>{$v.order_no}</td>
+                    <td>{$v.order_no}<if condition="$v['parent_order_id']"><span class="badge badge-warning">退货</span></if></td>
                     <td>{$v.storage_title}</td>
                     <td>{$v.customer_title}</td>
                     <td>{$v.create_time|showdate}</td>
                     <td><span class="badge badge-info">{$v.currency}</span> {$v.amount}</td>
                     <td>
+                        <if condition="$v['parent_order_id']">
+                            <if condition="$v['status'] EQ 1">
+                                <span class="badge badge-success">已入库</span>
+                                <else/>
+                                <span class="badge badge-warning">未入库</span>
+                            </if>
+                            <else/>
                         <if condition="$v['status'] EQ 1">
                             <span class="badge badge-success">已出库</span>
                             <else/>
                             <span class="badge badge-warning">未出库</span>
+                        </if>
                         </if>
                     </td>
                     <td class="operations">
                         <a class="btn btn-outline-primary" target="_blank" title="导出" href="{:url('saleOrder/exportOne',array('id'=>$v['id']))}" ><i class="ion-md-download"></i> </a>
                         <a class="btn btn-outline-primary" target="_blank" title="打印" href="{:url('saleOrder/detail',array('id'=>$v['id'],'is_print'=>1))}" ><i class="ion-md-print"></i> </a>
                         <if condition="$v['status'] EQ 0">
+                            <if condition="$v['parent_order_id']">
+                                <a class="btn btn-outline-success link-confirm" title="入库" data-confirm="请确认商品已入库，操作不可撤销!" href="{:url('saleOrder/status',array('id'=>$v['id'],'status'=>1))}" ><i class="ion-md-filing"></i> </a>
+                                <else/>
                             <a class="btn btn-outline-success link-confirm" title="出库" data-confirm="请确认商品已出库，操作不可撤销!" href="{:url('saleOrder/status',array('id'=>$v['id'],'status'=>1))}" ><i class="ion-md-filing"></i> </a>
+                            </if>
                             <a class="btn btn-outline-primary" title="编辑" href="{:url('saleOrder/detail',array('id'=>$v['id'],'mode'=>2))}" ><i class="ion-md-create"></i> </a>
                             <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('saleOrder/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
                             <else/>
-                            <a class="btn btn-outline-warning d-none" title="退货" href="{:url('purchaseOrder/back',array('id'=>$v['id']))}" ><i class="ion-md-undo"></i> </a>
+                            <if condition="$v['parent_order_id'] EQ 0">
+                            <a class="btn btn-outline-warning" title="退货" href="{:url('saleOrder/back',array('id'=>$v['id']))}" ><i class="ion-md-undo"></i> </a>
+                            </if>
                             <a class="btn btn-outline-primary link-detail" title="详情" href="{:url('saleOrder/detail',array('id'=>$v['id']))}" ><i class="ion-md-document"></i> </a>
                         </if>
                     </td>

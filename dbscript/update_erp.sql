@@ -188,8 +188,9 @@ DROP TABLE IF EXISTS `sa_purchase_order`;
 CREATE TABLE `sa_purchase_order` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `supplier_id` INT(11) NOT NULL,
-  `storage_id` INT(4) NOT NULL,
+  `storage_id` INT(11) NOT NULL,
   `order_no` VARCHAR(30) NOT NULL,
+  `parent_order_id` INT(11) NOT NULL,
   `supplier_order_no` VARCHAR(30) NOT NULL,
   `status` TINYINT(4) NOT NULL,
   `pay_status` TINYINT(4) DEFAULT '0',
@@ -264,6 +265,7 @@ CREATE TABLE `sa_sale_order` (
   `customer_id` INT(11) NOT NULL,
   `storage_id` INT(11) NOT NULL,
   `order_no` VARCHAR(30) NOT NULL,
+  `parent_order_id` INT(11) NOT NULL,
   `customer_order_no` VARCHAR(30) NOT NULL,
   `status` TINYINT(4) NOT NULL,
   `pay_status` TINYINT(4) DEFAULT '0',

@@ -657,7 +657,9 @@
                         success:function (json) {
                             if(json.code==1){
                                 dialog.success('开单成功！');
-                                location.reload();
+                                setTimeout(function () {
+                                    location.href='{:url('index')}';
+                                },1000);
                             }else{
                                 dialog.error(json.msg);
                             }

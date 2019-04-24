@@ -15,6 +15,7 @@ class PurchaseOrderModel extends BaseModel
         if(empty($order['order_no'])){
             $order['order_no']=self::create_no();
         }
+        $isback = $order['parent_order_id']>0;
 
         $rows = [];
         $total_price=0;
@@ -25,10 +26,10 @@ class PurchaseOrderModel extends BaseModel
             if(!$good['goods_id'])continue;
             $goods_id=$good['goods_id'];
             if(!$goods[$goods_id]) throw new Exception('订单中商品未找到');
-            $good['weight']=intval($good['weight']);
-            $good['count']=intval($good['count']);
+            $good['weight']=transsymbol(tonumber($good['weight']),$isback);
+            $good['count']=transsymbol(tonumber($good['count']),$isback);
             if($good['diy_price']==1){
-                $amount = tonumber($good['total_price']);
+                $amount = transsymbol(tonumber($good['total_price']),$isback);
             }else {
                 $amount = $good['price_type'] == 1 ? ($good['weight'] * $good['price']) : ($good['count'] * $good['price']);
             }
@@ -50,8 +51,9 @@ class PurchaseOrderModel extends BaseModel
         }
 
         $model = new static();
+        $total['price']=transsymbol(tonumber($total['price']),$isback);
         if($order['diy_price']==1) {
-            $order['amount'] = tonumber($total['price']);
+            $order['amount'] = $total['price'];
         }else {
             $order['amount'] = $total_price + $order['freight'];
             if($order['amount'] !== $total['price']){
@@ -79,6 +81,7 @@ class PurchaseOrderModel extends BaseModel
         if($this->status != 0){
             throw new Exception('订单已提交，不能修改');
         }
+        $isback = $order['parent_order_id']>0;
 
         $igoods_ids = array_column($goods,'id');
         Db::name('purchaseOrderGoods')->whereNotIn('id', $igoods_ids)
@@ -87,10 +90,10 @@ class PurchaseOrderModel extends BaseModel
         $time = time();
         $total_price=0;
         foreach ($goods as $good) {
-            $good['weight']=intval($good['weight']);
-            $good['count']=intval($good['count']);
+            $good['weight']=transsymbol(tonumber($good['weight']),$isback);
+            $good['count']=transsymbol(tonumber($good['count']),$isback);
             if($good['diy_price']==1){
-                $amount = tonumber($good['total_price']);
+                $amount = transsymbol(tonumber($good['total_price']),$isback);
             }else {
                 $amount = $good['price_type'] == 1 ? ($good['weight'] * $good['price']) : ($good['count'] * $good['price']);
             }
@@ -119,8 +122,9 @@ class PurchaseOrderModel extends BaseModel
             }
         }
 
+        $total['price']=transsymbol(tonumber($total['price']),$isback);
         if($order['diy_price']==1) {
-            $order['amount'] = tonumber($total['price']);
+            $order['amount'] = $total['price'];
         }else {
             $order['amount'] = $total_price + intval($order['freight']);
             if($order['amount'] !== $total['price']){
