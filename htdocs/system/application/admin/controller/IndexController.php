@@ -4,6 +4,8 @@ namespace app\admin\controller;
 
 use app\common\facade\CategoryFacade;
 use app\common\facade\GoodsCategoryFacade;
+use app\common\model\PurchaseOrderModel;
+use app\common\model\SaleOrderModel;
 use think\Db;
 use think\facade\Cache;
 use think\facade\Log;
@@ -38,73 +40,17 @@ class IndexController extends BaseController{
             ->select();
         $this->assign('storages',$storages);
 
-        $format="'%Y-%m-%d'";
+        $saleModel = new SaleOrderModel();
+        $purchaseModel = new PurchaseOrderModel();
 
-        $saleOrders = Db::name('saleOrder')
-            ->field('count(id) as order_count,sum(base_amount) as order_amount,date_format(from_unixtime(create_time),' . $format . ') as awdate')
-            ->where('create_time','GT',strtotime('today -6 days'))
-            ->where('delete_time',0)
-            ->group('awdate')->select();
-        $this->assign('saleOrders',$saleOrders);
+        $this->assign('saleOrders',$saleModel->getStatics());
 
-        $purchaseOrders = Db::name('purchaseOrder')
-            ->field('count(id) as order_count,sum(base_amount) as order_amount,date_format(from_unixtime(create_time),' . $format . ') as awdate')
-            ->where('create_time','GT',strtotime('today -6 days'))
-            ->where('delete_time',0)
-            ->group('awdate')->select();
-        $this->assign('purchaseOrders',$purchaseOrders);
+        $this->assign('purchaseOrders',$purchaseModel->getStatics());
 
-        //$format ="'%Y-%m'";
-        $last30day=strtotime('today -30 days');
-        $last90day=strtotime('today -90 days');
-
-        $saleFinance = Db::name('saleOrder')
-            ->where('delete_time',0)
-            ->whereExp('amount',' > payed_amount')
-            ->field('sum(amount - payed_amount) as unpayed_amount,currency,date_format(from_unixtime(create_time),'.$format. ') as awdate')
-            ->group('awdate,currency')
-            ->select();
-        $finance['sales']=[
-            'total'=>[],
-            'in30days'=>[],
-            'in90days'=>[],
-            'out90days'=>[]
-        ];
-        foreach ($saleFinance as $item){
-            $time = strtotime($item['awdate']);
-            $finance['sales']['total'][$item['currency']] += $item['unpayed_amount'];
-            if($time > $last30day){
-                $finance['sales']['in30days'][$item['currency']] += $item['unpayed_amount'];
-            }elseif($time > $last90day){
-                $finance['sales']['in90days'][$item['currency']] += $item['unpayed_amount'];
-            }else{
-                $finance['sales']['out90days'][$item['currency']] += $item['unpayed_amount'];
-            }
-        }
-
-        $purchaseFinance = Db::name('purchaseOrder')
-            ->where('delete_time',0)
-            ->whereExp('amount',' > payed_amount')
-            ->field('sum(amount - payed_amount) as unpayed_amount,currency,date_format(from_unixtime(create_time),'.$format. ') as awdate')
-            ->group('awdate,currency')
-            ->select();
-        $finance['purchases']=[
-            'total'=>[],
-            'in30days'=>[],
-            'in90days'=>[],
-            'out90days'=>[]
-        ];
-        foreach ($purchaseFinance as $item){
-            $time = strtotime($item['awdate']);
-            $finance['purchases']['total'][$item['currency']] += $item['unpayed_amount'];
-            if($time > $last30day){
-                $finance['purchases']['in30days'][$item['currency']] += $item['unpayed_amount'];
-            }elseif($time > $last90day){
-                $finance['purchases']['in90days'][$item['currency']] += $item['unpayed_amount'];
-            }else{
-                $finance['purchases']['out90days'][$item['currency']] += $item['unpayed_amount'];
-            }
-        }
+        $finance['sales']=$saleModel->getFinance();
+        $finance['sales_back']=$saleModel->getFinance(true);
+        $finance['purchases']=$purchaseModel->getFinance();
+        $finance['purchases_back']=$purchaseModel->getFinance(true);
 
         $this->assign('finance',$finance);
 

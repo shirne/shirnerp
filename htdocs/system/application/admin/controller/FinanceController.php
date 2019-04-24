@@ -11,57 +11,17 @@ use think\Db;
 class FinanceController extends BaseController
 {
     public function index(){
-        $format ="'%Y-%m-%d'";
-        $last30day=strtotime('today -30 days');
-        $last90day=strtotime('today -90 days');
+        $saleModel = new SaleOrderModel();
+        $purchaseModel = new PurchaseOrderModel();
 
-        $saleFinance = Db::name('saleOrder')
-            ->where('delete_time',0)
-            ->whereExp('amount',' > payed_amount')
-            ->field('sum(amount - payed_amount) as unpayed_amount,currency,date_format(from_unixtime(create_time),'.$format. ') as awdate')
-            ->group('awdate,currency')
-            ->select();
-        $finance['sales']=[
-            'total'=>[],
-            'in30days'=>[],
-            'in90days'=>[],
-            'out90days'=>[]
-        ];
-        foreach ($saleFinance as $item){
-            $time = strtotime($item['awdate']);
-            $finance['sales']['total'][$item['currency']] += $item['unpayed_amount'];
-            if($time > $last30day){
-                $finance['sales']['in30days'][$item['currency']] += $item['unpayed_amount'];
-            }elseif($time > $last90day){
-                $finance['sales']['in90days'][$item['currency']] += $item['unpayed_amount'];
-            }else{
-                $finance['sales']['out90days'][$item['currency']] += $item['unpayed_amount'];
-            }
-        }
+        $this->assign('saleOrders',$saleModel->getStatics());
 
-        $purchaseFinance = Db::name('purchaseOrder')
-            ->where('delete_time',0)
-            ->whereExp('amount',' > payed_amount')
-            ->field('sum(amount - payed_amount) as unpayed_amount,currency,date_format(from_unixtime(create_time),'.$format. ') as awdate')
-            ->group('awdate,currency')
-            ->select();
-        $finance['purchases']=[
-            'total'=>[],
-            'in30days'=>[],
-            'in90days'=>[],
-            'out90days'=>[]
-        ];
-        foreach ($purchaseFinance as $item){
-            $time = strtotime($item['awdate']);
-            $finance['purchases']['total'][$item['currency']] += $item['unpayed_amount'];
-            if($time > $last30day){
-                $finance['purchases']['in30days'][$item['currency']] += $item['unpayed_amount'];
-            }elseif($time > $last90day){
-                $finance['purchases']['in90days'][$item['currency']] += $item['unpayed_amount'];
-            }else{
-                $finance['purchases']['out90days'][$item['currency']] += $item['unpayed_amount'];
-            }
-        }
+        $this->assign('purchaseOrders',$purchaseModel->getStatics());
+
+        $finance['sales']=$saleModel->getFinance();
+        $finance['sales_back']=$saleModel->getFinance(true);
+        $finance['purchases']=$purchaseModel->getFinance();
+        $finance['purchases_back']=$purchaseModel->getFinance(true);
 
         $this->assign('finance',$finance);
         return $this->fetch();

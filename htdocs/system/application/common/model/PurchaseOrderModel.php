@@ -6,7 +6,7 @@ namespace app\common\model;
 use think\Db;
 use think\Exception;
 
-class PurchaseOrderModel extends BaseModel
+class PurchaseOrderModel extends BaseFinanceModel
 {
     protected $autoWriteTimestamp = true;
 
