@@ -17,10 +17,10 @@
             <div class="card border-info">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-4">
                             <i class="ion-md-apps ion-5x"></i>
                         </div>
-                        <div class="col-6 text-right">
+                        <div class="col text-right">
                             <p class="announcement-heading">{$stat.goods}</p>
                             <p class="announcement-text">商品</p>
                         </div>
@@ -38,10 +38,10 @@
             <div class="card border-info">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-4">
                             <i class="ion-md-people ion-5x"></i>
                         </div>
-                        <div class="col-6 text-right">
+                        <div class="col text-right">
                             <p class="announcement-heading">{$stat.customer}</p>
                             <p class="announcement-text">客户</p>
                         </div>
@@ -59,10 +59,10 @@
             <div class="card border-info">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-4">
                             <i class="ion-md-contacts ion-5x"></i>
                         </div>
-                        <div class="col-6 text-right">
+                        <div class="col text-right">
                             <p class="announcement-heading">{$stat.supplier}</p>
                             <p class="announcement-text">供应商</p>
                         </div>
@@ -80,10 +80,10 @@
             <div class="card border-info">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-4">
                             <i class="ion-md-analytics ion-5x"></i>
                         </div>
-                        <div class="col-6 text-right">
+                        <div class="col text-right">
                             <p class="announcement-heading">{$stat.sale_order}</p>
                             <p class="announcement-text">销售</p>
                         </div>
@@ -92,7 +92,7 @@
                 <div class="card-footer announcement-bottom">
                     <nav class="nav nav-fill">
                         <a class="nav-item nav-link" href="{:url('saleOrder/index')}"><i class="ion-md-navicon"></i> 管理销售单 </a>
-                        <a class="nav-item nav-link" href="{:url('saleOrder/statics')}"><i class="ion-md-stats-bars"></i> 订单统计 </a>
+                        <a class="nav-item nav-link" href="{:url('saleOrder/create')}"><i class="ion-md-document"></i> 销售开单 </a>
                     </nav>
                 </div>
             </div>
@@ -105,7 +105,7 @@
             <div class="card border-default">
                 <div class="card-header">
                     <a href="{:url('saleOrder/create')}" class="float-right">销售开单</a>
-                    <h5 class="panel-title"><i class="ion-md-stats"></i> 销售</h5>
+                    <h5 class="panel-title"><i class="ion-md-stats"></i> 销售 <span class="text-muted">7日统计</span> </h5>
                 </div>
                 <table class="table table-striped">
                     <tr>
@@ -114,6 +114,28 @@
                         <th>销售金额</th>
                     </tr>
                     <volist name="saleOrders" id="order" empty="$empty">
+                        <tr>
+                            <td>{$order.awdate}</td>
+                            <td>{$order.order_count}</td>
+                            <td>{$order.order_amount}</td>
+                        </tr>
+                    </volist>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card border-default">
+                <div class="card-header">
+                    <a href="{:url('purchaseOrder/create')}" class="float-right">采购入库</a>
+                    <h5 class="panel-title"><i class="ion-md-cart"></i> 采购 <span class="text-muted">7日统计</span> </h5>
+                </div>
+                <table class="table table-striped">
+                    <tr>
+                        <th>日期</th>
+                        <th>采购单数</th>
+                        <th>采购金额</th>
+                    </tr>
+                    <volist name="purchaseOrders" id="order" empty="$empty">
                         <tr>
                             <td>{$order.awdate}</td>
                             <td>{$order.order_count}</td>
@@ -192,28 +214,7 @@
                 </table>
             </div>
         </div>
-        <div class="col-md-6 mb-3">
-            <div class="card border-default">
-                <div class="card-header">
-                    <a href="{:url('purchaseOrder/create')}" class="float-right">采购入库</a>
-                    <h5 class="panel-title"><i class="ion-md-cart"></i> 采购</h5>
-                </div>
-                <table class="table table-striped">
-                    <tr>
-                        <th>日期</th>
-                        <th>采购单数</th>
-                        <th>采购金额</th>
-                    </tr>
-                    <volist name="purchaseOrders" id="order" empty="$empty">
-                        <tr>
-                            <td>{$order.awdate}</td>
-                            <td>{$order.order_count}</td>
-                            <td>{$order.order_amount}</td>
-                        </tr>
-                    </volist>
-                </table>
-            </div>
-        </div>
+
     </div>
 
 </div>

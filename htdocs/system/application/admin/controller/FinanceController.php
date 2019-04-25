@@ -7,6 +7,7 @@ use app\common\model\FinanceLogModel;
 use app\common\model\PurchaseOrderModel;
 use app\common\model\SaleOrderModel;
 use think\Db;
+use think\Exception;
 
 class FinanceController extends BaseController
 {
@@ -33,9 +34,8 @@ class FinanceController extends BaseController
         }
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('saleOrder','*')
-            ->where('delete_time',0)
             ->view('customer',['title'=>'customer_title','short','phone','province','city','area'],'customer.id=saleOrder.customer_id','LEFT')
-            ->whereExp('saleOrder.amount',' > saleOrder.payed_amount')
+            ->where('saleOrder.payed_time',0)
             ->where('saleOrder.delete_time',0);
 
         if(!empty($key)){
@@ -75,13 +75,17 @@ class FinanceController extends BaseController
             $data['id']=intval($data['id']);
 
             $order = SaleOrderModel::get($data['id']);
-            if(!$order){
+            if(empty($order)){
                 $this->error('订单错误！');
             }
-            if($order['payed_amount']>=$order['amount']){
-                $this->error('订单款项已结完！');
+            try {
+
+                $result = FinanceLogModel::addLog('sale', $order, $data['amount'], $data['pay_type'], $data['remark']);
+            }catch (Exception $e){
+                $this->error($e->getMessage());
             }
-            if(FinanceLogModel::addLog('sale',$order,$data['amount'],$data['pay_type'],$data['remark'])){
+
+            if($result){
                 $this->success('入账成功！');
             }else{
                 $this->error('入账失败！');
@@ -97,9 +101,8 @@ class FinanceController extends BaseController
         }
         $key=empty($key)?"":base64_decode($key);
         $model=Db::view('purchaseOrder','*')
-            ->where('delete_time',0)
             ->view('supplier',['title'=>'supplier_title','phone','province','city','area'],'supplier.id=purchaseOrder.supplier_id','LEFT')
-            ->whereExp('purchaseOrder.amount',' > purchaseOrder.payed_amount')
+            ->where('purchaseOrder.payed_time',0)
             ->where('purchaseOrder.delete_time',0);
 
         if(!empty($key)){
@@ -142,16 +145,21 @@ class FinanceController extends BaseController
             if(!$order){
                 $this->error('订单错误！');
             }
-            if($order['payed_amount']>=$order['amount']){
-                $this->error('订单款项已结完！');
+
+            try {
+
+                $result = FinanceLogModel::addLog('purchase',$order,$data['amount'],$data['pay_type'],$data['remark']);
+            }catch (Exception $e){
+                $this->error($e->getMessage());
             }
-            if(FinanceLogModel::addLog('purchase',$order,$data['amount'],$data['pay_type'],$data['remark'])){
+
+            if($result){
                 $this->success('入账成功！');
             }else{
                 $this->error('入账失败！');
             }
-
         }
+
         $this->error('请求错误！');
     }
 

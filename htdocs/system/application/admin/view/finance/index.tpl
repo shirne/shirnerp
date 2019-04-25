@@ -24,6 +24,15 @@
                     <td> {$finance.sales.in90days|show_finance|raw} </td>
                     <td> {$finance.sales.out90days|show_finance|raw} </td>
                 </tr>
+                <if condition="!empty($finance['sales_back']['total'])">
+                    <tr>
+                        <td>销售退货</td>
+                        <td> {$finance.sales_back.total|show_finance|raw} </td>
+                        <td> {$finance.sales_back.in30days|show_finance|raw} </td>
+                        <td> {$finance.sales_back.in90days|show_finance|raw} </td>
+                        <td> {$finance.sales_back.out90days|show_finance|raw} </td>
+                    </tr>
+                </if>
                 <tr>
                     <td>应付账款</td>
                     <td> {$finance.purchases.total|show_finance|raw} </td>
@@ -31,6 +40,15 @@
                     <td> {$finance.purchases.in90days|show_finance|raw} </td>
                     <td> {$finance.purchases.out90days|show_finance|raw} </td>
                 </tr>
+                <if condition="!empty($finance['purchases_back']['total'])">
+                    <tr>
+                        <td>采购退货</td>
+                        <td> {$finance.purchases_back.total|show_finance|raw} </td>
+                        <td> {$finance.purchases_back.in30days|show_finance|raw} </td>
+                        <td> {$finance.purchases_back.in90days|show_finance|raw} </td>
+                        <td> {$finance.purchases_back.out90days|show_finance|raw} </td>
+                    </tr>
+                </if>
             </table>
         </div>
     </div>

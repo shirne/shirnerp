@@ -93,6 +93,7 @@
             if(window.stop_ajax){
                 setTimeout(func, 2000);
             }else {
+                return;
                 $.ajax('{:url("index/newcount")}', {
                     dataType: 'JSON',
                     type: 'POST',

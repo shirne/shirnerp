@@ -25,6 +25,7 @@
             <thead>
             <tr>
                 <th width="50">编号</th>
+                <th>单号</th>
                 <th>供应商</th>
                 <th>货币</th>
                 <th>应付</th>
@@ -39,6 +40,7 @@
             <volist name="lists" id="v" empty="$empty">
                 <tr>
                     <td>{$v.id}</td>
+                    <td>{$v.order_no}<if condition="$v['parent_order_id']"><span class="badge badge-warning">退货</span> </if></td>
                     <td>{$v.customer_title}</td>
                     <td>{$v.currency}</td>
                     <td>{$v.amount}</td>
