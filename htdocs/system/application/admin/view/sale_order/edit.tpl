@@ -2,10 +2,10 @@
 
 <block name="body">
 
-    <include file="public/bread" menu="sale_order_index" title="销售开单" />
+    <include file="public/bread" menu="sale_order_index" title="修改销售单" />
 
     <div id="page-wrapper">
-        <div class="page-header">销售开单</div>
+        <div class="page-header">修改销售单</div>
         <div class="page-content">
             <form method="post" action="" enctype="multipart/form-data" @submit="onSubmit">
                 <div class="card">

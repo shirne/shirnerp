@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use shirne\excel\Excel;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use think\Db;
+use think\Exception;
 
 class PurchaseOrderController extends BaseController
 {
@@ -57,7 +58,11 @@ class PurchaseOrderController extends BaseController
             $order = $this->request->put('order');
             $goods = $this->request->put('goods');
             $total = $this->request->put('total');
-            $result = PurchaseOrderModel::createOrder($order,$goods,$total);
+            try {
+                $result = PurchaseOrderModel::createOrder($order,$goods,$total);
+            }catch (Exception $e){
+                $this->error($e->getMessage());
+            }
             if($result){
                 $this->success('开单成功！');
             }else{
@@ -137,7 +142,11 @@ class PurchaseOrderController extends BaseController
             $total = $this->request->put('total');
 
             $url = url('detail',['id'=>$id,'mode'=>$mode]);
-            $model->updateOrder($goods,$order,$total);
+            try {
+                $model->updateOrder($goods, $order, $total);
+            }catch (Exception $e){
+                $this->error($e->getMessage());
+            }
             if($order['status'] == 1) {
                 $url = url('index');
             }
@@ -173,13 +182,18 @@ class PurchaseOrderController extends BaseController
             $order = $this->request->put('order');
             $goods = $this->request->put('goods');
             $total = $this->request->put('total');
-            $result = PurchaseOrderModel::createOrder($order,$goods,$total);
+            try{
+                $result = PurchaseOrderModel::createOrder($order,$goods,$total);
+            }catch (Exception $e){
+                $this->error($e->getMessage());
+            }
             if($result){
                 $this->success('开单成功！');
             }else{
                 $this->error('开单失败');
             }
         }
+
         $supplier=Db::name('supplier')->find($model['supplier_id']);
         $goods = Db::view('purchaseOrderGoods','*')
             ->view('storage',['title'=>'storage_title'],'storage.id=purchaseOrderGoods.storage_id','LEFT')

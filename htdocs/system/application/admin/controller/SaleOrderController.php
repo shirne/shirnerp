@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use shirne\excel\Excel;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use think\Db;
+use think\Exception;
 
 class SaleOrderController extends BaseController
 {
@@ -57,7 +58,11 @@ class SaleOrderController extends BaseController
             $order = $this->request->put('order');
             $goods = $this->request->put('goods');
             $total = $this->request->put('total');
-            $result = SaleOrderModel::createOrder($order,$goods,$total);
+            try{
+                $result = SaleOrderModel::createOrder($order,$goods,$total);
+            }catch (Exception $e){
+                $this->error($e->getMessage());
+            }
             if($result){
                 $this->success('开单成功！');
             }else{
@@ -129,7 +134,11 @@ class SaleOrderController extends BaseController
             $order = $this->request->put('order');
             $goods = $this->request->put('goods');
             $total = $this->request->put('total');
-            $result = SaleOrderModel::createOrder($order,$goods,$total);
+            try {
+                $result = SaleOrderModel::createOrder($order, $goods, $total);
+            }catch (Exception $e){
+                $this->error($e->getMessage());
+            }
             if($result){
                 $this->success('开单成功！');
             }else{
@@ -169,7 +178,11 @@ class SaleOrderController extends BaseController
             $total = $this->request->put('total');
 
             $url = url('detail',['id'=>$id,'mode'=>$mode]);
-            $model->updateOrder($goods,$order,$total);
+            try {
+                $model->updateOrder($goods, $order, $total);
+            }catch (Exception $e){
+                $this->error($e->getMessage());
+            }
             if($order['status'] == 1) {
                 $url = url('index');
             }
@@ -188,7 +201,7 @@ class SaleOrderController extends BaseController
         if($mode==0) {
             $this->assign('paylog', Db::name('financeLog')->where('type', 'sale')->where('order_id', $id)->select());
         }
-        return $mode?$this->fetch($mode==2?($model['parent_order_id']?'back_edit':'edit'):'print_one'):$this->fetch();
+        return $mode?$this->fetch($mode==2?($model['parent_order_id']>0?'back_edit':'edit'):'print_one'):$this->fetch();
     }
 
     public function exportOne($id){

@@ -26,10 +26,10 @@ class PurchaseOrderModel extends BaseFinanceModel
             if(!$good['goods_id'])continue;
             $goods_id=$good['goods_id'];
             if(!$goods[$goods_id]) throw new Exception('订单中商品未找到');
-            $good['weight']=transsymbol(tonumber($good['weight']),$isback);
-            $good['count']=transsymbol(tonumber($good['count']),$isback);
+            $good['weight']=transsymbol(tonumber($good['weight']),$isback?'-':'+');
+            $good['count']=transsymbol(tonumber($good['count']),$isback?'-':'+');
             if($good['diy_price']==1){
-                $amount = transsymbol(tonumber($good['total_price']),$isback);
+                $amount = transsymbol(tonumber($good['total_price']),$isback?'-':'+');
             }else {
                 $amount = $good['price_type'] == 1 ? ($good['weight'] * $good['price']) : ($good['count'] * $good['price']);
             }
@@ -51,15 +51,17 @@ class PurchaseOrderModel extends BaseFinanceModel
         }
 
         $model = new static();
-        $total['price']=transsymbol(tonumber($total['price']),$isback);
+        $order['freight']=transsymbol(tonumber($order['freight']),$isback?'-':'+');
+        $total['price']=transsymbol(tonumber($total['price']),$isback?'-':'+');
         if($order['diy_price']==1) {
             $order['amount'] = $total['price'];
         }else {
-            $order['amount'] = $total_price + $order['freight'];
+            $order['amount'] = $total_price;
             if($order['amount'] !== $total['price']){
                 throw new Exception('订单总价计算错误：'.$total['price'].',计算总价:'.$order['amount']);
             }
         }
+        $order['amount'] = $order['amount']+$order['freight'];
         $order['base_amount']=CurrencyModel::exchange($order['amount'],$order['currency']);
         if($model->allowField(true)->save($order)) {
             foreach ($rows as &$row) {
@@ -90,10 +92,10 @@ class PurchaseOrderModel extends BaseFinanceModel
         $time = time();
         $total_price=0;
         foreach ($goods as $good) {
-            $good['weight']=transsymbol(tonumber($good['weight']),$isback);
-            $good['count']=transsymbol(tonumber($good['count']),$isback);
+            $good['weight']=transsymbol(tonumber($good['weight']),$isback?'-':'+');
+            $good['count']=transsymbol(tonumber($good['count']),$isback?'-':'+');
             if($good['diy_price']==1){
-                $amount = transsymbol(tonumber($good['total_price']),$isback);
+                $amount = transsymbol(tonumber($good['total_price']),$isback?'-':'+');
             }else {
                 $amount = $good['price_type'] == 1 ? ($good['weight'] * $good['price']) : ($good['count'] * $good['price']);
             }
@@ -122,15 +124,17 @@ class PurchaseOrderModel extends BaseFinanceModel
             }
         }
 
-        $total['price']=transsymbol(tonumber($total['price']),$isback);
+        $order['freight']=transsymbol(tonumber($order['freight']),$isback?'-':'+');
+        $total['price']=transsymbol(tonumber($total['price']),$isback?'-':'+');
         if($order['diy_price']==1) {
             $order['amount'] = $total['price'];
         }else {
-            $order['amount'] = $total_price + intval($order['freight']);
+            $order['amount'] = $total_price;
             if($order['amount'] !== $total['price']){
                 throw new Exception('订单总价计算错误：'.$total['price'].',计算总价:'.$order['amount']);
             }
         }
+        $order['amount'] = $order['amount'] + $order['freight'];
         $order['base_amount']=CurrencyModel::exchange($order['amount'],$order['currency']);
 
         if($order['status']){

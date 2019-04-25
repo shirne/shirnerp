@@ -543,7 +543,7 @@
                         },
                         success:function (json) {
                             if(json.code==1){
-                                dialog.success('开单成功！');
+                                dialog.success('编辑成功！');
                                 setTimeout(function () {
                                     if(json.url)location.href=json.url;
                                     else location.reload();

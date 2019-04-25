@@ -2,10 +2,10 @@
 
 <block name="body">
 
-    <include file="public/bread" menu="purchase_order_index" title="采购入库" />
+    <include file="public/bread" menu="purchase_order_index" title="修改采购单" />
 
     <div id="page-wrapper">
-        <div class="page-header">采购入库</div>
+        <div class="page-header">修改采购单</div>
         <div class="page-content">
             <form method="post" action="" enctype="multipart/form-data" @submit="onSubmit">
                 <div class="card">
