@@ -4,9 +4,85 @@ namespace app\common\model;
 
 
 use think\Db;
+use think\Exception;
 
 class BaseFinanceModel extends BaseModel
 {
+    public static function fixOrderDatas(&$order, &$goods, &$total)
+    {
+        $isback = $order['parent_order_id']>0;
+
+        $goods_ids=array_column($goods, 'goods_id');
+        $oGoods = Db::name('goods')->whereIn('id',$goods_ids)->select();
+        $oGoods = array_index($oGoods, 'id');
+
+        $units = getGoodsUnits();
+        $total_price=0;
+        foreach ($goods as $k=>&$good) {
+            if(!$good['goods_id']){
+                unset($goods[$k]);
+                continue;
+            }
+            $goods_id=$good['goods_id'];
+            if(!isset($oGoods[$goods_id])) throw new Exception('订单中商品未找到');
+
+
+            $good['goods_title']=$oGoods[$goods_id]['title'];
+            $good['goods_no']=$oGoods[$goods_id]['goods_no'];
+            $good['weight']=tonumber($good['weight']);
+            $good['count']=tonumber($good['count']);
+            $good['storage_id']=$good['storage_id']?:$order['storage_id'];
+
+            if(isset($good['unit']) && !isset($good['goods_unit'])){
+                $good['goods_unit']=$good['unit'];
+            }
+
+            if(!empty($good['goods_unit']) && isset($units[$good['goods_unit']])){
+                $unitData=$units[$good['goods_unit']];
+                if($unitData['weight_rate']){
+                    if(empty($good['count'])){
+                        if(!empty($good['weight'])){
+                            $good['count'] = $good['weight'] / $unitData['weight_rate'];
+                        }
+                    }else{
+                        if(empty($good['weight'])){
+                            $good['weight'] = $good['count'] * $unitData['weight_rate'];
+                        }
+                    }
+                }
+            }
+
+            $good['weight']=transsymbol($good['weight'],$isback?'-':'+');
+            $good['count']=transsymbol($good['count'],$isback?'-':'+');
+            $good['price']=tonumber($good['price']);
+            $good['base_price'] = CurrencyModel::exchange($good['price'],$order['currency']);
+
+            if($good['diy_price']==1){
+                $amount = transsymbol(tonumber($good['total_price']),$isback?'-':'+');
+            }else {
+                $amount = $good['price_type'] == 1 ? ($good['weight'] * $good['price']) : ($good['count'] * $good['price']);
+            }
+            $good['amount']=$amount;
+
+            $total_price += $amount;
+        }
+
+
+        $total['price']=transsymbol(tonumber($total['price']),$isback?'-':'+');
+        $order['freight'] = transsymbol(tonumber($order['freight']),$isback?'-':'+');
+        if($order['diy_price']==1) {
+            $order['amount'] = $total['price'];
+        }else {
+            $order['amount'] = $total_price;
+            if($order['amount'] !== $total['price']){
+                throw new Exception('订单总价计算错误：'.$total['price'].',计算总价:'.$order['amount']);
+            }
+        }
+
+        $order['amount'] = $order['amount'] + $order['freight'];
+        $order['base_amount']=CurrencyModel::exchange($order['amount'],$order['currency']);
+    }
+
     public function getStatics(){
         $format="'%Y-%m-%d'";
 

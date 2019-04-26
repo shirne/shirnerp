@@ -28,6 +28,24 @@ class FinanceController extends BaseController
         return $this->fetch();
     }
 
+    public function accounting($start_date='', $end_date='')
+    {
+        if(!empty($start_date) && !empty($end_date)){
+            $start_time=strtotime($start_date);
+            $end_time=strtotime($end_date);
+            if(empty($start_time) || empty($end_time)){
+                $this->error('日期参数错误');
+            }
+
+            $this->assign('finance',[]);
+        }else{
+            $this->assign('finance',[]);
+        }
+        $this->assign('start_date',$start_date);
+        $this->assign('end_date',$end_date);
+        return $this->fetch();
+    }
+
     public function receive($key='',$status=''){
         if($this->request->isPost()){
             return redirect(url('',['status'=>$status,'key'=>base64_encode($key)]));

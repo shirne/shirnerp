@@ -18,7 +18,7 @@
                             <th width="50">编号</th>
                             <th>单位</th>
                             <th>排序</th>
-                            <th>备注</th>
+                            <th>转换</th>
                             <th width="100">操作</th>
                         </tr>
                         </thead>
@@ -29,7 +29,7 @@
                                 <td>{$v.id}</td>
                                 <td>{$v.key}</td>
                                 <td>{$v.sort}</td>
-                                <td>{$v.description}</td>
+                                <td><if condition="$v['weight_rate'] NEQ 0">{$v.weight_rate}{:getSetting('weight_unit')}<else/>-</if></td>
                                 <td class="operations">
                                     <a class="btn btn-outline-primary unitEditBtn" data-id="{$v.id}" title="编辑" href="javascript:"><i class="ion-md-create"></i> </a>
                                     <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('data/unit_delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
@@ -95,6 +95,10 @@
     <script type="text/html" id="unitEdit">
         <div class="row" style="margin:0 10%;">
             <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">商品单位</span> </div><input type="text" name="key" class="form-control" placeholder="请填写商品单位"/> </div></div>
+            <div class="col-12 form-group">
+                <div class="input-group"><div class="input-group-prepend"><span class="input-group-text">重量转换</span> </div><input type="text" name="weight_rate" class="form-control" /> </div>
+                <div class="text-muted">非重量单位填写0。<br />1 当前单位 = 转换率 * {:getSetting('weight_unit')}</div>
+            </div>
             <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">单位说明</span> </div><input type="text" name="description" class="form-control" placeholder="请填写单位说明"/> </div> </div>
             <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">排序</span> </div><input type="text" name="sort" class="form-control" placeholder="请填写排序"/> </div> </div>
         </div>

@@ -8,7 +8,7 @@
 
         <div class="row list-header">
             <div class="col-6">
-
+                <h4>应收款</h4>
             </div>
             <div class="col-6">
                 <form action="{:url('finance/receive')}" method="post">

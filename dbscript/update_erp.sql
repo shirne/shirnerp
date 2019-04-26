@@ -6,7 +6,7 @@ CREATE TABLE `sa_currency` (
   `symbol` varchar(10) DEFAULT NULL COMMENT '币种符号',
   `icon` varchar(150) DEFAULT NULL COMMENT '图标',
   `is_base` tinyint(11) DEFAULT 0 COMMENT '基准货币',
-  `exchange_rate` DECIMAL(10,4) DEFAULT 1 COMMENT '汇率',
+  `exchange_rate` DECIMAL(18,8) DEFAULT 1 COMMENT '汇率',
   `sort` int(11) DEFAULT 0 COMMENT '排序',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`) USING BTREE
@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS `sa_currency_rate`;
 CREATE TABLE `sa_currency_rate` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `currency` varchar(20) DEFAULT NULL COMMENT '币种编码',
-  `exchange_rate` DECIMAL(10,4) DEFAULT 1 COMMENT '汇率',
+  `exchange_rate` DECIMAL(18,8) DEFAULT 1 COMMENT '汇率',
   `create_time` int(11) DEFAULT 0 COMMENT '时间',
   PRIMARY KEY (`id`),
   KEY `currency` (`currency`)
@@ -27,6 +27,7 @@ CREATE TABLE `sa_unit` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `key` varchar(10) DEFAULT NULL COMMENT '单位名称',
   `description` varchar(50) DEFAULT NULL COMMENT '单位说明',
+  `weight_rate` DECIMAL(18,8) DEFAULT 0 COMMENT '重量转换率',
   `sort` int(11) DEFAULT 0 COMMENT '排序',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`) USING BTREE

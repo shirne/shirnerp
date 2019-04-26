@@ -64,6 +64,7 @@ return array(
         'items'=>array(
             'index'=>'订单查看',
             'create'=>'采购下单',
+            'back'=>'采购退货',
             'export'=>'导出订单列表',
             'exportone'=>'导出订单',
             'detail'=>'订单查看/编辑',
@@ -86,6 +87,7 @@ return array(
         'items'=>array(
             'index'=>'订单查看',
             'create'=>'销售下单',
+            'back'=>'销售退货',
             'export'=>'导出订单列表',
             'exportone'=>'导出订单',
             'detail'=>'订单查看/编辑',
@@ -111,7 +113,9 @@ return array(
         'items'=>array(
             'index'=>'基础数据管理',
             'edit_unit'=>'编辑/添加单位',
+            'unit_delete'=>'单位删除',
             'edit_currency'=>'编辑/添加货币',
+            'currency_delete'=>'货币删除',
             'setBaseCurrency'=>'设置基准货币',
             'setCurrencyRate'=>'更新货币汇率'
         )

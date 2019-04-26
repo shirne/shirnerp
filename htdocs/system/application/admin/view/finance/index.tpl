@@ -5,6 +5,11 @@
     <include file="public/bread" menu="finance_index" title="客户财务" />
 
     <div id="page-wrapper">
+        <div class="row list-header">
+            <div class="col">
+                <a href="{:url('accounting')}" class="btn btn-outline-primary"><i class="ion-md-podium"></i> 成本核算</a>
+            </div>
+        </div>
         <div class="card border-default">
             <div class="card-header">
                 <h5 class="panel-title"><i class="ion-md-swap"></i> 资金</h5>
