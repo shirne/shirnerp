@@ -43,9 +43,9 @@ class IndexController extends BaseController{
         $saleModel = new SaleOrderModel();
         $purchaseModel = new PurchaseOrderModel();
 
-        $this->assign('saleOrders',$saleModel->getStatics());
+        $this->assign('saleOrders',$saleModel->getStatics(strtotime('today -6 days'),time()));
 
-        $this->assign('purchaseOrders',$purchaseModel->getStatics());
+        $this->assign('purchaseOrders',$purchaseModel->getStatics(strtotime('today -6 days'),time()));
 
         $finance['sales']=$saleModel->getFinance();
         $finance['sales_back']=$saleModel->getFinance(true);

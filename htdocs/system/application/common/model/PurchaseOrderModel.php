@@ -10,6 +10,27 @@ class PurchaseOrderModel extends BaseFinanceModel
 {
     protected $autoWriteTimestamp = true;
 
+    public static function getGoodsChanges($start_time, $storage_ids='')
+    {
+        $model= Db::name('purchaseOrderGoods')->alias('purchaseOrderGoods')
+            ->join('purchaseOrder purchaseOrder','purchaseOrder.id=purchaseOrderGoods.purchase_order_id','LEFT');
+
+        if(!empty($storage_ids)){
+            $model->whereIn('purchaseOrderGoods.storage_id',idArr($storage_ids));
+        }
+        if(is_array($start_time)){
+            $model->whereBetween('purchaseOrder.confirm_time',$start_time);
+        }else{
+            $model->where('purchaseOrder.confirm_time','GT',$start_time);
+        }
+        $datas =$model->where('purchaseOrder.status',1)
+            ->group('goods_id')
+            ->field('goods_id, sum(count) as count, sum(purchaseOrderGoods.base_amount) as total_amount, avg(base_price) as avg_price,min(base_price) as min_price,max(base_price) as max_price')
+            ->select();
+
+        return array_index($datas,'goods_id');
+    }
+
     public static function createOrder($order, $orderGoods, $total)
     {
         if(empty($order['order_no'])){

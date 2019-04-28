@@ -10,6 +10,24 @@ class StorageInventoryModel extends BaseModel
 {
     protected $autoWriteTimestamp = true;
 
+
+    public static function getGoodsChanges($start_time, $storage_ids='')
+    {
+        $model= Db::name('storageInventoryGoods')->alias('storageInventoryGoods')
+            ->join('storageInventory storageInventory','storageInventory.id=storageInventoryGoods.inventory_id','LEFT');
+
+        if(!empty($storage_ids)){
+            $model->whereIn('storageInventory.storage_id',idArr($storage_ids));
+        }
+        $datas =$model->where('storageInventory.status',1)
+            ->where('storageInventory.inventory_time','GT',$start_time)
+            ->group('goods_id')
+            ->field('goods_id, sum(new_count-count) as count')
+            ->select();
+
+        return array_index($datas,'goods_id');
+    }
+
     public static function createOrder($order, $orderGoods){
         if(empty($order['order_no'])){
             $order['order_no']=self::create_no();

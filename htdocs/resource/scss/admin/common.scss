@@ -460,6 +460,14 @@ table {
     white-space: nowrap;
   }
 
+  thead.multirow{
+    th{
+      vertical-align: middle;
+      padding: .25rem;
+      border: 1px solid #dee2e6;
+    }
+  }
+
   &.tablesorter thead tr th:hover {
     background-color: #f5f5f5;
   }

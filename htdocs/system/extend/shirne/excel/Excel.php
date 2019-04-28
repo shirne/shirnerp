@@ -5,10 +5,12 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
+define('OD_COLUMN_COUNT',26);
+
 class Excel {
 
     /**
-     * Excel5,Excel2007
+     * Xls,Xlsx
      */
     private $format;
 
@@ -29,18 +31,9 @@ class Excel {
         $this->excel=new Spreadsheet();
         $this->sheet=$this->excel->getActiveSheet();
         $this->rownum=1;
-        $this->columnmap=array();
-        $words='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $l=strlen($words);
-        for ($i=0; $i < $l; $i++) {
-            $this->columnmap[]=substr($words, $i, 1);
-        }
-        for ($i=0; $i < $l; $i++) {
-            for ($j=0; $j < $l; $j++) {
-                $this->columnmap[]=$this->columnmap[$i].$this->columnmap[$j];
-            }
-        }
-        $this->columntype=array();
+        $this->columnmap=[];
+        $this->init_colum();
+        $this->columntype=[];
     }
 
     public function load($file)
@@ -49,21 +42,40 @@ class Excel {
         $this->excel = $reader->load($file); // 文档名称
         $this->sheet = $this->excel->getActiveSheet();
     }
+
+    protected function init_colum()
+    {
+        $words='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $l=strlen($words);
+        for ($i=0; $i < $l; $i++) {
+            $this->columnmap[]=substr($words, $i, 1);
+        }
+    }
+
+    protected function extend_colum()
+    {
+        $l=OD_COLUMN_COUNT;
+        if(count($this->columnmap)>$l)return;
+        for ($i=0; $i < $l; $i++) {
+            for ($j=0; $j < $l; $j++) {
+                $this->columnmap[]=$this->columnmap[$i].$this->columnmap[$j];
+            }
+        }
+    }
+
     public function read($file='',$start=1,$limit=100,$maxcolumn=255){
         if(!empty($file)){
             $this->load($file);
         }
         $highestRow = $this->sheet->getHighestRow(); // 取得总行数
         $highestColumn = $this->sheet->getHighestColumn(); // 取得总列数
-
-        $hc=0;
-        foreach ($this->columnmap as $k=>$cm){
-            if($highestColumn==$cm){
-                $hc=$k;
-                break;
-            }
+        if(strlen($highestColumn)>1){
+            $this->extend_colum();
         }
-        if($hc>$maxcolumn)$hc=$maxcolumn;
+
+        $maxcolumnnum = array_index($this->columnmap,$highestColumn);
+
+        if($maxcolumnnum>$maxcolumn)$maxcolumnnum=$maxcolumn;
         $this->rowcount=$highestRow;
 
         if($highestRow>$start+$limit)$highestRow=$start+$limit;
@@ -72,7 +84,7 @@ class Excel {
         $data=array();
         for ($row = $start; $row <= $highestRow; $row++) {
             $datarow=array();
-            for ($column = 0; $column<=$hc; $column++) {
+            for ($column = 0; $column<=$maxcolumnnum; $column++) {
                 $datarow[$column] = $this->sheet->getCellByColumnAndRow($column, $row)->getValue();
             }
             $data[]=$datarow;
@@ -120,9 +132,22 @@ class Excel {
      */
     public function setColumnType($column,$type){
         if(is_numeric($column)){
+            if($column>OD_COLUMN_COUNT){
+                $this->extend_colum();
+            }
             $column=$this->columnmap[$column];
         }
         $this->columntype[$column]=$type;
+    }
+
+    public function setRowStyle($rownum)
+    {
+        $maxcolumn = $this->sheet->getHighestColumn();
+        if(strlen($maxcolumn)>1){
+            $this->extend_colum();
+        }
+        $maxcolumnnum = array_index($this->columnmap,$maxcolumn);
+        $this->sheet->getStyleByColumnAndRow(1,$rownum,$maxcolumnnum,$rownum);
     }
 
     public function setTitle($title){
@@ -143,6 +168,9 @@ class Excel {
      */
     public function setHeader($header=array()){
         $i=0;
+        if(count($header)>OD_COLUMN_COUNT){
+            $this->extend_colum();
+        }
         foreach ($header as $key => $value) {
             $this->sheet->setCellValueExplicit($this->columnmap[$i].$this->rownum,$value,DataType::TYPE_STRING);
             $i++;
@@ -152,6 +180,9 @@ class Excel {
 
     public function addRow($row){
         $i=0;
+        if(count($row)>OD_COLUMN_COUNT){
+            $this->extend_colum();
+        }
         foreach ($row as $key => $value) {
             if(is_array($value)){
                 $this->sheet->setCellValueExplicit($this->columnmap[$i] . $this->rownum, $value[0], $value[1]);
@@ -218,7 +249,7 @@ class Excel {
         Header("Content-type: application/vnd.ms-excel");
         Header("Accept-Ranges: bytes");
         Header("Accept-Length: ".$size);
-        Header("Content-Disposition: attachment; filename=" . $filename.'.'.($this->format=='Excel2007'?'xlsx':'xls'));
+        Header("Content-Disposition: attachment; filename=" . $filename.'.'.strtolower($this->format));
         // 输出文件内容
         echo fread($file,$size);
         fclose($file);

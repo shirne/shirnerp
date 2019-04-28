@@ -7,6 +7,16 @@ use think\Db;
 
 class StorageModel extends BaseModel
 {
+    public static function getGoods($storage_ids='')
+    {
+        $model = Db::name('goods')->alias('goods')
+            ->join('goodsStorage goodsStorage','goods.id=goodsStorage.goods_id','LEFT');
+        if(!empty($storage_ids)){
+            $model->whereIn('goodsStorage.storage_id',idArr($storage_ids));
+        }
+        return $model->group('goods.id')->field('goods.id,goods.title,sum(goodsStorage.count) as count')->select();
+    }
+
     /**
      *
      * @param $storage_id

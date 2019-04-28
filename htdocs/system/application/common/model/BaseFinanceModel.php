@@ -63,6 +63,7 @@ class BaseFinanceModel extends BaseModel
                 $amount = $good['price_type'] == 1 ? ($good['weight'] * $good['price']) : ($good['count'] * $good['price']);
             }
             $good['amount']=$amount;
+            $good['base_amount']=CurrencyModel::exchange($amount,$order['currency']);
 
             $total_price += $amount;
         }
@@ -83,15 +84,60 @@ class BaseFinanceModel extends BaseModel
         $order['base_amount']=CurrencyModel::exchange($order['amount'],$order['currency']);
     }
 
-    public function getStatics(){
+    public function getTotal($from_time, $to_time){
+
+        $datas = Db::name($this->name)
+            ->field('count(id) as order_count,sum(base_amount) as order_amount,sum(payed_amount) as order_payed_amount,currency')
+            ->whereBetween('confirm_time',[$from_time, $to_time])
+            ->where('parent_order_id','0')
+            ->group('currency')
+            ->select();
+
+        $data=[
+            'count'=>0,
+            'order_amount'=>0,
+            'order_payed_amount'=>0,
+            'back_count'=>0,
+            'back_amount'=>0,
+            'back_payed_amount'=>0
+        ];
+        foreach ($datas as $row){
+            $data['count'] += $row['order_count'];
+            $data['order_amount'] += $row['order_amount'];
+            $data['order_payed_amount'] += CurrencyModel::exchange($row['order_payed_amount'],$row['currency']);
+        }
+
+        $datas = Db::name($this->name)
+            ->field('count(id) as order_count,sum(base_amount) as order_amount,sum(payed_amount) as order_payed_amount,currency')
+            ->whereBetween('confirm_time',[$from_time, $to_time])
+            ->where('parent_order_id','GT','0')
+            ->group('currency')
+            ->select();
+        foreach ($datas as $row){
+            $data['back_count'] += $row['order_count'];
+            $data['back_amount'] += abs($row['order_amount']);
+            $data['back_payed_amount'] += CurrencyModel::exchange(abs($row['order_payed_amount']),$row['currency']);
+        }
+        return $data;
+    }
+
+    public function getStatics($from_time, $to_time,$type='day'){
         $format="'%Y-%m-%d'";
+        if($type == 'month'){
+            $format="'%Y-%m'";
+        }elseif($type=='week'){
+            $format="'%x-%v'";
+        }elseif($type=='year'){
+            $format="'%Y'";
+        }
 
         return Db::name($this->name)
             ->field('count(id) as order_count,sum(base_amount) as order_amount,date_format(from_unixtime(create_time),' . $format . ') as awdate')
-            ->where('create_time','GT',strtotime('today -6 days'))
+            ->whereBetween('create_time',[$from_time, $to_time])
             ->where('delete_time',0)
             ->group('awdate')->select();
     }
+
     public function getFinance($isBack=false){
         $format="'%Y-%m-%d'";
 

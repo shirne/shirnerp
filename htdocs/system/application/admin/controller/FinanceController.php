@@ -6,6 +6,9 @@ namespace app\admin\controller;
 use app\common\model\FinanceLogModel;
 use app\common\model\PurchaseOrderModel;
 use app\common\model\SaleOrderModel;
+use app\common\model\StorageInventoryModel;
+use app\common\model\StorageModel;
+use shirne\excel\Excel;
 use think\Db;
 use think\Exception;
 
@@ -15,9 +18,9 @@ class FinanceController extends BaseController
         $saleModel = new SaleOrderModel();
         $purchaseModel = new PurchaseOrderModel();
 
-        $this->assign('saleOrders',$saleModel->getStatics());
+        $this->assign('saleOrders',$saleModel->getStatics(strtotime('today -6 days'),time()));
 
-        $this->assign('purchaseOrders',$purchaseModel->getStatics());
+        $this->assign('purchaseOrders',$purchaseModel->getStatics(strtotime('today -6 days'),time()));
 
         $finance['sales']=$saleModel->getFinance();
         $finance['sales_back']=$saleModel->getFinance(true);
@@ -28,8 +31,9 @@ class FinanceController extends BaseController
         return $this->fetch();
     }
 
-    public function accounting($start_date='', $end_date='')
+    public function accounting($start_date='', $end_date='', $export = false)
     {
+        $finance=[];
         if(!empty($start_date) && !empty($end_date)){
             $start_time=strtotime($start_date);
             $end_time=strtotime($end_date);
@@ -37,13 +41,120 @@ class FinanceController extends BaseController
                 $this->error('日期参数错误');
             }
 
-            $this->assign('finance',[]);
+            //销售
+            $saleModel=new SaleOrderModel();
+            $saleData = $saleModel->getTotal($start_time,$end_time);
+
+            //采购
+            $purchaseModel=new PurchaseOrderModel();
+            $purchaseData = $purchaseModel->getTotal($start_time,$end_time);
+
+            $goods = StorageModel::getGoods();
+
+            $start_inventery_goods = StorageInventoryModel::getGoodsChanges($start_time);
+            $end_inventery_goods = StorageInventoryModel::getGoodsChanges($end_time);
+
+            $purchase_goods = PurchaseOrderModel::getGoodsChanges([$start_time,$end_time]);
+            $end_purchase_goods = PurchaseOrderModel::getGoodsChanges($end_time);
+
+            $sale_goods = SaleOrderModel::getGoodsChanges([$start_time,$end_time]);
+            $end_sale_goods = SaleOrderModel::getGoodsChanges($end_time);
+
+            foreach ($goods as &$good)
+            {
+                $goods_id=$good['id'];
+
+                if(!isset($start_inventery_goods[$goods_id])){
+                    $start_inventery_goods[$goods_id]=['goods_id'=>$goods_id,'count'=>0];
+                }
+                if(!isset($end_inventery_goods[$goods_id])){
+                    $end_inventery_goods[$goods_id]=['goods_id'=>$goods_id,'count'=>0];
+                }
+
+                if(!isset($purchase_goods[$goods_id])){
+                    $purchase_goods[$goods_id]=['goods_id'=>$goods_id,'count'=>0];
+                }
+                if(!isset($end_purchase_goods[$goods_id])){
+                    $end_purchase_goods[$goods_id]=['goods_id'=>$goods_id,'count'=>0];
+                }
+
+                if(!isset($sale_goods[$goods_id])){
+                    $sale_goods[$goods_id]=['goods_id'=>$goods_id,'count'=>0];
+                }
+                if(!isset($end_sale_goods[$goods_id])){
+                    $end_sale_goods[$goods_id]=['goods_id'=>$goods_id,'count'=>0];
+                }
+
+                $good['end_count'] = $good['count']
+                    - $start_inventery_goods[$goods_id]['count']
+                    + $end_sale_goods[$goods_id]['count']
+                    - $end_purchase_goods[$goods_id]['count'];
+
+                $good['start_count'] = $good['count']
+                    - $start_inventery_goods[$goods_id]['count']
+                    + $sale_goods[$goods_id]['count']
+                    + $end_sale_goods[$goods_id]['count']
+                    - $purchase_goods[$goods_id]['count']
+                    - $end_purchase_goods[$goods_id]['count'];
+
+                $good['inventery_count']=$good['end_count'] +
+                    ($start_inventery_goods[$goods_id]['count']-$end_inventery_goods[$goods_id]['count']);
+                $good['purchase']=$purchase_goods[$goods_id];
+                $good['sale']=$sale_goods[$goods_id];
+
+                //销售成本
+
+                //毛利润
+
+                //损耗率
+            }
+            $goods = array_filter($goods,function($item){
+                return !empty($item['start_count']) || !empty($item['end_count']) ||
+                    !empty($item['purchase']['count']) || !empty($item['sale']['count']) || !empty($item['inventery_count']);
+            });
+
+            $finance['goods']=$goods;
+
+            if($export){
+                return $this->exportAccounting($goods,$start_time, $end_time);
+            }
+
+
+            $this->assign('sale_total',$saleData);
+            $this->assign('purchase_total',$purchaseData);
+            $this->assign('finance',$finance);
         }else{
-            $this->assign('finance',[]);
+            $this->assign('finance',$finance);
         }
         $this->assign('start_date',$start_date);
         $this->assign('end_date',$end_date);
         return $this->fetch();
+    }
+
+    protected function exportAccounting($goods,$start_time, $end_time){
+        $excel=new Excel('Xlsx');
+
+        $excel->setHeader([
+            '编号','品名','期初数量','采购','','','销售','','','账面结存数量','盘点结存数量','差异','','销售成本','毛利润','毛利率%','损耗率%'
+        ]);
+        $excel->merge('D1','F1');
+        $excel->merge('G1','I1');
+        $excel->merge('L1','M1');
+        $excel->setHeader([
+            '','','','数量','单价','金额','数量','单价','金额','','','差异数量','差异金额'
+        ]);
+        foreach (['A','B','C','J','K','N','O','P','Q'] as $col){
+            $excel->merge($col.'1',$col.'2');
+        }
+        foreach ($goods as $good){
+            $excel->addRow([
+                $good['id'],$good['title'],$good['start_count'],
+                $good['purchase']['count'],$good['purchase']['avg_price'],$good['purchase']['total_amount'],
+                $good['sale']['count'],$good['sale']['avg_price'],$good['sale']['total_amount'],
+            ]);
+        }
+
+        $excel->output('生产成本表['.date('Y-m-d',$start_time).'-'.date('Y-m-d',$end_time).']');
     }
 
     public function receive($key='',$status=''){
