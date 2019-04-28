@@ -251,6 +251,7 @@
                             id:goods[i].id,
                             goods_id:goods[i].goods_id,
                             title:goods[i].goods_title,
+                            storage:0,
                             orig_title:goods[i].goods_title,
                             diy_price:goods[i].diy_price,
                             price_type:goods[i].price_type,
@@ -268,6 +269,7 @@
                     this.goods.push({
                         id:0,
                         goods_id:0,
+                        storage:0,
                         title:'',
                         orig_title:'',
                         count:'',

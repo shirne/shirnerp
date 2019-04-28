@@ -164,6 +164,7 @@
                     this.goods.push({
                         id:0,
                         title:'',
+                        storage:0,
                         orig_title:'',
                         count:'',
                         unit:''

@@ -26,9 +26,17 @@ class StorageController extends BaseController
         return json(['data'=>$lists,'code'=>1]);
     }
 
-    public function getStorage($storage_id, $goods_id){
-        $stores = Db::name('goodsStorage')->where('storage_id',$storage_id)->whereIn('goods_id',$goods_id)->select();
-        $storages = array_index($stores, 'goods_id,count');
+    public function getStorage($storage_id, $goods_id=''){
+        if(is_array($storage_id)){
+            $storages=[];
+            foreach ($storage_id as $sid=>$goods_id){
+                $stores = Db::name('goodsStorage')->where('storage_id', $sid)->whereIn('goods_id', idArr($goods_id))->select();
+                $storages[$sid]=array_index($stores, 'goods_id,count');
+            }
+        }else {
+            $stores = Db::name('goodsStorage')->where('storage_id', $storage_id)->whereIn('goods_id', idArr($goods_id))->select();
+            $storages = array_index($stores, 'goods_id,count');
+        }
         return json(['data'=>$storages,'code'=>1]);
     }
 

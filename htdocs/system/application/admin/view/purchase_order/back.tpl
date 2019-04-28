@@ -237,6 +237,7 @@
                     for(var i=0;i<goods.length;i++){
                         this.goods.push({
                             id:goods[i].id,
+                            storage:0,
                             goods_id:goods[i].goods_id,
                             title:goods[i].goods_title,
                             orig_title:goods[i].goods_title,
@@ -257,6 +258,7 @@
                         id:0,
                         goods_id:0,
                         title:'',
+                        storage:0,
                         orig_title:'',
                         count:'',
                         unit:'单位',

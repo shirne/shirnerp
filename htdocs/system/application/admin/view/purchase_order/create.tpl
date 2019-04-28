@@ -254,6 +254,7 @@
                         goods_id:0,
                         title:'',
                         orig_title:'',
+                        storage:0,
                         count:'',
                         unit:'单位',
                         diy_price:0,

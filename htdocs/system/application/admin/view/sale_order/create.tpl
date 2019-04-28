@@ -288,6 +288,7 @@
                         id:0,
                         title:'',
                         orig_title:'',
+                        storage:0,
                         storage_id:this.order.storage_id,
                         count:'',
                         diy_price:0,
@@ -299,25 +300,36 @@
                     });
                 },
                 updateStorage:function(){
-                    if(this.order.storage_id){
-                        var goods_ids=[];
-                        for(var i=0;i<this.goods.length;i++){
-                            goods_ids.push(this.goods[i].goods_id);
+                    var storage_map={ };
+                    var storage_id=0;
+                    for(var i=0;i<this.goods.length;i++){
+                        storage_id=this.goods[i].storage_id;
+                        if(storage_id>0) {
+                            if (!storage_map[storage_id])
+                                storage_map[storage_id] = [];
+                            storage_map[storage_id].push(this.goods[i].goods_id);
                         }
+                    }
+                    if(storage_id>0){
                         var self=this;
                         $.ajax({
                             url:'{:url("storage/getStorage")}',
                             type:'GET',
                             dataType:'JSON',
                             data:{
-                                storage_id:self.order.storage_id,
-                                goods_id:goods_ids.join(',')
+                                storage_id:storage_map
                             },
                             success:function (json) {
                                 if(json.code==1) {
                                     var storages=json.data;
                                     for(var i=0;i<self.goods.length;i++){
-                                        self.goods[i].storage=storages[self.goods[i].goods_id]?storages[self.goods[i].goods_id]:0;
+                                        var storage_id=self.goods[i].storage_id;
+                                        if(storage_id>0 && storages[storage_id]
+                                        && storages[storage_id][self.goods[i].goods_id]) {
+                                            self.goods[i].storage = storages[storage_id][self.goods[i].goods_id];
+                                        }else{
+                                            self.goods[i].storage = 0;
+                                        }
                                     }
                                 }
                             }
