@@ -194,6 +194,11 @@ class SaleOrderController extends BaseController
             ->view('storage',['title'=>'storage_title'],'storage.id=saleOrderGoods.storage_id','LEFT')
             ->where('sale_order_id',  $id)
             ->order('saleOrderGoods.id ASC')->select();
+        if($model['customer_time']){
+            $model['customer_time']=date('Y-m-d H:i:s',$model['customer_time']);
+        }else{
+            $model['customer_time']='';
+        }
         $this->assign('model',$model);
         $this->assign('customer',$customer);
         $this->assign('goods',$goods);
