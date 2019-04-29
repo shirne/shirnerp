@@ -56,7 +56,7 @@
         {$page|raw}
     </div>
 </block>
-<block name="script"
+<block name="script">
     <script type="text/javascript">
         jQuery(function ($) {
 
