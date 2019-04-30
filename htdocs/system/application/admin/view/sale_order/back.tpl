@@ -302,11 +302,13 @@
                     var storage_map={ };
                     var storage_id=0;
                     for(var i=0;i<this.goods.length;i++){
-                        storage_id=this.goods[i].storage_id;
-                        if(storage_id>0) {
-                            if (!storage_map[storage_id])
-                                storage_map[storage_id] = [];
-                            storage_map[storage_id].push(this.goods[i].goods_id);
+                        if( this.goods[i].goods_id>0) {
+                            storage_id=this.goods[i].storage_id;
+                            if(storage_id>0 ) {
+                                if (!storage_map[storage_id])
+                                    storage_map[storage_id] = [];
+                                storage_map[storage_id].push(this.goods[i].goods_id);
+                            }
                         }
                     }
                     if(storage_id>0){
@@ -456,7 +458,7 @@
                         var good = this.listGoods[idx];
                         if(good){
                             for(var i=0;i<this.goods.length;i++){
-                                if(this.goods[i].goods_id == good.id){
+                                if(i != idx && this.goods[i].goods_id == good.id){
                                     dialog.alert('商品重复');
                                     return false;
                                 }
@@ -469,6 +471,7 @@
                             this.goods[idx].unit=good.unit;
                             this.goods[idx].price_type=good.price_type;
                             $(currentInput).parents('tr').find('.counttd input').focus();
+                            this.updateStorage();
                             return true;
                         }
                     }

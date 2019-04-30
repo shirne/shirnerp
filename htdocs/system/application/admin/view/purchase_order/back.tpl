@@ -212,8 +212,8 @@
                 }
             },
             mounted:function(){
-                this.initData();
                 this.loadStorages();
+                this.initData();
             },
             methods:{
                 loadStorages:function () {
@@ -412,7 +412,7 @@
                         var good = this.listGoods[idx];
                         if(good){
                             for(var i=0;i<this.goods.length;i++){
-                                if(this.goods[i].goods_id == good.id){
+                                if(i != idx && this.goods[i].goods_id == good.id){
                                     dialog.alert('商品重复');
                                     return false;
                                 }
@@ -425,6 +425,7 @@
                             this.goods[idx].unit=good.unit;
                             this.goods[idx].price_type=good.price_type;
                             $(currentInput).parents('tr').find('.counttd input').focus();
+                            this.updateStorage();
                             return true;
                         }
                     }

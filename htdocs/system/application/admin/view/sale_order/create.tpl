@@ -121,7 +121,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <select class="form-control form-control-sm" v-model="good.storage_id">
+                                    <select class="form-control form-control-sm" @change="updateStorage" v-model="good.storage_id">
                                         <option :value="0">请选择仓库</option>
                                         <option v-for="storage in storages" :key="storage.id" :value="storage.id">[{{storage.storage_no}}]{{storage.title}}</option>
                                     </select>
@@ -303,13 +303,16 @@
                     var storage_map={ };
                     var storage_id=0;
                     for(var i=0;i<this.goods.length;i++){
-                        storage_id=this.goods[i].storage_id;
-                        if(storage_id>0) {
-                            if (!storage_map[storage_id])
-                                storage_map[storage_id] = [];
-                            storage_map[storage_id].push(this.goods[i].goods_id);
+                        if( this.goods[i].goods_id>0) {
+                            storage_id=this.goods[i].storage_id;
+                            if(storage_id>0 ) {
+                                if (!storage_map[storage_id])
+                                    storage_map[storage_id] = [];
+                                storage_map[storage_id].push(this.goods[i].goods_id);
+                            }
                         }
                     }
+
                     if(storage_id>0){
                         var self=this;
                         $.ajax({
@@ -457,7 +460,7 @@
                         var good = this.listGoods[idx];
                         if(good){
                             for(var i=0;i<this.goods.length;i++){
-                                if(this.goods[i].goods_id == good.id){
+                                if(i != idx && this.goods[i].goods_id == good.id){
                                     dialog.alert('商品重复');
                                     return false;
                                 }
@@ -470,6 +473,7 @@
                             this.goods[idx].unit=good.unit;
                             this.goods[idx].price_type=good.price_type;
                             $(currentInput).parents('tr').find('.counttd input').focus();
+                            this.updateStorage();
                             return true;
                         }
                     }

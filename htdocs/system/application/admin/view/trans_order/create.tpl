@@ -279,7 +279,7 @@
                         var good = this.listGoods[idx];
                         if(good){
                             for(var i=0;i<this.goods.length;i++){
-                                if(this.goods[i].goods_id == good.id){
+                                if(i != idx && this.goods[i].goods_id == good.id){
                                     dialog.alert('商品重复');
                                     return false;
                                 }
@@ -291,6 +291,7 @@
                             this.goods[idx].storage=good.storage?good.storage:0;
                             this.goods[idx].unit=good.unit;
                             $(currentInput).parents('tr').find('.counttd input').focus();
+                            this.updateStorage();
                             return true;
                         }
                     }
