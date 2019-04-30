@@ -121,7 +121,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <select class="form-control" v-model="good.storage_id">
+                                    <select class="form-control" @change="updateStorage" v-model="good.storage_id">
                                         <option :value="0">请选择仓库</option>
                                         <option v-for="storage in storages" :key="storage.id" :value="storage.id">[{{storage.storage_no}}]{{storage.title}}</option>
                                     </select>

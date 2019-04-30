@@ -109,7 +109,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="input-group input-group-sm" v-if="good.diy_price">
+                                    <div class="input-group input-group-sm" @change="updateStorage" v-if="good.diy_price">
                                         <input type="text" v-model="good.total_price" @change="totalPrice" class="form-control" />
                                         <div class="input-group-append">
                                             <a href="javascript:" class="btn btn-outline-primary" @click="changePricetype(idx,0)" title="自动计算"><i class="ion-md-undo"></i> </a>
