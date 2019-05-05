@@ -53,9 +53,9 @@ class FinanceLogModel extends BaseModel
 
             if($order['parent_order_id']>0){
                 $data['amount'] = $amount;
+                $uptype='DEC';
             }else{
                 $data['amount'] = -$amount;
-                $uptype='DEC';
             }
 
             $data['base_amount']=-$base_amount;

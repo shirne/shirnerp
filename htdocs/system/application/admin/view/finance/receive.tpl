@@ -10,7 +10,7 @@
             <div class="col-6">
                 <h4>应收款</h4>
             </div>
-            <div class="col-6">
+            <div class="col-4">
                 <form action="{:url('finance/receive')}" method="post">
                     <div class="input-group input-group-sm">
                         <input type="text" class="form-control" name="key" placeholder="输入邮箱或者关键词搜索">
@@ -19,6 +19,9 @@
                         </div>
                     </div>
                 </form>
+            </div>
+            <div class="col-2">
+                <a href="{:url('receiveFix')}" class="btn btn-sm btn-outline-secondary">修复状态</a>
             </div>
         </div>
         <table class="table table-hover table-striped">
@@ -36,7 +39,7 @@
             </tr>
             </thead>
             <tbody>
-            <php>$empty=list_empty(8);</php>
+            <php>$empty=list_empty(9);</php>
             <volist name="lists" id="v" empty="$empty">
                 <tr>
                     <td>{$v.id}</td>

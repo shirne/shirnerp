@@ -198,6 +198,28 @@ class FinanceController extends BaseController
         return $this->fetch();
     }
 
+    public function receiveFix(){
+        Db::name('saleOrder')
+            ->where('parent_order_id',0)
+            ->where('payed_time',0)
+            ->whereExp('payed_amount',' >= amount')->update(['payed_time'=>time()]);
+        Db::name('saleOrder')
+            ->where('parent_order_id','GT',0)
+            ->where('payed_time',0)
+            ->whereExp('payed_amount',' <= amount')->update(['payed_time'=>time()]);
+
+        Db::name('saleOrder')
+            ->where('parent_order_id',0)
+            ->where('payed_time','GT',0)
+            ->whereExp('payed_amount',' < amount')->update(['payed_time'=>0]);
+        Db::name('saleOrder')
+            ->where('parent_order_id','GT',0)
+            ->where('payed_time','GT',0)
+            ->whereExp('payed_amount',' > amount')->update(['payed_time'=>0]);
+
+        $this->success('修复完成');
+    }
+
     public function receiveLog(){
         if($this->request->isPost()){
             $data = $this->request->only('id,amount,pay_type,remark','post');
@@ -263,6 +285,28 @@ class FinanceController extends BaseController
         $this->assign('paytypes',getFinanceTypes(false));
         $this->assign('page',$lists->render());
         return $this->fetch();
+    }
+
+    public function payableFix(){
+        Db::name('purchaseOrder')
+            ->where('parent_order_id',0)
+            ->where('payed_time',0)
+        ->whereExp('payed_amount',' >= amount')->update(['payed_time'=>time()]);
+        Db::name('purchaseOrder')
+            ->where('parent_order_id','GT',0)
+            ->where('payed_time',0)
+            ->whereExp('payed_amount',' <= amount')->update(['payed_time'=>time()]);
+
+        Db::name('purchaseOrder')
+            ->where('parent_order_id',0)
+            ->where('payed_time','GT',0)
+            ->whereExp('payed_amount',' < amount')->update(['payed_time'=>0]);
+        Db::name('purchaseOrder')
+            ->where('parent_order_id','GT',0)
+            ->where('payed_time','GT',0)
+            ->whereExp('payed_amount',' > amount')->update(['payed_time'=>0]);
+
+        $this->success('修复完成');
     }
 
     public function payableLog(){

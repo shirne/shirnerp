@@ -10,7 +10,7 @@
             <div class="col-6">
                 <h4>应付款</h4>
             </div>
-            <div class="col-6">
+            <div class="col-4">
                 <form action="{:url('finance/payable')}" method="post">
                     <div class="input-group input-group-sm">
                         <input type="text" class="form-control" name="key" placeholder="输入邮箱或者关键词搜索">
@@ -19,6 +19,9 @@
                         </div>
                     </div>
                 </form>
+            </div>
+            <div class="col-2">
+                <a href="{:url('payableFix')}" class="btn btn-sm btn-outline-secondary">修复状态</a>
             </div>
         </div>
         <table class="table table-hover table-striped">
@@ -36,12 +39,12 @@
             </tr>
             </thead>
             <tbody>
-            <php>$empty=list_empty(8);</php>
+            <php>$empty=list_empty(9);</php>
             <volist name="lists" id="v" empty="$empty">
                 <tr>
                     <td>{$v.id}</td>
                     <td>{$v.order_no}<if condition="$v['parent_order_id']"><span class="badge badge-warning">退货</span> </if></td>
-                    <td>{$v.customer_title}</td>
+                    <td>{$v.supplier_title}</td>
                     <td>{$v.currency}</td>
                     <td>{$v.amount}</td>
                     <td>{$v.payed_amount}</td>
