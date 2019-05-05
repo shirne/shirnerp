@@ -42,23 +42,25 @@ class FinanceLogModel extends BaseModel
 
             if($order['parent_order_id']>0){
                 $data['amount'] = -$amount;
+                $data['base_amount']=-$base_amount;
                 $uptype='DEC';
             }else{
                 $data['amount'] = $amount;
+                $data['base_amount']=$base_amount;
             }
 
-            $data['base_amount']=$base_amount;
         }elseif($data['type'] == 'purchase'){
             $data['supplier_id']=$order['supplier_id'];
 
             if($order['parent_order_id']>0){
                 $data['amount'] = $amount;
+                $data['base_amount']=$base_amount;
                 $uptype='DEC';
             }else{
                 $data['amount'] = -$amount;
+                $data['base_amount']=-$base_amount;
             }
 
-            $data['base_amount']=-$base_amount;
         }
         $model = static::create($data);
         if($model['id']){
