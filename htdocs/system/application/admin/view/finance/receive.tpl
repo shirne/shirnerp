@@ -51,7 +51,7 @@
                     <td>{$v['amount'] - $v['payed_amount']}</td>
                     <td>{$v.create_time|showdate}</td>
                     <td class="operations">
-                        <a href="javascript:" title="入账" data-id="{$v.id}" data-amount="{$v['amount'] - $v['payed_amount']}" class="btn btn-outline-primary finance-btn"><i class="ion-md-list-box"></i> </a>
+                        <a href="javascript:" title="入账" data-id="{$v.id}" data-amount="{$v['amount'] - $v['payed_amount']}" data-currency="{$v.currency}" data-isback="{$v['parent_order_id']}" class="btn btn-outline-primary finance-btn"><i class="ion-md-list-box"></i> </a>
                         <a class="btn btn-outline-primary" rel="ajax" title="明细" href="{:url('SaleOrder/detail',array('id'=>$v['id']))}"><i class="ion-md-document"></i> </a>
                     </td>
                 </tr>
@@ -74,7 +74,13 @@
                     </select>
                 </div>
             </div>
-            <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">金额</span> </div><input type="text" name="amount" class="form-control" placeholder="请填写入账金额"/> </div></div>
+            <div class="col-12 form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text">金额</span> </div>
+                    <input type="text" name="amount" class="form-control" placeholder="请填写入账金额"/>
+                    <div class="input-group-append"><span class="input-group-text">{@currency}</span> </div>
+                </div>
+            </div>
             <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">备注</span> </div><input type="text" name="reson" class="form-control" /> </div> </div>
         </div>
     </script>
@@ -84,6 +90,9 @@
             $('.finance-btn').click(function() {
                 var id=$(this).data('id');
                 var release=$(this).data('amount');
+                var currency=$(this).data('currency');
+                var isback = $(this).data('isback')=='0';
+
                 var dlg=new Dialog({
                     onshown:function(body){
                         if(release)body.find('[name=amount]').val(release);
@@ -106,29 +115,41 @@
 
                         }
                         var pay_type = body.find('[name=pay_type]').val();
-                        $.ajax({
-                            url:'{:url("receiveLog")}',
-                            type:'POST',
-                            data:{
-                                id:id,
-                                amount:amount,
-                                pay_type:pay_type,
-                                reson:body.find('input[name=reson]').val()
-                            },
-                            dataType:'JSON',
-                            success:function(j){
-                                if(j.code==1) {
-                                    dlg.hide();
-                                    dialog.alert(j.msg,function() {
-                                        location.reload();
-                                    })
-                                }else{
-                                    dialog.warning(j.msg);
+                        var pay_type_text = body.find('[name=pay_type]')[0].selectedOptions[0].innerText;
+                        var reson=body.find('input[name=reson]').val();
+
+                        dialog.confirm('<div>请仔细核对您填写的数据</div><br /><div>' + [
+                            '<b>付款方式</b>: ' + pay_type_text,
+                            '<b>金额('+currency+')</b>: ' + amount + ' ('+(amount>=release? '已结清':('剩余:'+(Math.abs(release) - Math.abs(amount))))+')',
+                            '<b>备注</b>: <span class="text-muted" >' + reson + '</span>'
+                        ].join('</div><div>') + '</div>',function () {
+                            $.ajax({
+                                url:'{:url("receiveLog")}',
+                                type:'POST',
+                                data:{
+                                    id:id,
+                                    amount:amount,
+                                    pay_type:pay_type,
+                                    reson:reson
+                                },
+                                dataType:'JSON',
+                                success:function(j){
+                                    if(j.code==1) {
+                                        dlg.hide();
+                                        dialog.alert(j.msg,function() {
+                                            location.reload();
+                                        })
+                                    }else{
+                                        dialog.warning(j.msg);
+                                    }
                                 }
-                            }
-                        })
+                            });
+                        },3);
+                        return false;
                     }
-                }).show(tpl,'收款入账');
+                }).show(tpl.compile({
+                    'currency' : currency
+                }),isback?'退货退款':'收款入账');
             });
         })
     </script>

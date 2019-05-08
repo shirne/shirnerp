@@ -222,7 +222,7 @@ class FinanceController extends BaseController
 
     public function receiveLog(){
         if($this->request->isPost()){
-            $data = $this->request->only('id,amount,pay_type,remark','post');
+            $data = $this->request->only('id,amount,pay_type,reson','post');
             $data['id']=intval($data['id']);
 
             $order = SaleOrderModel::get($data['id']);
@@ -231,7 +231,7 @@ class FinanceController extends BaseController
             }
             try {
 
-                $result = FinanceLogModel::addLog('sale', $order, $data['amount'], $data['pay_type'], $data['remark']);
+                $result = FinanceLogModel::addLog('sale', $order, $data['amount'], $data['pay_type'], $data['reson']);
             }catch (Exception $e){
                 $this->error($e->getMessage());
             }
@@ -311,7 +311,7 @@ class FinanceController extends BaseController
 
     public function payableLog(){
         if($this->request->isPost()){
-            $data = $this->request->only('id,amount,pay_type,remark','post');
+            $data = $this->request->only('id,amount,pay_type,reson','post');
             $data['id']=intval($data['id']);
 
             $order = PurchaseOrderModel::get($data['id']);
@@ -321,7 +321,7 @@ class FinanceController extends BaseController
 
             try {
 
-                $result = FinanceLogModel::addLog('purchase',$order,$data['amount'],$data['pay_type'],$data['remark']);
+                $result = FinanceLogModel::addLog('purchase',$order,$data['amount'],$data['pay_type'],$data['reson']);
             }catch (Exception $e){
                 $this->error($e->getMessage());
             }
