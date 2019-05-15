@@ -71,7 +71,7 @@
                     </td>
                     <td class="operations">
                         <a class="btn btn-outline-primary" target="_blank" title="导出" href="{:url('saleOrder/exportOne',array('id'=>$v['id']))}" ><i class="ion-md-download"></i> </a>
-                        <a class="btn btn-outline-primary" target="_blank" title="打印" href="{:url('saleOrder/detail',array('id'=>$v['id'],'is_print'=>1))}" ><i class="ion-md-print"></i> </a>
+                        <a class="btn btn-outline-primary" target="_blank" title="打印" href="{:url('saleOrder/detail',array('id'=>$v['id'],'mode'=>1))}" ><i class="ion-md-print"></i> </a>
                         <if condition="$v['status'] EQ 0">
                             <if condition="$v['parent_order_id']">
                                 <a class="btn btn-outline-success link-confirm" title="入库" data-confirm="请确认商品已入库，操作不可撤销!" href="{:url('saleOrder/status',array('id'=>$v['id'],'status'=>1))}" ><i class="ion-md-filing"></i> </a>

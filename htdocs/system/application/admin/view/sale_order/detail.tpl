@@ -46,6 +46,10 @@
 
         <table class="table">
             <tbody>
+            <tr>
+                <th>运费</th>
+                <td colspan="3">{$model.freight}</td>
+            </tr>
             <if condition="$model['remark']">
                 <tr>
                     <th>订单备注</th>

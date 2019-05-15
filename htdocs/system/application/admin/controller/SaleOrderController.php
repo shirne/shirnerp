@@ -262,19 +262,24 @@ class SaleOrderController extends BaseController
                 $row['storage_title'],''
             ));
         }
+        $excel->addRow([
+            '运费','','','','',[$model['freight'],DataType::TYPE_NUMERIC]
+        ]);
         $rownum = $excel->getRownum()-1;
         if($model['diy_price']==1){
-            $total = $model['amount'];
+            $total = [$model['amount'],DataType::TYPE_NUMERIC];
         }else {
             $total = "=SUM(F{$firstrow}:F{$rownum})";
         }
 
         $excel->addRow(array(
-            '',["=SUM(B{$firstrow}:B{$rownum})",DataType::TYPE_FORMULA],'',
+            '合计',["=SUM(B{$firstrow}:B{$rownum})",DataType::TYPE_FORMULA],'',
             ["=SUM(D{$firstrow}:D{$rownum})",DataType::TYPE_FORMULA],'',
             $total,
             '',''
         ));
+
+        $excel->setRangeBorder('A1:H'.($rownum+1),'FF000000');
 
         $excel->output('订单['.$model['order_no'].']');
     }

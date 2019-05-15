@@ -1,9 +1,15 @@
 <?php
 namespace shirne\excel;
 
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Style;
 
 define('OD_COLUMN_COUNT',26);
 
@@ -140,14 +146,181 @@ class Excel {
         $this->columntype[$column]=$type;
     }
 
-    public function setRowStyle($rownum)
+    public function getRangeStyle($range)
     {
-        $maxcolumn = $this->sheet->getHighestColumn();
-        if(strlen($maxcolumn)>1){
-            $this->extend_colum();
+        if(!$range instanceof Style){
+            if(is_array($range)){
+                if(count($range)==4) {
+                    return $this->sheet->getStyleByColumnAndRow($range[0], $range[1], $range[2], $range[3]);
+                }else{
+                    return $this->sheet->getStyleByColumnAndRow($range[0], $range[1]);
+                }
+            }else {
+                if(strpos($range, ':')>0){
+                    list($rangeStart, $rangeEnd) = Coordinate::rangeBoundaries($range);
+
+                    return $this->sheet->getStyleByColumnAndRow($rangeStart[0],$rangeStart[1],$rangeEnd[0],$rangeEnd[1]);
+                }else{
+                    return $this->sheet->getStyle($range);
+                }
+            }
         }
-        $maxcolumnnum = array_index($this->columnmap,$maxcolumn);
-        $this->sheet->getStyleByColumnAndRow(1,$rownum,$maxcolumnnum,$rownum);
+        return $range;
+    }
+
+    public function setRangeStyle($range, $setting)
+    {
+        $style = $this->getRangeStyle($range);
+        foreach ($setting as $k=>$val){
+            if($k == 'border'){
+
+                $this->setRangeBorder($style, $val);
+
+            }elseif($k == 'font'){
+
+                $this->setRangeFont($style, $val);
+
+            }elseif($k == 'fill'){
+
+                $this->setRangeFill($style, $val);
+
+            }elseif($k == 'align'){
+
+                $this->setRangeAlign($style, $val);
+
+            }
+        }
+    }
+
+    public function setRangeFont($range, $value)
+    {
+        $style = $this->getRangeStyle($range);
+        $font = $style->getFont();
+        if(is_array($value)) {
+            foreach ($value as $key => $v) {
+                $method = "set".ucfirst($key);
+                if(method_exists($font,$method)) {
+                    $font->$method($v);
+                }else{
+                    //警告?
+                }
+            }
+        }else{
+            if(is_int($value)) {
+                $font->setSize($value);
+            }else{
+                $font->setColor(new Color($value));
+            }
+        }
+    }
+
+    public function setRangeFill($range, $value)
+    {
+        $style = $this->getRangeStyle($range);
+        $fill = $style->getFill();
+        if(is_array($value)) {
+            $fill->setFillType(Fill::FILL_GRADIENT_LINEAR);
+            $fill->setEndColor(new Color($value[0]));
+            $fill->setStartColor(new Color($value[1]));
+            if (isset($value[2])) {
+                $fill->setRotation($value[2]);
+            }
+        }elseif($value == 'none'){
+            $fill->setFillType(Fill::FILL_NONE);
+        }else{
+            $fill->setFillType(Fill::FILL_SOLID);
+            $color = new Color($value);
+            $fill->setEndColor($color);
+            $fill->setStartColor($color);
+        }
+    }
+
+    public function setRangeAlign($range, $value)
+    {
+        $style = $this->getRangeStyle($range);
+        $align = $style->getAlignment();
+        if(is_array($value)){
+            $keys = array_keys($value);
+            if($keys == [0,1]){
+                $align->setHorizontal($value[0]);
+                $align->setVertical($value[1]);
+            }else {
+                foreach ($value as $key => $v) {
+                    $method = "set" . ucfirst($key);
+                    if (method_exists($align, $method)) {
+                        $align->$method($v);
+                    } else {
+                        //警告?
+                    }
+                }
+            }
+        }else{
+            //默认设置水平
+            $align->setHorizontal($value);
+        }
+    }
+
+    public function setRangeBorder($range, $value)
+    {
+        $style = $this->getRangeStyle($range);
+        $border = $style->getBorders();
+        $allborder = $border->getAllBorders();
+        if(is_array($value) && is_assoc_array($value)) {
+
+            foreach ($value as $key => $val) {
+                if($key == 'style') {
+                    $allborder->setBorderStyle($val);
+                }elseif($key == 'color'){
+                    $allborder->setColor(new Color($val));
+                }elseif(in_array($key,['left','right','top','bottom','inside','diagonal','outline','horizontal','vertical'])){
+                    $method = 'get'.ucfirst($key);
+                    $subborder=$border->$method();
+                    if($subborder instanceof Border) {
+                        $this->setBorderStyle($subborder, $this->transBorderStyle($val));
+                    }
+                }
+            }
+
+        }else{
+            $this->setBorderStyle($allborder, $this->transBorderStyle($value));
+        }
+    }
+
+    private function transBorderStyle($style)
+    {
+        $styleData=['style'=>Border::BORDER_THIN, 'color'=>Color::COLOR_BLACK];
+        if(is_array($style)) {
+
+            if (is_assoc_array($style)) {
+                foreach ($style as $key => $value) {
+                    $styleData[$key] = $value;
+                }
+            } else {
+                $styleData['style'] = $style[0];
+                if (isset($style[1])) {
+                    $styleData['color'] = $style[1];
+                }
+            }
+        }elseif($style == 'none'){
+            $styleData['style']=Border::BORDER_NONE;
+        }else{
+            $styleData['color']=$style;
+        }
+        return $styleData;
+    }
+
+    /**
+     * @param $border Border
+     * @param $style array
+     */
+    private function setBorderStyle($border, $style)
+    {
+        if(isset($style['style'])){
+            $border->setBorderStyle($style['style']);
+        }
+        if(isset($style['color'])){
+            $border->setColor(new Color($style['color']));
+        }
     }
 
     public function setTitle($title){

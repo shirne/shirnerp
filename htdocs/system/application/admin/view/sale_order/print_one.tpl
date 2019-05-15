@@ -13,8 +13,8 @@
         <h3 class="text-center">{:getSetting('site-name')}</h3>
         <h4 class="text-center">{$model['parent_order_id']?'退货':'出货'}清单({$customer['title']})</h4>
         <div class="row">
-            <div class="col text-left">下单日期：{$model['create_time']|showdate}</div>
-            <div class="col text-right"></div>
+            <div class="col text-left">交货日期：{$model['customer_time']|showdate}</div>
+            <div class="col text-right">下单日期：{$model['create_time']|showdate}</div>
         </div>
         <table class="table table-bordered">
             <caption></caption>
@@ -36,7 +36,7 @@
                         <td>{$good.goods_title}</td>
                         <td>{$good.count}</td>
                         <td>{$good.goods_unit}</td>
-                        <td></td>
+                        <td>{$good.weight}</td>
                         <td>{$good.price}</td>
                         <td>{$good.amount}</td>
                         <td>{$good.storage_title}</td>
@@ -44,6 +44,14 @@
                     </tr>
                 </volist>
             </tbody>
+            <tfoot>
+            <tr>
+                <th>运费</th>
+                <td colspan="3">{$model.freight}</td>
+                <th>合计</th>
+                <td colspan="3">[{$model.currency}]&nbsp;{$model.amount}</td>
+            </tr>
+            </tfoot>
         </table>
     </div>
 </block>

@@ -35,7 +35,7 @@
                     <td>{$good.goods_title}</td>
                     <td>{$good.count}</td>
                     <td>{$good.goods_unit}</td>
-                    <td></td>
+                    <td>{$good.weight}</td>
                     <td>{$good.price}</td>
                     <td>{$good.amount}</td>
                     <td>{$good.storage_title}</td>
@@ -43,6 +43,14 @@
                 </tr>
             </volist>
             </tbody>
+            <tfoot>
+                <tr>
+                    <th>运费</th>
+                    <td colspan="3">{$model.freight}</td>
+                    <th>合计</th>
+                    <td colspan="3">[{$model.currency}]&nbsp;{$model.amount}</td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </block>
