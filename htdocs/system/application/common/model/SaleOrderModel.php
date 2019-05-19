@@ -80,7 +80,7 @@ class SaleOrderModel extends BaseFinanceModel
 
             $data = $model->getOrigin();
             $model->triggerStatus($data,$order['status']);
-            return true;
+            return $model['id'];
         }
         return false;
     }

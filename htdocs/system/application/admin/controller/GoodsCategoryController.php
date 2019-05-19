@@ -46,9 +46,10 @@ class GoodsCategoryController extends BaseController
                     $this->error($this->uploadErrorCode.':'.$this->uploadError);
                 }
 
-                $result=Db::name('goodsCategory')->insert($data);
+                $result=Db::name('goodsCategory')->insert($data,false,true);
                 if ($result) {
                     GoodsCategoryFacade::clearCache();
+                    user_log($this->mid,['addgoodscategory',$result],1,'添加商品分类 ' ,'manager');
                     $this->success(lang('Add success!'), url('goodsCategory/index'));
                 } else {
                     delete_image([$data['icon'],$data['image']]);
@@ -98,6 +99,7 @@ class GoodsCategoryController extends BaseController
                 if ($result) {
                     delete_image($delete_images);
                     GoodsCategoryFacade::clearCache();
+                    user_log($this->mid,['addgoodscategory',$id],1,'修改商品分类 ' ,'manager');
                     $this->success(lang('Update success!'), url('goodsCategory/index'));
                 } else {
                     delete_image([$data['icon'],$data['image']]);
@@ -125,7 +127,7 @@ class GoodsCategoryController extends BaseController
     public function delete($id)
     {
         $id = idArr($id);
-        //查询属于这个分类的文章
+        //查询属于这个分类的商品
         $posts = Db::name('Goods')->where('cate_id','in',$id)->count();
         if($posts){
             $this->error("禁止删除含有文章的分类");
@@ -139,6 +141,7 @@ class GoodsCategoryController extends BaseController
         $result = Db::name('goodsCategory')->where('id','in',$id)->delete();
         if($result){
             GoodsCategoryFacade::clearCache();
+            user_log($this->mid,['deletegoodscategory',$id],1,'删除商品分类 ' ,'manager');
             $this->success(lang('Delete success!'), url('goodsCategory/index'));
         }else{
             $this->error(lang('Delete failed!'));

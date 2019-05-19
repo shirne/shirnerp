@@ -31,6 +31,13 @@ class PurchaseOrderModel extends BaseFinanceModel
         return array_index($datas,'goods_id');
     }
 
+    /**
+     * @param $order
+     * @param $orderGoods
+     * @param $total
+     * @return bool|int
+     * @throws Exception
+     */
     public static function createOrder($order, $orderGoods, $total)
     {
         if(empty($order['order_no'])){
@@ -74,7 +81,7 @@ class PurchaseOrderModel extends BaseFinanceModel
 
             $data = $model->getOrigin();
             $model->triggerStatus($data,$order['status']);
-            return true;
+            return $model->id;
         }
 
         return false;

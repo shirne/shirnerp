@@ -117,6 +117,7 @@ class GoodsController extends BaseController
         $unitUpdated=false;
 
         $errors=[];
+        $imported=[];
         foreach ($rows as $idx=>&$row){
             $price_type = 0;
 
@@ -147,6 +148,7 @@ class GoodsController extends BaseController
 
 
                 $hasGoods[$row['title']]=GoodsModel::create($data);
+                $imported[]=$hasGoods[$row['title']]['id'];
             }
 
             if(strpos('=',$row['weight'])==0){
@@ -165,6 +167,9 @@ class GoodsController extends BaseController
         }
 
         if($unitUpdated)getGoodsUnits(true);
+        if(!empty($imported)) {
+            user_log($this->mid, ['importgoods', $imported], 1, '导入商品(订单)', 'manager');
+        }
 
         $this->success('处理成功','',['success'=>1,'goods'=>$rows,'errors'=>$errors]);
     }
@@ -232,7 +237,7 @@ class GoodsController extends BaseController
                 $model=GoodsModel::create($data);
                 if ($model->id) {
                     //delete_image($delete_images);
-                    user_log($this->mid,'addgoods',1,'添加商品 '.$model->id ,'manager');
+                    user_log($this->mid,['addgoods',$model['id']],1,'添加商品 ' ,'manager');
                     $this->success(lang('Add success!'), url('Goods/index'));
                 } else {
                     delete_image($data['cover']);
@@ -298,7 +303,8 @@ class GoodsController extends BaseController
             $datas[]=$row;
         }
         $model=new GoodsModel();
-        $model->saveAll($datas);
+        $datas = $model->saveAll($datas);
+        user_log($this->mid,['addgoods',array_column($datas->toArray(),'id')],1,'批量添加商品 ' ,'manager');
         $this->success('保存成功！');
     }
 
@@ -397,7 +403,8 @@ class GoodsController extends BaseController
 
 
         $model=new GoodsModel();
-        $model->saveAll($datas);
+        $datas = $model->saveAll($datas);
+        user_log($this->mid, ['importgoods', array_column($datas->toArray(),'id')], 1, '导入商品', 'manager');
 
         $this->success('处理成功','',['success'=>1,'errors'=>$errors]);
     }
@@ -434,7 +441,7 @@ class GoodsController extends BaseController
                 $model=GoodsModel::get($id);
                 if ($model->allowField(true)->save($data)) {
                     //delete_image($delete_images);
-                    user_log($this->mid, 'updategoods', 1, '修改商品 ' . $id, 'manager');
+                    user_log($this->mid, ['updategoods',$id], 1, '修改商品 ' . $id, 'manager');
                     $this->success("编辑成功", url('Article/index'));
                 } else {
                     delete_image($data['cover']);
@@ -459,11 +466,19 @@ class GoodsController extends BaseController
      */
     public function delete($id)
     {
+        $salecount = Db::name('saleOrderGoods')->whereIn('goods_id',idArr($id))->count();
+        if($salecount>0){
+            $this->error('商品已在销售单中使用，无法删除');
+        }
+        $purchasecount = Db::name('purchaseOrderGoods')->whereIn('goods_id',idArr($id))->count();
+        if($purchasecount>0){
+            $this->error('商品已在采购单中使用，无法删除');
+        }
         $model = Db::name('goods');
         $result = $model->whereIn("id",idArr($id))->delete();
         if($result){
             //Db::name('goodsImages')->whereIn("goods_id",idArr($id))->delete();
-            user_log($this->mid,'deletegoods',1,'删除商品 '.$id ,'manager');
+            user_log($this->mid,['deletegoods',$id],1,'删除商品 '.$id ,'manager');
             $this->success(lang('Delete success!'), url('Goods/index'));
         }else{
             $this->error(lang('Delete failed!'));

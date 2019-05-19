@@ -65,9 +65,33 @@ class SupplierController extends BaseController
             $this->error('没有匹配到数据');
         }
 
-        $model=new SupplierModel();
-        $model->saveAll($datas);
+        //去重及去除已存在的数据
+        $titles = array_column($datas,'title');
+        $shorts = array_column($datas,'short');
+        $exists =  Db::name('supplier')->whereIn('title',$titles,'OR')
+            ->whereIn('short',$shorts,'OR')
+            ->select();
+        if(!empty($exists)){
+            $titleExists = array_column($exists,'title');
+            $shortExists = array_column($exists,'short');
+            foreach ($datas as $k=>$row){
+                if(in_array($row['title'],$titleExists)){
+                    unset($datas[$k]);
+                }
+                if(in_array($row['short'],$shortExists)){
+                    unset($datas[$k]);
+                }
+            }
+        }
+        foreach ($datas as $k=>$row) {
+            if (empty($row['title'])) {
+                unset($datas[$k]);
+            }
+        }
 
+        $model=new SupplierModel();
+        $datas = $model->saveAll($datas);
+        user_log($this->mid,['importsupplier',array_column($datas->toArray(),'id')],1,'导入供应商 ' ,'manager');
         $this->success('处理成功','',['success'=>1]);
     }
 
@@ -94,6 +118,7 @@ class SupplierController extends BaseController
 
                 $result = SupplierModel::create($data);
                 if ($result['id']) {
+                    user_log($this->mid,['addsupplier',$result['id']],1,'添加供应商 ' ,'manager');
                     $this->success(lang('Add success!'), url('supplier/index'));
                 } else {
                     $this->error(lang('Add failed!'));
@@ -135,6 +160,7 @@ class SupplierController extends BaseController
                 $result = SupplierModel::update($data,['id'=>$id]);
                 if ($result) {
                     delete_image($delete_images);
+                    user_log($this->mid,['editsupplier',$id],1,'编辑供应商 ' ,'manager');
                     $this->success(lang('Update success!'), url('supplier/index'));
                 } else {
                     $this->error(lang('Update failed!'));
@@ -165,6 +191,7 @@ class SupplierController extends BaseController
         $model = Db::name('supplier');
         $result = $model->delete($id);
         if($result){
+            user_log($this->mid,['deletesupplier',$id],1,'删除供应商 ' ,'manager');
             $this->success(lang('Delete success!'), url('supplier/index'));
         }else{
             $this->error(lang('Delete failed!'));

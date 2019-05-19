@@ -82,7 +82,9 @@ class StorageController extends BaseController
                     $this->error($this->uploadErrorCode.':'.$this->uploadError);
                 }
 
-                if (Db::name('storage')->insert($data)) {
+                $result = Db::name('storage')->insert($data,false,true);
+                if ($result) {
+                    user_log($this->mid,['addstorage',$result],1,'添加仓库','manager');
                     $this->success(lang('Add success!'), url('storage/index'));
                 } else {
                     $this->error(lang('Add failed!'));
@@ -123,6 +125,7 @@ class StorageController extends BaseController
                 $data['id']=$id;
                 if (Db::name('storage')->update($data)) {
                     delete_image($delete_images);
+                    user_log($this->mid,['editstorage',$id],1,'编辑仓库','manager');
                     $this->success(lang('Update success!'), url('storage/index'));
                 } else {
                     $this->error(lang('Update failed!'));
@@ -156,6 +159,7 @@ class StorageController extends BaseController
 
             $result = StorageInventoryModel::createOrder($order,$goods);
             if($result){
+                user_log($this->mid,['addinventory',$result],1,'创建盘点单','manager');
                 $this->success('创建盘点数据成功！',url('inventory',['storage_id'=>$storage_id]));
             }else{
                 $this->error('创建失败');
@@ -211,7 +215,7 @@ class StorageController extends BaseController
             if($status == 1) {
                 $url = url('inventoryDetail',['id'=>$id]);
             }
-
+            user_log($this->mid,['editinventory',$id],1,'编辑盘点单','manager');
             $this->success('处理成功！',$url);
         }
         $goods = Db::view('storageInventoryGoods','*')
@@ -226,11 +230,11 @@ class StorageController extends BaseController
 
     public function deleteInventory($id, $storage_id){
         $model = Db::name('storageInventory');
-
-        $result = $model->whereIn("id",idArr($id))->where('status',0)->useSoftDelete('delete_time',time())->delete();
+        $ids = idArr($id);
+        $result = $model->whereIn("id",$ids)->where('status',0)->useSoftDelete('delete_time',time())->delete();
         if($result){
-            Db::name('storageInventoryGoods')->whereIn("inventory_id",idArr($id))->useSoftDelete('delete_time',time())->delete();
-            user_log($this->mid,'deleteinventory',1,'删除盘点 '.$id ,'manager');
+            Db::name('storageInventoryGoods')->whereIn("inventory_id",$ids)->useSoftDelete('delete_time',time())->delete();
+            user_log($this->mid,['deleteinventory',$ids],1,'删除盘点 '.$id ,'manager');
             $this->success(lang('Delete success!'), url('storage/inventory',['storage_id'=>$storage_id]));
         }else{
             $this->error(lang('Delete failed!'));
@@ -297,6 +301,7 @@ class StorageController extends BaseController
             $goods = $this->request->put('goods');
             $result = TransOrderModel::createOrder($order,$goods);
             if($result){
+                user_log($this->mid,['addtransorder',$result],1,'转库开单 '.$result ,'manager');
                 $this->success('开单成功！');
             }else{
                 $this->error('开单失败');
@@ -327,6 +332,7 @@ class StorageController extends BaseController
         $model = Db::name('storage');
         $result = $model->delete($id);
         if($result){
+            user_log($this->mid,['deletestorage',$id],1,'删除仓库 '.$result ,'manager');
             $this->success(lang('Delete success!'), url('storage/index'));
         }else{
             $this->error(lang('Delete failed!'));

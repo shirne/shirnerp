@@ -120,7 +120,7 @@
 
                         dialog.confirm('<div>请仔细核对您填写的数据</div><br /><div>' + [
                             '<b>付款方式</b>: ' + pay_type_text,
-                            '<b>金额('+currency+')</b>: ' + amount + ' ('+(amount>=release? '已结清':('剩余:'+(abs(release) - abs(amount))))+')',
+                            '<b>金额('+currency+')</b>: ' + amount + ' ('+(amount>=release? '已结清':('剩余:'+(Math.abs(release) - Math.abs(amount))))+')',
                             '<b>备注</b>: <span class="text-muted" >' + reson + '</span>'
                         ].join('</div><div>') + '</div>',function () {
                             $.ajax({

@@ -55,6 +55,7 @@ class TransOrderController extends BaseController
             $goods = $this->request->put('goods');
             $result = TransOrderModel::createOrder($order,$goods);
             if($result){
+                user_log($this->mid,['addtransorder',$result],1,'转库开单','manager');
                 $this->success('开单成功！');
             }else{
                 $this->error('开单失败');
@@ -99,7 +100,7 @@ class TransOrderController extends BaseController
             'status'=>$status
         );
         $order->updateStatus($data);
-        user_log($this->mid,'audittransorder',1,'更新订单 '.$id .' '.$audit,'manager');
+        user_log($this->mid,['audittransorder',$id],1,'更新订单 '.$id ,'manager');
         $this->success('操作成功');
     }
 
@@ -111,10 +112,11 @@ class TransOrderController extends BaseController
     {
         $model = Db::name('transOrder');
 
-        $result = $model->whereIn("id",idArr($id))->where('status',0)->useSoftDelete('delete_time',time())->delete();
+        $ids = idArr($id);
+        $result = $model->whereIn("id",$ids)->where('status',0)->useSoftDelete('delete_time',time())->delete();
         if($result){
-            Db::name('transOrderGoods')->whereIn("trans_order_id",idArr($id))->useSoftDelete('delete_time',time())->delete();
-            user_log($this->mid,'deletetransorder',1,'删除订单 '.$id ,'manager');
+            Db::name('transOrderGoods')->whereIn("trans_order_id",$ids)->useSoftDelete('delete_time',time())->delete();
+            user_log($this->mid,['deletetransorder',$ids],1,'删除订单 '.$id ,'manager');
             $this->success(lang('Delete success!'), url('saleOrder/index'));
         }else{
             $this->error(lang('Delete failed!'));

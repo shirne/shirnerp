@@ -64,6 +64,7 @@ class SaleOrderController extends BaseController
                 $this->error($e->getMessage());
             }
             if($result){
+                user_log($this->mid,['addsaleorder',$result],1,'创建订单 '.$result,'manager');
                 $this->success('开单成功！');
             }else{
                 $this->error('开单失败');
@@ -140,6 +141,7 @@ class SaleOrderController extends BaseController
                 $this->error($e->getMessage());
             }
             if($result){
+                user_log($this->mid,['addsaleorder',$result],1,'创建订单 '.$result,'manager');
                 $this->success('开单成功！');
             }else{
                 $this->error('开单失败');
@@ -186,7 +188,7 @@ class SaleOrderController extends BaseController
             if($order['status'] == 1) {
                 $url = url('index');
             }
-
+            user_log($this->mid,['editsaleorder',$id],1,'编辑订单 '.$id,'manager');
             $this->success('处理成功！',$url);
         }
         $customer=Db::name('customer')->find($model['customer_id']);
@@ -370,7 +372,7 @@ class SaleOrderController extends BaseController
             $data['confirm_time']=time();
         }
         $order->updateStatus($data);
-        user_log($this->mid,'auditsaleorder',1,'更新订单 '.$id .' '.$status,'manager');
+        user_log($this->mid,['auditsaleorder',$id],1,'更新订单 '.$id .' '.$status,'manager');
         $this->success('操作成功');
     }
 
@@ -380,12 +382,13 @@ class SaleOrderController extends BaseController
      */
     public function delete($id)
     {
+        $ids = idArr($id);
         $model = Db::name('saleOrder');
 
-        $result = $model->whereIn("id",idArr($id))->where('status',0)->useSoftDelete('delete_time',time())->delete();
+        $result = $model->whereIn("id",$ids)->where('status',0)->useSoftDelete('delete_time',time())->delete();
         if($result){
-            Db::name('saleOrderGoods')->whereIn("sale_order_id",idArr($id))->useSoftDelete('delete_time',time())->delete();
-            user_log($this->mid,'deletesaleorder',1,'删除订单 '.$id ,'manager');
+            Db::name('saleOrderGoods')->whereIn("sale_order_id",$ids)->useSoftDelete('delete_time',time())->delete();
+            user_log($this->mid,['deletesaleorder',$ids],1,'删除订单 '.$id ,'manager');
             $this->success(lang('Delete success!'), url('saleOrder/index'));
         }else{
             $this->error(lang('Delete failed!'));

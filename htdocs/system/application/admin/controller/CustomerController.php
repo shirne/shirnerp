@@ -66,9 +66,33 @@ class CustomerController extends BaseController
             $this->error('没有匹配到数据');
         }
 
-        $model=new CustomerModel();
-        $model->saveAll($datas);
+        //去重及去除已存在的数据
+        $titles = array_column($datas,'title');
+        $shorts = array_column($datas,'short');
+        $exists =  Db::name('customer')->whereIn('title',$titles,'OR')
+            ->whereIn('short',$shorts,'OR')
+            ->select();
+        if(!empty($exists)){
+            $titleExists = array_column($exists,'title');
+            $shortExists = array_column($exists,'short');
+            foreach ($datas as $k=>$row){
+                if(in_array($row['title'],$titleExists)){
+                    unset($datas[$k]);
+                }
+                if(in_array($row['short'],$shortExists)){
+                    unset($datas[$k]);
+                }
+            }
+        }
+        foreach ($datas as $k=>$row) {
+            if (empty($row['title'])) {
+                unset($datas[$k]);
+            }
+        }
 
+        $model=new CustomerModel();
+        $datas = $model->saveAll($datas);
+        user_log($this->mid,['importcustomer',array_index($datas->toArray(),'id')],1,'导入客户 ' ,'manager');
         $this->success('处理成功','',['success'=>1]);
     }
 
@@ -95,6 +119,7 @@ class CustomerController extends BaseController
 
                 $result = CustomerModel::create($data);
                 if ($result['id']) {
+                    user_log($this->mid,['addcustomer',$result['id']],1,'创建客户 ' ,'manager');
                     $this->success(lang('Add success!'), url('customer/index'));
                 } else {
                     $this->error(lang('Add failed!'));
@@ -136,6 +161,7 @@ class CustomerController extends BaseController
                 $result = CustomerModel::update($data,['id'=>$id]);
                 if ($result) {
                     delete_image($delete_images);
+                    user_log($this->mid,['editcustomer',$id],1,'编辑客户 ' ,'manager');
                     $this->success(lang('Update success!'), url('customer/index'));
                 } else {
                     $this->error(lang('Update failed!'));
@@ -166,6 +192,7 @@ class CustomerController extends BaseController
         $model = Db::name('customer');
         $result = $model->delete($id);
         if($result){
+            user_log($this->mid,['deletecustomer',$id],1,'删除客户 ' ,'manager');
             $this->success(lang('Delete success!'), url('customer/index'));
         }else{
             $this->error(lang('Delete failed!'));
