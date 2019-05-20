@@ -64,7 +64,7 @@ class SaleOrderController extends BaseController
                 $this->error($e->getMessage());
             }
             if($result){
-                user_log($this->mid,['addsaleorder',$result],1,'创建订单 '.$result,'manager');
+                user_log($this->mid,[SaleOrderModel::ACTION_ADD,$result],1,'创建订单 '.$result,'manager');
                 $this->success('开单成功！');
             }else{
                 $this->error('开单失败');
@@ -141,7 +141,7 @@ class SaleOrderController extends BaseController
                 $this->error($e->getMessage());
             }
             if($result){
-                user_log($this->mid,['addsaleorder',$result],1,'创建订单 '.$result,'manager');
+                user_log($this->mid,[SaleOrderModel::ACTION_ADD,$result],1,'创建订单 '.$result,'manager');
                 $this->success('开单成功！');
             }else{
                 $this->error('开单失败');
@@ -188,7 +188,7 @@ class SaleOrderController extends BaseController
             if($order['status'] == 1) {
                 $url = url('index');
             }
-            user_log($this->mid,['editsaleorder',$id],1,'编辑订单 '.$id,'manager');
+            user_log($this->mid,[SaleOrderModel::ACTION_EDIT,$id],1,'编辑订单 '.$id,'manager');
             $this->success('处理成功！',$url);
         }
         $customer=Db::name('customer')->find($model['customer_id']);
@@ -205,6 +205,7 @@ class SaleOrderController extends BaseController
         $this->assign('customer',$customer);
         $this->assign('goods',$goods);
         $this->assign('currencies',getCurrencies());
+        $this->assign('logs',SaleOrderModel::getLogs($id));
         if($mode==0) {
             $this->assign('paylog', Db::name('financeLog')->where('type', 'sale')->where('order_id', $id)->select());
         }
@@ -352,6 +353,13 @@ class SaleOrderController extends BaseController
         return $this->fetch();
     }
 
+    public function log($id)
+    {
+        $logs = SaleOrderModel::getLogs($id);
+
+        $this->result($logs,1);
+    }
+
     /**
      * 订单进度修改
      * @param $id
@@ -368,11 +376,17 @@ class SaleOrderController extends BaseController
         $data=array(
             'status'=>$status
         );
+        $remark = '更新订单状态';
         if($status==1){
+            if($order['parent_order_id']>0){
+                $remark = '退货入库';
+            }else{
+                $remark = '销售出库';
+            }
             $data['confirm_time']=time();
         }
         $order->updateStatus($data);
-        user_log($this->mid,['auditsaleorder',$id],1,'更新订单 '.$id .' '.$status,'manager');
+        user_log($this->mid,[SaleOrderModel::ACTION_AUDIT,$id],1,$remark,'manager');
         $this->success('操作成功');
     }
 
@@ -388,7 +402,7 @@ class SaleOrderController extends BaseController
         $result = $model->whereIn("id",$ids)->where('status',0)->useSoftDelete('delete_time',time())->delete();
         if($result){
             Db::name('saleOrderGoods')->whereIn("sale_order_id",$ids)->useSoftDelete('delete_time',time())->delete();
-            user_log($this->mid,['deletesaleorder',$ids],1,'删除订单 '.$id ,'manager');
+            user_log($this->mid,[SaleOrderModel::ACTION_DELETE,$ids],1,'删除订单 '.$id ,'manager');
             $this->success(lang('Delete success!'), url('saleOrder/index'));
         }else{
             $this->error(lang('Delete failed!'));

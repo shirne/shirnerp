@@ -64,7 +64,7 @@ class PurchaseOrderController extends BaseController
                 $this->error($e->getMessage());
             }
             if($result){
-                user_log($this->mid,['addpurchaseorder',$result],1,'创建订单 '.$result,'manager');
+                user_log($this->mid,[PurchaseOrderModel::ACTION_ADD,$result],1,'创建订单 '.$result,'manager');
                 $this->success('开单成功！');
             }else{
                 $this->error('开单失败');
@@ -151,7 +151,7 @@ class PurchaseOrderController extends BaseController
             if($order['status'] == 1) {
                 $url = url('index');
             }
-            user_log($this->mid,['editpurchaseorder',$id],1,'编辑订单 '.$id,'manager');
+            user_log($this->mid,[PurchaseOrderModel::ACTION_EDIT,$id],1,'编辑订单 '.$id,'manager');
             $this->success('处理成功！',$url);
         }
         $supplier=Db::name('supplier')->find($model['supplier_id']);
@@ -164,6 +164,7 @@ class PurchaseOrderController extends BaseController
         $this->assign('supplier',$supplier);
         $this->assign('goods',$goods);
         $this->assign('currencies',getCurrencies());
+        $this->assign('logs',PurchaseOrderModel::getLogs($id));
         if($mode==0) {
             $this->assign('paylog', Db::name('financeLog')->where('type', 'purchase')->where('order_id', $id)->select());
         }
@@ -189,7 +190,7 @@ class PurchaseOrderController extends BaseController
                 $this->error($e->getMessage());
             }
             if($result){
-                user_log($this->mid,['addpurchaseorder',$result],1,'创建订单 '.$id,'manager');
+                user_log($this->mid,[PurchaseOrderModel::ACTION_ADD,$result],1,'创建退货单 '.$id,'manager');
                 $this->success('开单成功！');
             }else{
                 $this->error('开单失败');
@@ -284,6 +285,13 @@ class PurchaseOrderController extends BaseController
         $excel->output('订单['.$model['order_no'].']');
     }
 
+    public function log($id)
+    {
+        $logs = PurchaseOrderModel::getLogs($id);
+
+        $this->result($logs,1);
+    }
+
     /**
      * 订单进度修改
      * @param $id
@@ -300,11 +308,17 @@ class PurchaseOrderController extends BaseController
         $data=array(
             'status'=>$status
         );
+        $remark='更新订单';
         if($status==1){
+            if($order['parent_order_id']>0){
+                $remark = '退货出库';
+            }else{
+                $remark = '采购入库';
+            }
             $data['confirm_time']=time();
         }
         $order->updateStatus($data);
-        user_log($this->mid,['auditpurchaseorder',$id],1,'更新订单 '.$id .' '.$status,'manager');
+        user_log($this->mid,[PurchaseOrderModel::ACTION_AUDIT,$id],1,$remark,'manager');
         $this->success('操作成功');
     }
 
@@ -319,7 +333,7 @@ class PurchaseOrderController extends BaseController
         $result = $model->whereIn("id",$ids)->where('status',0)->useSoftDelete('delete_time',time())->delete();
         if($result){
             Db::name('purchaseOrderGoods')->whereIn("purchase_order_id",$ids)->useSoftDelete('delete_time',time())->delete();
-            user_log($this->mid,['deletepurchaseorder',$ids],1,'删除订单 '.$id ,'manager');
+            user_log($this->mid,[PurchaseOrderModel::ACTION_DELETE,$ids],1,'删除订单 '.$id ,'manager');
             $this->success(lang('Delete success!'), url('purchaseOrder/index'));
         }else{
             $this->error(lang('Delete failed!'));

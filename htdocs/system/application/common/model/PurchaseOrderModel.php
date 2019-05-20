@@ -10,6 +10,16 @@ class PurchaseOrderModel extends BaseFinanceModel
 {
     protected $autoWriteTimestamp = true;
 
+    const ACTION_ADD = 'addpurchaseorder';
+    const ACTION_EDIT = 'editpurchaseorder';
+    const ACTION_AUDIT = 'auditpurchaseorder';
+    const ACTION_DELETE = 'deletepurchaseorder';
+
+    public static function getActions()
+    {
+        return [self::ACTION_ADD,self::ACTION_EDIT,self::ACTION_AUDIT,self::ACTION_DELETE];
+    }
+
     public static function getGoodsChanges($start_time, $storage_ids='')
     {
         $model= Db::name('purchaseOrderGoods')->alias('purchaseOrderGoods')

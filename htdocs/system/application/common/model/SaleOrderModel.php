@@ -10,6 +10,16 @@ class SaleOrderModel extends BaseFinanceModel
 {
     protected $autoWriteTimestamp = true;
 
+    const ACTION_ADD = 'addsaleorder';
+    const ACTION_EDIT = 'editsaleorder';
+    const ACTION_AUDIT = 'auditsaleorder';
+    const ACTION_DELETE = 'deletesaleorder';
+
+    public static function getActions()
+    {
+        return [self::ACTION_ADD,self::ACTION_EDIT,self::ACTION_AUDIT,self::ACTION_DELETE];
+    }
+
     public static function getGoodsChanges($start_time, $storage_ids='')
     {
         $model= Db::name('saleOrderGoods')->alias('saleOrderGoods')

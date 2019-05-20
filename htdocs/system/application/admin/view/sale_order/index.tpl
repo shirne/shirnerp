@@ -72,6 +72,7 @@
                     <td class="operations">
                         <a class="btn btn-outline-primary" target="_blank" title="导出" href="{:url('saleOrder/exportOne',array('id'=>$v['id']))}" ><i class="ion-md-download"></i> </a>
                         <a class="btn btn-outline-primary" target="_blank" title="打印" href="{:url('saleOrder/detail',array('id'=>$v['id'],'mode'=>1))}" ><i class="ion-md-print"></i> </a>
+                        <a class="btn btn-outline-primary link-log" title="操作记录" href="{:url('saleOrder/log',array('id'=>$v['id']))}" ><i class="ion-md-list"></i> </a>
                         <if condition="$v['status'] EQ 0">
                             <if condition="$v['parent_order_id']">
                                 <a class="btn btn-outline-success link-confirm" title="入库" data-confirm="请确认商品已入库，操作不可撤销!" href="{:url('saleOrder/status',array('id'=>$v['id'],'status'=>1))}" ><i class="ion-md-filing"></i> </a>
@@ -162,6 +163,42 @@
                     }
                 }).show('<p class="loading">'+lang('loading...')+'</p>','订单详情');
             })
+        });
+        var linkTpl='<tr>\n' +
+            '      <th scope="row">{@id}</th>\n' +
+            '      <td>{@username}</td>\n' +
+            '      <td>{@remark}</td>\n' +
+            '      <td>{@datetime}</td>\n' +
+            '    </tr>';
+        var tplBox = '<table class="table">\n' +
+            '  <thead>\n' +
+            '    <tr>\n' +
+            '      <th scope="col">#</th>\n' +
+            '      <th scope="col">操作员</th>\n' +
+            '      <th scope="col">操作</th>\n' +
+            '      <th scope="col">日期</th>\n' +
+            '    </tr>\n' +
+            '  </thead>\n' +
+            '  <tbody>\n' +
+            '    {@list}\n' +
+            '  </tbody>\n' +
+            '</table>';
+        $('.link-log').click(function (e) {
+            e.preventDefault();
+            var self=$(this);
+            var dlg = new Dialog({
+                btns: ['确定'],
+                onshow: function (body) {
+                    $.ajax({
+                        url: self.attr('href'),
+                        success: function (json) {
+                            body.html(tplBox.compile({
+                                list:linkTpl.compile(json.data,true)
+                            }));
+                        }
+                    });
+                }
+            }).show('<p class="loading">'+lang('loading...')+'</p>','订单操作记录');
         });
     </script>
 </block>

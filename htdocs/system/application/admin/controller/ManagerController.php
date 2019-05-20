@@ -43,15 +43,21 @@ class ManagerController extends BaseController
      * @return mixed
      */
     public function log($key=''){
-        $model=Db::view('ManagerLog','*')
-            ->view('Manager',['username'],'ManagerLog.manager_id=Manager.id','LEFT');
-        $where=array();
-        if(!empty($key)){
-            $where[]=['ManagerLog.remark','like',"%$key%"];
+        if($this->request->isPost()){
+            return redirect(url('',['key'=>base64_encode($key)]));
         }
 
-        $logs = $model->where($where)->order('ManagerLog.id DESC')->paginate(15);
+        $model=Db::view('ManagerLog','*')
+            ->view('Manager',['username'],'ManagerLog.manager_id=Manager.id','LEFT');
+
+        if(!empty($key)){
+            $key = base64_decode($key);
+            $model->whereLike('ManagerLog.remark',"%$key%");
+        }
+
+        $logs = $model->order('ManagerLog.id DESC')->paginate(15);
         $this->assign('logs', $logs);
+        $this->assign('keyword', $key);
         $this->assign('page',$logs->render());
         return $this->fetch();
     }
