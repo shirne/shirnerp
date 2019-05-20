@@ -75,6 +75,7 @@ class PurchaseOrderModel extends BaseFinanceModel
                 'price_type'=>$good['price_type'],
                 'price'=>$good['price'],
                 'base_price'=>$good['base_price'],
+                'remark'=>$good['remark'],
                 'amount'=>$good['amount']
             ];
 
@@ -129,6 +130,7 @@ class PurchaseOrderModel extends BaseFinanceModel
                 'price'=>$good['price'],
                 'base_price'=>$good['base_price'],
                 'amount'=>$good['amount'],
+                'remark'=>$good['remark'],
                 'update_time'=>$time
             ];
             if($good['id']) {

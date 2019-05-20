@@ -240,7 +240,7 @@ class SaleOrderController extends BaseController
         $style->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
         $excel->setHeader(array(
-            '品种','件数','单位','重量','单价','总价','出库仓','备注'
+            '品种','数量','单位','重量','单价','总价','出库仓','备注'
         ));
         $style = $excel->getCell('A3')->getStyle();
         $style->getFont()->setBold(true);

@@ -21,7 +21,7 @@
             <thead>
                 <tr>
                     <th>品种</th>
-                    <th>件数</th>
+                    <th>数量</th>
                     <th>单位</th>
                     <th>重量</th>
                     <th>单价</th>
@@ -40,7 +40,7 @@
                         <td>{$good.price}</td>
                         <td>{$good.amount}</td>
                         <td>{$good.storage_title}</td>
-                        <td>&nbsp;</td>
+                        <td>{$good.remark}</td>
                     </tr>
                 </volist>
             </tbody>

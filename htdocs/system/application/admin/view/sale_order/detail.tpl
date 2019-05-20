@@ -26,6 +26,7 @@
                 <th>单价</th>
                 <th>总价</th>
                 <th>仓库</th>
+                <th>备注</th>
             </tr>
             </thead>
             <tbody>
@@ -39,6 +40,7 @@
                         <td>{$p.amount}<if condition="$p['diy_price']"><span class="badge badge-secondary">已改价</span></if>
                         </td>
                         <td>{$p.storage_title}</td>
+                        <td>{$p.remark}</td>
                     </tr>
                 </volist>
             </tbody>
@@ -65,7 +67,7 @@
                     <if condition="$model['diy_price']"><span class="badge badge-secondary">已改价</span></if>
                 </td>
                 <th>已付款</th>
-                <td colspan="3">
+                <td>
                     <span class="badge badge-info">{$model.currency}</span> {$model.payed_amount}
                 </td>
             </tr>

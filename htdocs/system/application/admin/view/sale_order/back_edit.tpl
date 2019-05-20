@@ -70,14 +70,15 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th>产品</th>
+                            <th width="240">产品</th>
                             <th width="100">库存</th>
                             <th width="160">数量</th>
                             <th width="160">重量</th>
                             <th width="200">单价</th>
                             <th width="160">总价</th>
                             <th width="160">出库仓</th>
-                            <th>操作</th>
+                            <th width="160">备注</th>
+                            <th width="100">操作</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -126,6 +127,11 @@
                                         <option v-for="storage in storages" :key="storage.id" :value="storage.id">[{{storage.storage_no}}]{{storage.title}}</option>
                                     </select>
                                 </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" v-model="good.remark"/>
+                                    </div>
+                                </td>
                                 <td class="operations"><a href="javascript:" class="btn btn-sm btn-outline-danger" title="删除" @click="delGoods(idx)"><i class="ion-md-close "></i> </a> </td>
                             </tr>
                         </tbody>
@@ -151,15 +157,22 @@
                             <td>
 
                             </td>
+                            <td>
+
+                            </td>
                             <td></td>
                         </tr>
                         <tr>
                             <td colspan="5">
+                                <div class="input-group input-group-sm w-50 float-right">
+                                    <div class="input-group-prepend"><span class="input-group-text">订单备注</span></div>
+                                    <input type="text" class="form-control" v-model="order.remark"/>
+                                </div>
                                 <a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-sm btn-addrow"><i class="ion-md-add"></i> 添加行</a>
                                 <a href="{:url('goods/importOrder')}" @click="importOrder" class="btn btn-outline-primary btn-sm btn-import"><i class="ion-md-cloud-upload"></i> 导入订单</a>
                             </td>
-                            <td colspan="3" class="text-right">
-                                <div class="input-group input-group-sm">
+                            <td colspan="4">
+                                <div class="input-group input-group-sm w-50">
                                     <div class="input-group-prepend"><span class="input-group-text">运费</span></div>
                                     <input type="text" class="form-control" v-model="order.freight"/>
                                 </div>
@@ -276,6 +289,7 @@
                             weight:goods[i].weight,
                             unit:goods[i].goods_unit,
                             price:goods[i].price,
+                            remark:goods[i].remark,
                             total_price:goods[i].amount
                         });
                     }
@@ -295,6 +309,7 @@
                         unit:'',
                         weight:0,
                         price:0,
+                        remark:'',
                         total_price:0
                     });
                 },
@@ -529,6 +544,7 @@
                                 price_type:good.price_type,
                                 weight:good.weight,
                                 price:good.price,
+                                remark:'',
                                 total_price:0
                             });
                             self.updateRow(self.goods.length-1);
