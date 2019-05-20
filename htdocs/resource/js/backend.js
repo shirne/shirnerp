@@ -122,11 +122,12 @@ function importResult(json,callback) {
                 callback(json.data)
             }else{
                 var errors=json.data.errors;
-                if(errors.length>5){
-                    errors.splice(5);
-                    errors.push('...');
-                }
+
                 if(errors && errors.length){
+                    if(errors.length>5){
+                        errors.splice(5);
+                        errors.push('...');
+                    }
                     dialog.alert(json.msg+"<br />"+errors.join('<br />'),'warning');
                 }else {
                     dialog.success(json.msg);

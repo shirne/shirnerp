@@ -4,5 +4,5 @@ return [
     'tpl_replace_string'  =>  [
         '__STATIC__'=>'/static'
     ],
-    'static_version'=>'20190508'
+    'static_version'=>'20190520'
 ];
