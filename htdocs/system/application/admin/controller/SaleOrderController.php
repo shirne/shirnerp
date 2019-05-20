@@ -64,7 +64,7 @@ class SaleOrderController extends BaseController
                 $this->error($e->getMessage());
             }
             if($result){
-                user_log($this->mid,[SaleOrderModel::ACTION_ADD,$result],1,'创建订单 '.$result,'manager');
+                user_log($this->mid,[SaleOrderModel::ACTION_ADD,$result],1,'创建订单','manager');
                 $this->success('开单成功！');
             }else{
                 $this->error('开单失败');
@@ -141,7 +141,7 @@ class SaleOrderController extends BaseController
                 $this->error($e->getMessage());
             }
             if($result){
-                user_log($this->mid,[SaleOrderModel::ACTION_ADD,$result],1,'创建订单 '.$result,'manager');
+                user_log($this->mid,[SaleOrderModel::ACTION_ADD,$result],1,'创建订单','manager');
                 $this->success('开单成功！');
             }else{
                 $this->error('开单失败');
@@ -188,7 +188,7 @@ class SaleOrderController extends BaseController
             if($order['status'] == 1) {
                 $url = url('index');
             }
-            user_log($this->mid,[SaleOrderModel::ACTION_EDIT,$id],1,'编辑订单 '.$id,'manager');
+            user_log($this->mid,[SaleOrderModel::ACTION_EDIT,$id],1,'编辑订单','manager');
             $this->success('处理成功！',$url);
         }
         $customer=Db::name('customer')->find($model['customer_id']);
@@ -402,7 +402,7 @@ class SaleOrderController extends BaseController
         $result = $model->whereIn("id",$ids)->where('status',0)->useSoftDelete('delete_time',time())->delete();
         if($result){
             Db::name('saleOrderGoods')->whereIn("sale_order_id",$ids)->useSoftDelete('delete_time',time())->delete();
-            user_log($this->mid,[SaleOrderModel::ACTION_DELETE,$ids],1,'删除订单 '.$id ,'manager');
+            user_log($this->mid,[SaleOrderModel::ACTION_DELETE,$ids],1,'删除订单' ,'manager');
             $this->success(lang('Delete success!'), url('saleOrder/index'));
         }else{
             $this->error(lang('Delete failed!'));

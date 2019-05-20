@@ -64,7 +64,7 @@ class PurchaseOrderController extends BaseController
                 $this->error($e->getMessage());
             }
             if($result){
-                user_log($this->mid,[PurchaseOrderModel::ACTION_ADD,$result],1,'创建订单 '.$result,'manager');
+                user_log($this->mid,[PurchaseOrderModel::ACTION_ADD,$result],1,'创建订单','manager');
                 $this->success('开单成功！');
             }else{
                 $this->error('开单失败');
@@ -151,7 +151,7 @@ class PurchaseOrderController extends BaseController
             if($order['status'] == 1) {
                 $url = url('index');
             }
-            user_log($this->mid,[PurchaseOrderModel::ACTION_EDIT,$id],1,'编辑订单 '.$id,'manager');
+            user_log($this->mid,[PurchaseOrderModel::ACTION_EDIT,$id],1,'编辑订单','manager');
             $this->success('处理成功！',$url);
         }
         $supplier=Db::name('supplier')->find($model['supplier_id']);
@@ -190,7 +190,7 @@ class PurchaseOrderController extends BaseController
                 $this->error($e->getMessage());
             }
             if($result){
-                user_log($this->mid,[PurchaseOrderModel::ACTION_ADD,$result],1,'创建退货单 '.$id,'manager');
+                user_log($this->mid,[PurchaseOrderModel::ACTION_ADD,$result],1,'创建退货单','manager');
                 $this->success('开单成功！');
             }else{
                 $this->error('开单失败');
@@ -333,7 +333,7 @@ class PurchaseOrderController extends BaseController
         $result = $model->whereIn("id",$ids)->where('status',0)->useSoftDelete('delete_time',time())->delete();
         if($result){
             Db::name('purchaseOrderGoods')->whereIn("purchase_order_id",$ids)->useSoftDelete('delete_time',time())->delete();
-            user_log($this->mid,[PurchaseOrderModel::ACTION_DELETE,$ids],1,'删除订单 '.$id ,'manager');
+            user_log($this->mid,[PurchaseOrderModel::ACTION_DELETE,$ids],1,'删除订单' ,'manager');
             $this->success(lang('Delete success!'), url('purchaseOrder/index'));
         }else{
             $this->error(lang('Delete failed!'));

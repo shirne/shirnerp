@@ -53,6 +53,26 @@
             </tr>
             </tfoot>
         </table>
+        <table class="table mt-2">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">操作员</th>
+                <th scope="col">操作</th>
+                <th scope="col">日期</th>
+            </tr>
+            </thead>
+            <tbody>
+            <volist name="logs" id="log">
+                <tr>
+                    <th>{$log.id}</th>
+                    <td>{$log.username}</td>
+                    <td>{$log.remark}</td>
+                    <td>{$log.datetime}</td>
+                </tr>
+            </volist>
+            </tbody>
+        </table>
     </div>
 </block>
 <block name="script">
