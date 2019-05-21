@@ -279,6 +279,7 @@ class PurchaseOrderController extends BaseController
             [$model['currency'],DataType::TYPE_STRING],$total,
             '',''
         ));
+        $excel->setRangeAlign('E'.($rownum+1),Alignment::HORIZONTAL_RIGHT);
         if($model['remark']){
             $excel->addRow([
                 '备注：',$model['remark']
