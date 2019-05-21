@@ -277,8 +277,8 @@ class SaleOrderController extends BaseController
 
         $excel->addRow(array(
             '合计',["=SUM(B{$firstrow}:B{$rownum})",DataType::TYPE_FORMULA],'',
-            ["=SUM(D{$firstrow}:D{$rownum})",DataType::TYPE_FORMULA],'',
-            $total,
+            ["=SUM(D{$firstrow}:D{$rownum})",DataType::TYPE_FORMULA],
+            [$model['currency'],DataType::TYPE_STRING],$total,
             '',''
         ));
         if($model['remark']){
