@@ -287,7 +287,7 @@ class PurchaseOrderController extends BaseController
 
         $excel->setRangeBorder('A1:H'.($rownum+1),'FF000000');
 
-        $excel->output('订单['.$model['order_no'].']');
+        $excel->output('入库单['.$model['order_no'].']');
     }
 
     public function log($id)

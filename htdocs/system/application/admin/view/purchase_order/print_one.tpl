@@ -11,7 +11,7 @@
     </div>
     <div id="page-wrapper" class="container m-auto">
         <h3 class="text-center">{:getSetting('site-name')}</h3>
-        <h4 class="text-center">{$model['parent_order_id']?'退货':'收货'}清单({$supplier['title']})</h4>
+        <h4 class="text-center">{$model['parent_order_id']?'采购退货':'采购入库'}清单({$supplier['title']})</h4>
         <div class="row">
             <div class="col text-left">下单日期：{$model['create_time']|showdate}</div>
             <div class="col text-right"></div>
