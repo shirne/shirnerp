@@ -45,12 +45,18 @@
                 </volist>
             </tbody>
             <tfoot>
-            <tr>
-                <th>运费</th>
-                <td colspan="3">{$model.freight}</td>
-                <th>合计</th>
-                <td colspan="3">[{$model.currency}]&nbsp;{$model.amount}</td>
-            </tr>
+            <if condition="!empty($model['remark'])">
+                <tr>
+                    <th>备注</th>
+                    <td colspan="7">{$model.remark}</td>
+                </tr>
+            </if>
+                <tr>
+                    <th>运费</th>
+                    <td colspan="3">{$model.freight}</td>
+                    <th>合计</th>
+                    <td colspan="3">[{$model.currency}]&nbsp;{$model.amount}</td>
+                </tr>
             </tfoot>
         </table>
         <table class="table mt-2">

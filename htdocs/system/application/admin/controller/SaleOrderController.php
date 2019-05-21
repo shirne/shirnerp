@@ -262,7 +262,7 @@ class SaleOrderController extends BaseController
                 $row['goods_title'],$row['count'],$row['goods_unit'],
                 $row['weight'],$row['price'],
                 $subtotal,
-                $row['storage_title'],''
+                $row['storage_title'],$row['remark']
             ));
         }
         $excel->addRow([
@@ -281,6 +281,11 @@ class SaleOrderController extends BaseController
             $total,
             '',''
         ));
+        if($model['remark']){
+            $excel->addRow([
+                '备注：',$model['remark']
+            ]);
+        }
 
         $excel->setRangeBorder('A1:H'.($rownum+1),'FF000000');
 
