@@ -36,7 +36,7 @@
                     <td>{$good.count}</td>
                     <td>{$good.goods_unit}</td>
                     <td>{$good.weight}</td>
-                    <td>{$good.price}</td>
+                    <td>{$good.price}/{$good['price_type']?getSetting('weight_unit'):$good['goods_unit']}</td>
                     <td>{$good.amount}</td>
                     <td>{$good.storage_title}</td>
                     <td>{$good.remark}</td>
