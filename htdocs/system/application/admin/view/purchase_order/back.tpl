@@ -129,7 +129,7 @@
                             <td></td>
                             <td>{{total.count}}</td>
                             <td></td>
-                            <td></td>
+                            <td>{{total.weight}} {:getSetting('weight_unit')}</td>
                             <td>
                                 <div class="input-group input-group-sm" v-if="order.diy_price">
                                     <input type="text" v-model="total.price" class="form-control" />
@@ -212,6 +212,7 @@
                 listGoods:[],
                 total:{
                     count:0,
+                    weight:0,
                     price:0
                 },
                 ajaxing:false
@@ -335,14 +336,16 @@
                     }
                 },
                 totalPrice:function () {
+                    this.total.count = 0;
+                    this.total.weight = 0;
+                    var total_price = 0;
+                    for (var i = 0; i < this.goods.length; i++) {
+                        if (this.goods[i].count) this.total.count += parseFloat(this.goods[i].count);
+                        if (this.goods[i].weight) this.total.weight += parseFloat(this.goods[i].weight);
+                        if (this.goods[i].total_price) total_price += parseFloat(this.goods[i].total_price.toString().replace(',', ''));
+                    }
                     if(this.order.diy_price==0) {
-                        this.total.count = 0;
-                        this.total.price = 0;
-                        for (var i = 0; i < this.goods.length; i++) {
-                            if (this.goods[i].count) this.total.count += parseFloat(this.goods[i].count);
-                            if (this.goods[i].total_price) this.total.price += parseFloat(this.goods[i].total_price.toString().replace(',', ''));
-                        }
-                        this.total.price = this.total.price.format(2);
+                        this.total.price = total_price.format(2);
                     }
                 },
 

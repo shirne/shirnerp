@@ -91,6 +91,7 @@ return array(
             'export'=>'导出订单列表',
             'exportone'=>'导出订单',
             'detail'=>'订单查看/编辑',
+            'prints'=>'打印标签',
             'delete'=>'订单删除',
             'status'=>'订单状态',
         )

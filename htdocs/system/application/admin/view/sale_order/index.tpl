@@ -14,7 +14,7 @@
                         <a href="javascript:" class="btn btn-outline-secondary checkreverse-btn">反选</a>
                     </div>
                     <div class="btn-group btn-group-sm mr-2" role="group" aria-label="action button group">
-                        <a href="javascript:" class="btn btn-outline-secondary action-btn" data-action="prints">打印</a>
+                        <a href="javascript:" class="btn btn-outline-secondary action-btn" data-action="prints">打印标签</a>
                         <a href="javascript:" class="btn btn-outline-secondary action-btn" data-action="export">导出</a>
                     </div>
                     <a href="{:url('saleOrder/create')}" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 添加销售单</a>
