@@ -6,7 +6,7 @@
 <div id="page-wrapper">
     <div class="row list-header">
         <div class="col-md-6">
-            <a href="{:url('manager/add')}" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 添加管理员</a>
+            <a href="{:url('manager/add')}" data-tab="timestamp" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 添加管理员</a>
         </div>
         <div class="col-md-6">
             <form action="{:url('manager/index')}" method="post">
@@ -47,9 +47,9 @@
                 </td> 
                 <td><if condition="$v.status eq 1">正常<else/><span style="color:red">禁用</span></if></td>
                 <td class="operations">
-                    <a class="btn btn-outline-primary" title="编辑" href="{:url('manager/update',array('id'=>$v['id']))}"><i class="ion-md-create"></i> </a>
+                    <a class="btn btn-outline-primary" data-tab="edit-{$v.id}" title="编辑" href="{:url('manager/update',array('id'=>$v['id']))}"><i class="ion-md-create"></i> </a>
                 <if condition="$v.type neq 1">
-                    <a class="btn btn-outline-primary" title="权限" href="{:url('manager/permision',array('id'=>$v['id']))}"><i class="ion-md-key"></i> </a>
+                    <a class="btn btn-outline-primary" data-tab="permision-{$v.id}" title="权限" href="{:url('manager/permision',array('id'=>$v['id']))}"><i class="ion-md-key"></i> </a>
                 </if>
                 <if condition="$v.status eq 1">	
                     <a class="btn btn-outline-danger link-confirm" title="禁用" data-confirm="禁用后用户将不能登陆后台!\n请确认!!!" href="{:url('manager/delete',array('id'=>$v['id']))}" ><i class="ion-md-close"></i> </a>

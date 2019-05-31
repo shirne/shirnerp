@@ -194,6 +194,7 @@
         var hideTimeout=0;
         var currentInput=null;
         var hideCustomerTimeout=0;
+        window.page_title = '销售退货[{$customer.title}]';
         var app = new Vue({
             el: '#page-wrapper',
             data: {

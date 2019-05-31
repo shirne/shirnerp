@@ -63,6 +63,7 @@
 
     <block name="script"></block>
     <script type="text/javascript">
+
         (function(){
             if(!window.IS_TOP){
                 var curkey = $(window.frameElement).data('key');

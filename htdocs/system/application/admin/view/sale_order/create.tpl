@@ -205,6 +205,7 @@
         var hideTimeout=0;
         var currentInput=null;
         var hideCustomerTimeout=0;
+        window.page_title = '销售单[{$customer.title}]';
         var app = new Vue({
             el: '#page-wrapper',
             data: {
@@ -644,6 +645,7 @@
                             this.order.customer_id=customer.id;
                             this.order.customer_title=customer.title;
                             this.cKey = customer.title;
+                            updateThisTitle('销售单['+customer.title+']');
                             return true;
                         }
                     }

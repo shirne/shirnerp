@@ -7,7 +7,7 @@
     <div id="page-wrapper">
         <div class="row list-header">
             <div class="col">
-                <a href="{:url('accounting')}" class="btn btn-outline-primary"><i class="ion-md-podium"></i> 成本核算</a>
+                <a href="{:url('accounting')}" data-tab="accounting" class="btn btn-outline-primary"><i class="ion-md-podium"></i> 成本核算</a>
             </div>
         </div>
         <div class="card border-default">

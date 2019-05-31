@@ -210,7 +210,7 @@
             window.createPage = createPage;
             window.createNavPage=createNavPage;
             window.refreshPage = refreshPage;
-            window.removePage = removePage;
+            window.removePage = window.closePage = removePage;
             window.updatePage = updatePage;
 
 

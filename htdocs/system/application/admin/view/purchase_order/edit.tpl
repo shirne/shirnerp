@@ -2,10 +2,10 @@
 
 <block name="body">
 
-    <include file="public/bread" menu="purchase_order_index" title="修改采购单" />
+    <include file="public/bread" menu="purchase_order_index" title="编辑采购单" />
 
     <div id="page-wrapper">
-        <div class="page-header">修改采购单</div>
+        <div class="page-header">编辑采购单</div>
         <div class="page-content">
             <form method="post" action="" enctype="multipart/form-data" @submit="onSubmit">
                 <div class="card">
@@ -188,6 +188,7 @@
         var hideTimeout=0;
         var currentInput=null;
         var hideSupplierTimeout=0;
+        window.page_title = '采购单[{$supplier.title}]';
         var app = new Vue({
             el: '#page-wrapper',
             data: {
@@ -604,6 +605,8 @@
                             this.order.supplier_id=supplier.id;
                             this.order.supplier_title=supplier.title;
                             this.cKey = supplier.title;
+                            updateThisTitle('采购单['+supplier.title+']');
+
                             return true;
                         }
                     }

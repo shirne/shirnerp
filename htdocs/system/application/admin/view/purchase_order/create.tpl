@@ -588,6 +588,7 @@
                             this.order.supplier_id=supplier.id;
                             this.order.supplier_title=supplier.title;
                             this.cKey = supplier.title;
+                            updateThisTitle('采购单['+supplier.title+']');
                             return true;
                         }
                     }

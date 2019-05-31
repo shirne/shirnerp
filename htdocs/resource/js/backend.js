@@ -26,6 +26,19 @@ function getData(body) {
     return data;
 }
 
+function closeThisPage() {
+    if(window.frameElement && top.closePage){
+        var curkey = $(window.frameElement).data('key');
+        top.closePage(curkey);
+    }
+}
+function updateThisTitle(title){
+    if(window.frameElement && top.closePage){
+        var curkey = $(window.frameElement).data('key');
+        top.updatePage(curkey,title);
+    }
+}
+
 var excelTpl = '<form method="POST" enctype="multipart/form-data">' +
     '<div class="form-group">' +
     '<div class="custom-file">\n' +
@@ -413,13 +426,22 @@ jQuery(function ($) {
                 window.stop_ajax=false;
                 isbtn?$(btn).text(origText):$(btn).val(origText);
                 if (json.code == 1) {
-                    dialog.alert(json.msg,function(){
+                    dialog.confirm(json.msg,function () {
                         if (json.url) {
                             location.href = json.url;
                         } else {
                             location.reload();
                         }
+                    },function () {
+                        closeThisPage()
                     });
+                    /*dialog.alert(json.msg,function(){
+                        if (json.url) {
+                            location.href = json.url;
+                        } else {
+                            location.reload();
+                        }
+                    });*/
                 } else {
                     dialog.warning(json.msg);
                     $(btn).removeAttr('disabled');

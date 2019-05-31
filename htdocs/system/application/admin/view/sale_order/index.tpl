@@ -17,7 +17,7 @@
                         <a href="javascript:" class="btn btn-outline-secondary action-btn" data-action="prints">打印标签</a>
                         <a href="javascript:" class="btn btn-outline-secondary action-btn" data-action="export">导出</a>
                     </div>
-                    <a href="{:url('saleOrder/create')}" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 添加销售单</a>
+                    <a href="{:url('saleOrder/create')}" data-tab="timestamp" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 添加销售单</a>
                 </div>
             </div>
             <div class="col-6">
@@ -79,11 +79,11 @@
                                 <else/>
                             <a class="btn btn-outline-success link-confirm" title="出库" data-confirm="请确认商品已出库，操作不可撤销!" href="{:url('saleOrder/status',array('id'=>$v['id'],'status'=>1))}" ><i class="ion-md-filing"></i> </a>
                             </if>
-                            <a class="btn btn-outline-primary" title="编辑" href="{:url('saleOrder/detail',array('id'=>$v['id'],'mode'=>2))}" ><i class="ion-md-create"></i> </a>
+                            <a class="btn btn-outline-primary" data-tab="edit-{$v.id}" title="编辑" href="{:url('saleOrder/detail',array('id'=>$v['id'],'mode'=>2))}" ><i class="ion-md-create"></i> </a>
                             <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('saleOrder/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
                             <else/>
                             <if condition="$v['parent_order_id'] EQ 0">
-                            <a class="btn btn-outline-warning" title="退货" href="{:url('saleOrder/back',array('id'=>$v['id']))}" ><i class="ion-md-undo"></i> </a>
+                            <a class="btn btn-outline-warning" data-tab="timestamp" title="退货" href="{:url('saleOrder/back',array('id'=>$v['id']))}" ><i class="ion-md-undo"></i> </a>
                             </if>
                             <a class="btn btn-outline-primary link-detail" title="详情" href="{:url('saleOrder/detail',array('id'=>$v['id']))}" ><i class="ion-md-document"></i> </a>
                         </if>

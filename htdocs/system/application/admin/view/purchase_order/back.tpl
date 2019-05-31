@@ -183,6 +183,7 @@
         var hideTimeout=0;
         var currentInput=null;
         var hideSupplierTimeout=0;
+        window.page_title = '采购退货[{$supplier.title}]';
         var app = new Vue({
             el: '#page-wrapper',
             data: {

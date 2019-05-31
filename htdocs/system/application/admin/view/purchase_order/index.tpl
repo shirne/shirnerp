@@ -8,7 +8,7 @@
 
         <div class="row list-header">
             <div class="col-6">
-                <a href="{:url('purchaseOrder/create')}" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 添加入库单</a>
+                <a href="{:url('purchaseOrder/create')}" data-tab="timestamp" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 添加入库单</a>
             </div>
             <div class="col-6">
                 <form action="{:url('purchaseOrder/index')}" method="post">
@@ -69,11 +69,11 @@
                                 <else/>
                             <a class="btn btn-outline-success link-confirm" title="入库" data-confirm="请确认商品已入库，操作不可撤销!" href="{:url('purchaseOrder/status',array('id'=>$v['id'],'status'=>1))}" ><i class="ion-md-filing"></i> </a>
                             </if>
-                            <a class="btn btn-outline-primary" title="编辑" href="{:url('purchaseOrder/detail',array('id'=>$v['id'],'mode'=>2))}" ><i class="ion-md-create"></i> </a>
+                            <a class="btn btn-outline-primary" data-tab="edit-{$v.id}" title="编辑" href="{:url('purchaseOrder/detail',array('id'=>$v['id'],'mode'=>2))}" ><i class="ion-md-create"></i> </a>
                             <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('purchaseOrder/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
                             <else/>
                             <if condition="$v['parent_order_id'] EQ 0">
-                            <a class="btn btn-outline-warning" title="退货" href="{:url('purchaseOrder/back',array('id'=>$v['id']))}" ><i class="ion-md-undo"></i> </a>
+                            <a class="btn btn-outline-warning" data-tab="timestamp" title="退货" href="{:url('purchaseOrder/back',array('id'=>$v['id']))}" ><i class="ion-md-undo"></i> </a>
                             </if>
                             <a class="btn btn-outline-primary link-detail" data-id="{$v.id}" title="详情" href="{:url('purchaseOrder/detail',array('id'=>$v['id']))}" ><i class="ion-md-document"></i> </a>
                         </if>

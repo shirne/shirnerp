@@ -65,7 +65,7 @@ class SaleOrderController extends BaseController
             }
             if($result){
                 user_log($this->mid,[SaleOrderModel::ACTION_ADD,$result],1,'创建订单','manager');
-                $this->success('开单成功！');
+                $this->success('开单成功！',url('detail',['id'=>$result]));
             }else{
                 $this->error('开单失败');
             }
@@ -142,7 +142,7 @@ class SaleOrderController extends BaseController
             }
             if($result){
                 user_log($this->mid,[SaleOrderModel::ACTION_ADD,$result],1,'创建订单','manager');
-                $this->success('开单成功！');
+                $this->success('开单成功！',url('detail',['id'=>$result]));
             }else{
                 $this->error('开单失败');
             }
