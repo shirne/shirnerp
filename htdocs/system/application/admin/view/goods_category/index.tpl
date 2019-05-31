@@ -8,7 +8,7 @@
     
     <div class="row list-header">
         <div class="col-6">
-            <a href="{:url('goodsCategory/add')}" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> {:lang('Add Category')}</a>
+            <a href="{:url('goodsCategory/add')}" data-tab="timestamp" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> {:lang('Add Category')}</a>
         </div>
         <div class="col-6">
             <form action="{:url('goodsCategory/index')}" method="post">
@@ -39,9 +39,9 @@
                 <td>{$v.name}</td>
                 <td>{$v.sort}</td>
                 <td class="operations">
-                    <a class="btn btn-outline-primary" title="{:lang('Publish Goods')}" href="{:url('goods/add',array('cid'=>$v['id']))}"><i class="ion-md-paper-plane"></i> </a>
-                    <a class="btn btn-outline-primary" title="{:lang('Add Sub Category')}" href="{:url('goodsCategory/add',array('pid'=>$v['id']))}"><i class="ion-md-add"></i> </a>
-                    <a class="btn btn-outline-primary" title="{:lang('Edit')}" href="{:url('goodsCategory/edit',array('id'=>$v['id']))}"><i class="ion-md-create"></i> </a>
+                    <a class="btn btn-outline-primary" title="{:lang('Publish Goods')}" data-tab="timestamp" href="{:url('goods/add',array('cid'=>$v['id']))}"><i class="ion-md-paper-plane"></i> </a>
+                    <a class="btn btn-outline-primary" title="{:lang('Add Sub Category')}" data-tab="timestamp" href="{:url('goodsCategory/add',array('pid'=>$v['id']))}"><i class="ion-md-add"></i> </a>
+                    <a class="btn btn-outline-primary" title="{:lang('Edit')}" data-tab="edit-{$v.id}" href="{:url('goodsCategory/edit',array('id'=>$v['id']))}"><i class="ion-md-create"></i> </a>
                     <a class="btn btn-outline-danger link-confirm" title="{:lang('Delete')}" data-confirm="{:lang('Confirm to delete? The operation can not restore!')}" href="{:url('category/delete',array('id'=>$v['id']))}"  ><i class="ion-md-trash"></i> </a>
                 </td>
             </tr>

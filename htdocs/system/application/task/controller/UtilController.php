@@ -41,7 +41,7 @@ class UtilController extends Controller
 
     public function updatedb()
     {
-        $sqls = [];
+        $sqls = ["UPDATE sa_permission set `url`='Index/dashboard' where `id`=1"];
         foreach ($sqls as $sql){
             Db::execute($sql);
         }

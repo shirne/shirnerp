@@ -149,7 +149,7 @@ jQuery(function ($) {
     var bread = $(".breadcrumb");
     var menu = bread.data('menu');
     if (menu) {
-        var link = $('.side-nav a[data-key=' + menu + ']');
+        var link = top.$('.side-nav a[data-key=' + menu + ']');
 
         var html = [];
         if (link.length > 0) {
@@ -157,8 +157,8 @@ jQuery(function ($) {
                 html.push('<li class="breadcrumb-item"><a href="javascript:"><i class="' + link.find('i').attr('class') + '"></i>&nbsp;' + link.text() + '</a></li>');
             } else {
                 var parent = link.parents('.collapse').eq(0);
-                parent.addClass('show');
-                link.addClass("active");
+                //parent.addClass('show');
+                //link.addClass("active");
                 var topmenu = parent.siblings('.card-header').find('a.menu_top');
                 html.push('<li class="breadcrumb-item"><a href="javascript:"><i class="' + topmenu.find('i').attr('class') + '"></i>&nbsp;' + topmenu.text() + '</a></li>');
                 html.push('<li class="breadcrumb-item"><a href="javascript:">' + link.text() + '</a></li>');

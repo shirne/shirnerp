@@ -15,6 +15,14 @@ function setLogin($user){
     user_log($user['id'],'login',1,'登录成功' ,'manager');
 }
 
+function filterurl($url){
+    //只保留本站url
+    if(!preg_match('/^\/[a-zA-Z0-9\-_\.\/]+$/',$url)){
+        return '';
+    }
+    return $url;
+}
+
 function clearLogin($log=true){
     $id=session('adminId');
     if($log && !empty($id)) {

@@ -17,11 +17,15 @@ use think\facade\Log;
  */
 class IndexController extends BaseController{
 
+    public function index(){
+        return $this->fetch();
+    }
+
     /**
      * 首页
      * @return mixed
      */
-    public function index(){
+    public function dashboard(){
 
         $stat=array();
         $stat['goods']=Db::name('goods')->count();

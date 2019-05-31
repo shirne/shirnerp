@@ -44,42 +44,15 @@
     </script>
 
     <block name="header"></block>
-
+    <script type="text/javascript">
+        if(!window.IS_TOP && !window.frameElement){
+            console.log('{:url("index/index")}?url={:url()}')
+            top.location = '{:url("index/index")}?url={:url()}'
+        }
+    </script>
 </head>
 
 <body>
-
-<div id="wrapper">
-
-    <!-- Sidebar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" role="navigation">
-
-        <a class="navbar-brand" href="{:url('index/index')}">{:lang('Management')}</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse justify-content-end navbar-ex1-collapse" id="navbarSupportedContent">
-
-            <include file="public/sidebar" />
-
-            <div class="nav navbar-nav navbar-user">
-
-                <li class="dropdown user-dropdown">
-                    <a href="javascript:" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="ion-md-person"></i> {:lang('Welcome %s',[session('adminname')])} <b class="caret"></b></a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="/" target="_blank"><i class="ion-md-home"></i> {:lang('Home ')}</a>
-                        <a class="dropdown-item" href="{:url('index/clearcache')}"><i class="ion-md-sync"></i> {:lang('Clear Cache')}</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{:url('setting/index')}"><i class="ion-md-options"></i> {:lang('Settings')}</a>
-                        <a class="dropdown-item" href="{:url('index/profile')}"><i class="ion-md-person"></i> {:lang('Profile')}</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{:url('login/logout')}"><i class="ion-md-log-out"></i> {:lang('Sign out')}</a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </nav>
 
     <block name="body" ></block>
 
@@ -87,58 +60,47 @@
     <script src="__STATIC__/moment/locale/zh-cn.js"></script>
     <script src="__STATIC__/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
     <script src="__STATIC__/admin/js/app.min.js?v={:config('template.static_version')}"></script>
+
+    <block name="script"></block>
     <script type="text/javascript">
         (function(){
-            var func=arguments.callee;
-            if(window.stop_ajax){
-                setTimeout(func, 2000);
-            }else {
-                return;
-                $.ajax('{:url("index/newcount")}', {
-                    dataType: 'JSON',
-                    type: 'POST',
-                    success: function (json) {
-                        //console.log(json);
-                        $('.side-nav .badge').remove();
-                        for (var key in json) {
-                            var node = null;
-                            switch (key) {
-                                case 'newMemberCount':
-                                    node = $('[data-key=member_index]');
-                                    break;
-                                case 'newOrderCount':
-                                    node = $('[data-key=order_index]');
-                                    break;
-                            }
-                            if (node) {
-                                if (json[key] > 0) {
-                                    var badge = node.find('.badge');
-                                    if (badge.length < 1) {
-                                        node.append('<span class="badge badge-light">' + json[key] + '</span>');
-                                    } else {
-                                        badge.text(json[key]);
-                                    }
-                                    if (node.parents('.panel-body').length > 0) {
-                                        var pbadge = node.parents('.panel').find('.panel-title a .badge');
-                                        if (pbadge.length < 1) {
-                                            node.parents('.panel').find('.panel-title a').append('<span class="badge badge-light">..</span>');
-                                        } else {
-                                            pbadge.text(json[key]);
-                                        }
-                                    }
-                                }
-                            }
-                        }
+            if(!window.IS_TOP){
+                var curkey = $(window.frameElement).data('key');
 
-                        setTimeout(func, 10000);
-                    },
-                    error: function () {
-                        setTimeout(func, 10000);
+                $('a[data-tab]').click(function (e) {
+                    e.preventDefault();
+                    var islist = window.IS_LIST;
+                    var subkey = $(this).data('tab');
+                    var key = curkey + '_';
+                    if(subkey === 'random') {
+                        key += Math.random().toString().substr(2);
+                    }else if(subkey === 'timestamp'){
+                        key += new Date().getTime();
+                    }else{
+                        key += subkey;
                     }
+                    top.createPage(key, $(this).text(), $(this).attr('href'));
                 });
+                $('a[data-nav]').click(function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    top.createNavPage($(this).data('nav'));
+                });
+                if(window.page_title){
+                    top.updatePage(curkey, window.page_title);
+                }else {
+                    var title = $('.breadcrumb').data('title');
+                    if (title) {
+                        top.updatePage(curkey, title);
+                    }
+                }
+
+                $('.bread_refresh').click(function (e) {
+                    location.reload();
+                })
             }
         })();
+
     </script>
-    <block name="script"></block>
 </body>
 </html>

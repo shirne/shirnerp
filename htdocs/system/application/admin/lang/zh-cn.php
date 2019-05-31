@@ -26,4 +26,6 @@ return [
     'Category update'=>'分类信息',
     'Category'=>'分类',
     'Category Title'=>'分类名称',
+
+    'Confirm to delete? The operation can not restore!'=>'确定删除？该操作无法撤销！'
 ];

@@ -9,7 +9,7 @@
     <div class="row list-header">
         <div class="col-6">
             <a href="{:url('storage/add')}" class="btn btn-outline-primary btn-sm btn-add-storage"><i class="ion-md-add"></i> 添加仓库</a>
-            <a href="{:url('transOrder/create')}" class="btn btn-outline-primary btn-sm btn-trans-goods"><i class="ion-md-swap"></i> 商品转库</a>
+            <a href="{:url('transOrder/create')}" data-tab="timestamp" class="btn btn-outline-primary btn-sm btn-trans-goods"><i class="ion-md-swap"></i> 商品转库</a>
         </div>
         <div class="col-6">
         </div>
@@ -33,8 +33,8 @@
                 <td>{$v.province}/{$v.city}/{$v.area}</td>
                 <td>{$v.address}</td>
                 <td class="operations">
-                    <a class="btn btn-outline-primary" title="盘点" href="{:url('storage/inventory',array('storage_id'=>$v['id']))}"><i class="ion-md-today"></i> </a>
-                    <a class="btn btn-outline-primary" title="库存" href="{:url('storage/goods',array('id'=>$v['id']))}"><i class="ion-md-grid"></i> </a>
+                    <a class="btn btn-outline-primary" title="盘点" data-tab="inventory-{$v.id}" href="{:url('storage/inventory',array('storage_id'=>$v['id']))}"><i class="ion-md-today"></i> </a>
+                    <a class="btn btn-outline-primary" title="库存" data-tab="goods-{$v.id}" href="{:url('storage/goods',array('id'=>$v['id']))}"><i class="ion-md-grid"></i> </a>
                     <a class="btn btn-outline-primary btn-edit-storage" data-id="{$v.id}" title="编辑" href="{:url('storage/edit',array('id'=>$v['id']))}"><i class="ion-md-create"></i> </a>
                     <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('storage/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
                 </td>

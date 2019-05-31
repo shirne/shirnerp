@@ -8,7 +8,7 @@
 
         <div class="row list-header">
             <div class="col-6">
-                <a href="{:url('transOrder/create')}" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 商品转库</a>
+                <a href="{:url('transOrder/create')}" data-tab="timestamp" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 商品转库</a>
             </div>
             <div class="col-6">
                 <form action="{:url('transOrder/index')}" method="post">

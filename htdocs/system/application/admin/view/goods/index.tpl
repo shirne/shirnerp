@@ -17,7 +17,7 @@
 				<a href="{:url('goods/add')}" class="btn btn-outline-primary btn-sm action-btn mr-2" data-needchecks="false" data-action="add"><i class="ion-md-add"></i> 添加商品</a>
 				<a href="javascript:" class="btn btn-outline-primary btn-sm action-btn mr-2" data-needchecks="false" data-action="batchadd"><i class="ion-md-add"></i> 批量添加</a>
 				<a href="{:url('goods/import')}" class="btn btn-outline-primary btn-sm mr-2 btn-import"><i class="ion-md-cloud-upload"></i> 导入商品</a>
-				<a href="{:url('rank')}" class="btn btn-outline-primary btn-sm"><i class="ion-md-stats"></i> 商品统计</a>
+				<a href="{:url('rank')}" data-tab="stat" class="btn btn-outline-primary btn-sm"><i class="ion-md-stats"></i> 商品统计</a>
 			</div>
 		</div>
 		<div class="col-md-6">
@@ -69,7 +69,7 @@
 					<td>{$v.category_title}</td>
 					<td>{$v.description}</td>
 					<td class="operations">
-						<a href="{:url('statics',['goods_id'=>$v['id']])}" title="商品统计" class="btn btn-outline-primary btn-sm"><i class="ion-md-stats"></i></a>
+						<a href="{:url('statics',['goods_id'=>$v['id']])}" data-tab="stat-{$v.id}" title="商品统计" class="btn btn-outline-primary btn-sm"><i class="ion-md-stats"></i></a>
 					<a class="btn btn-outline-primary action-btn" data-action="edit" data-needchecks="false" data-id="{$v.id}" title="编辑" href="{:url('goods/edit',array('id'=>$v['id']))}"><i class="ion-md-create"></i> </a>
 					<a class="btn btn-outline-danger link-confirm" title="{:lang('Delete')}" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('goods/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
 					</td>
