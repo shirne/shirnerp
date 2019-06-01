@@ -33,11 +33,11 @@
                     <else/>
                     <div class="form-group">
                         <label>密码</label>
-                        <input class="form-control" type="password" name="password" placeholder="password">
+                        <input class="form-control" type="password" name="password" placeholder="登录密码">
                     </div>
                     <div class="form-group">
                         <label>确认密码</label>
-                        <input class="form-control" type="password" name="repassword" placeholder="repassword">
+                        <input class="form-control" type="password" name="repassword" placeholder="再次输入确认">
                     </div>
                 </if>
                 <div class="form-row">

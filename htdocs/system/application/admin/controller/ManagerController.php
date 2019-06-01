@@ -114,7 +114,7 @@ class ManagerController extends BaseController
                 $model=ManagerModel::create($data);
                 if ($model->id) {
                     user_log($this->mid,'addmanager',1,'添加管理员'.$model->id ,'manager');
-                    $this->success(lang('Add success!'), url('manager/index'));
+                    $this->success(lang('Add success!'), url('manager/update',['id'=>$model->id]));
                 } else {
                     $this->error(lang('Add failed!'));
                 }
