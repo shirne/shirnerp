@@ -33,9 +33,15 @@ function closeThisPage() {
     }
 }
 function updateThisTitle(title){
-    if(window.frameElement && top.closePage){
+    if(window.frameElement && top.updatePage){
         var curkey = $(window.frameElement).data('key');
         top.updatePage(curkey,title);
+    }
+}
+function refreshFromPage(){
+    if(window.frameElement && top.refreshFromPage){
+        var curkey = $(window.frameElement).data('key');
+        top.refreshFromPage(curkey);
     }
 }
 
@@ -426,7 +432,14 @@ jQuery(function ($) {
                 window.stop_ajax=false;
                 isbtn?$(btn).text(origText):$(btn).val(origText);
                 if (json.code == 1) {
-                    dialog.confirm(json.msg,function () {
+                    refreshFromPage();
+                    dialog.confirm({
+                        btns:[
+                            {'text':'关闭本页','type':'secondary'},
+                            {'text':'留在本页','isdefault':true,'type':'primary'}
+                        ],
+                        content:json.msg
+                    },function () {
                         if (json.url) {
                             location.href = json.url;
                         } else {

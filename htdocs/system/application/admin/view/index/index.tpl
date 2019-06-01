@@ -53,6 +53,17 @@
 
                 </ul>
                 </div>
+                <div class="arrow arrow-down">
+                    <i class="ion-md-arrow-dropdown"></i>
+                    <div class="tab-menu">
+                        <div class="tab-menu-group">
+                            <a class="dropdown-item" href="javascript:" data-action="createSaleOrder">销售开单</a>
+                            <a class="dropdown-item" href="javascript:" data-action="createPurchaseOrder">采购开单</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="javascript:" data-action="closeAll">关闭全部</a>
+                        </div>
+                    </div>
+                </div>
                 <div class="arrow arrow-right"><i class="ion-md-arrow-dropright"></i> </div>
             </div>
             <div class="tab-content"></div>
@@ -117,9 +128,10 @@
                     if(pages.length===1){
                         header_box.append('<li class="noclose h-'+key+'" data-key="'+key+'">'+title+'</li>');
                     }else {
-                        header_box.append('<li class="h-' + key + '" data-key="' + key + '"><a class="float-right" href="javascript:"><i class="ion-md-close"></i> </a><span>' + title + '</span></li>');
+                        header_box.append('<li class="h-' + key + '" data-key="' + key + '"><a class="float-right" href="javascript:" title="关闭此页"><i class="ion-md-close"></i> </a><span>' + title + '</span></li>');
                     }
                     content_box.append('<iframe class="c-'+key+'" data-key="' + key + '" src="'+url+'" frameborder="0"></iframe>');
+                    checkScroll();
                     refresh=true;
                 }
                 activePageByKey(key, refresh);
@@ -137,6 +149,7 @@
                     header_box.find('li.h-' + key).addClass('active');
                     content_box.find('iframe').removeClass('active');
                     content_box.find('iframe.c-' + key).addClass('active');
+                    current_index = idx;
                     if(refresh ){
                         refreshPage(key, curPage.url);
                     }else if(curPage.refresh){
@@ -152,6 +165,14 @@
                         frame.contentWindow.location.href=url;
                     }else {
                         frame.contentWindow.location.reload();
+                    }
+                }
+            }
+            function refreshFromPage(key) {
+                var exist = existsPage(key);
+                if(exist>-1){
+                    if(pages[exist].fromkey){
+                        refreshPage(pages[exist].fromkey);
                     }
                 }
             }
@@ -174,13 +195,18 @@
                                     .removeClass('c-'+key)
                                     .addClass('c-'+newKey)
                                     .data('key',newKey);
+
+                                key = newKey;
                             }
                         }
                     }else{
                         updatetitle=true;
                         pages[exist].title = title;
                     }
-                    header_box.find('li.h-' + key+' span').text(title);
+                    if(updatetitle) {
+                        header_box.find('li.h-' + key + ' span').text(title);
+                        checkScroll();
+                    }
                 }
             }
 
@@ -198,13 +224,59 @@
                     var item = pages.splice(exist,1);
                     header_box.find('.h-'+key).remove();
                     content_box.find('.c-'+key).remove();
-
+                    checkScroll();
                     activePage(exist-1);
                 }
             }
 
-            function checkScroll(){
 
+            var offset=0;
+            var wrapperWidth=$('.tabwrapper').width();
+            var listWidth=0;
+            function checkScroll(){
+                wrapperWidth=$('.tabwrapper').width();
+                listWidth=0;
+                var lists = header_box.find('li');
+                for(var i=0;i<lists.length;i++){
+                    listWidth += lists.eq(i).outerWidth();
+                }
+                listWidth=Math.ceil(listWidth);
+                header_box.width(listWidth);
+                if(listWidth <= wrapperWidth){
+                    setOffset(0);
+                    $('.page-tabs .arrow-left,.page-tabs .arrow-right').addClass('d-none');
+                }else{
+                    $('.page-tabs .arrow-left,.page-tabs .arrow-right').removeClass('d-none');
+                }
+
+            }
+            
+            function checkOffset() {
+                var cur = pages[current_index];
+                if(cur){
+                    var item=header_box.find('.h-'+cur.key);
+                    var left = 0;
+                    var siblings=$(item).prevAll();
+                    var width = $(this).outerWidth();
+                    for(var i=0;i<siblings.length;i++){
+                        left += siblings.eq(i).outerWidth();
+                    }
+                    left = Math.ceil(left);
+                }
+            }
+
+            function setOffset(newOffset) {
+                if (newOffset < wrapperWidth - listWidth) newOffset = wrapperWidth - listWidth;
+                if(newOffset>0)newOffset=0;
+
+                offset=newOffset;
+                header_box.css('transform','translate('+offset+'px,0)');
+            }
+            function addOffset(step) {
+                setOffset(offset - step);
+            }
+            function decOffset(step) {
+                setOffset(offset + step);
             }
 
             window.createPage = createPage;
@@ -212,6 +284,7 @@
             window.refreshPage = refreshPage;
             window.removePage = window.closePage = removePage;
             window.updatePage = updatePage;
+            window.refreshFromPage = refreshFromPage;
 
 
             var navlinks=$('.side-nav a');
@@ -227,6 +300,52 @@
                     createPageByLink(this);
                 }
             }).eq(0).trigger('click');
+
+
+            var actions={
+                createSaleOrder:function () {
+                    createPage('sale_order_create-'+new Date().getTime(),'销售开单','{:url("saleOrder/create")}');
+                },
+                createPurchaseOrder:function () {
+                    createPage('sale_order_create-'+new Date().getTime(),'采购开单','{:url("purchaseOrder/create")}');
+                },
+                closeAll:function () {
+                    if(pages.length<2)return;
+                    dialog.confirm('是否关闭全部页面？<br />请确认修改过的数据已保存',function () {
+                        for(var i=pages.length-1;i>0;i--){
+                            removePage(pages[i].key);
+                        }
+                    });
+                }
+            };
+
+            var tabMenu=$('.tab-menu');
+            $('.arrow-down').click(function (e) {
+                e.preventDefault();
+                if(tabMenu.is('.show')){
+                    tabMenu.removeClass('show');
+                }else{
+                    tabMenu.addClass('show');
+                }
+            });
+            $('.arrow-down .dropdown-item').click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                tabMenu.removeClass('show');
+                var action=$(this).data('action');
+                if(actions[action]){
+                    actions[action]();
+                }else{
+                    dialog.error('操作不存在');
+                }
+
+            });
+            $('.arrow-left').click(function (e) {
+                decOffset(wrapperWidth*.5);
+            });
+            $('.arrow-right').click(function (e) {
+                addOffset(wrapperWidth*.5);
+            });
 
             var initurl = '{$Request.get.url|filterurl}';
             if(initurl){

@@ -47,8 +47,8 @@ h6 {
     height:40px;
     display:flex;
     flex-direction: row;
-    overflow: hidden;
     .arrow{
+      flex:0 0 30px;
       width:30px;
       text-align: center;
       background:#F6F6F6;
@@ -58,12 +58,38 @@ h6 {
         line-height:40px;
       }
     }
+    .arrow-down{
+      border-left:1px #ddd solid;
+      position: relative;
+      .tab-menu{
+        position: absolute;
+        z-index : 999;
+        top:40px;
+        min-width:100px;
+        right:0;
+        background:#fff;
+        border:1px #ddd solid;
+        border-top:0;
+        box-shadow: 1px 2px 5px rgba(0,0,0,.2);
+        border-radius:2px;
+        padding:10px 0;
+        display: none;
+        &.show{
+          display: block;
+        }
+      }
+    }
     .arrow-right{
       border-left:1px #ddd solid;
     }
     .tabwrapper {
       flex : 1;
+      overflow: hidden;
       ul {
+        height:40px;
+        overflow: hidden;
+        margin:0;
+        transition: transform .5s linear;
         li {
           float      : left;
           padding    : 0 5px 0 10px;

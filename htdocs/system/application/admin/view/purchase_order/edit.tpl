@@ -657,11 +657,13 @@
                         success:function (json) {
                             self.ajaxing=false;
                             if(json.code==1){
-                                dialog.success('保存成功！');
-                                setTimeout(function () {
-                                    if(json.url)location.href=json.url;
-                                    else location.reload();
-                                },1000)
+                                refreshFromPage();
+                                top.success(json.msg);
+                                if(self.order.status==1){
+                                    closeThisPage();
+                                }else{
+                                    location.reload();
+                                }
                             }else{
                                 dialog.error(json.msg);
                             }

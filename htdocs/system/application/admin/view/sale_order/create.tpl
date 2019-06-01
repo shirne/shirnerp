@@ -205,7 +205,7 @@
         var hideTimeout=0;
         var currentInput=null;
         var hideCustomerTimeout=0;
-        window.page_title = '销售单[{$customer.title}]';
+
         var app = new Vue({
             el: '#page-wrapper',
             data: {
@@ -681,7 +681,16 @@
                         dialog.error('请选择客户');
                         return false;
                     }
-
+                    var goods_count=0;
+                    for(var i=0;i<this.goods.length;i++){
+                        if(this.goods[i].goods_id)goods_count++;
+                    }
+                    if(goods_count < 1){
+                        dialog.error('请至少录入一条产品');
+                        return false;
+                    }
+                    var self=this;
+                    this.ajaxing=true;
                     $.ajax({
                         url:'',
                         type:"POST",
@@ -692,16 +701,29 @@
                             total:this.total
                         },
                         success:function (json) {
+                            self.ajaxing=false;
                             if(json.code==1){
-                                dialog.success('开单成功！');
-                                setTimeout(function () {
-                                    location.href='{:url('index')}';
-                                },1000);
+                                refreshFromPage();
+                                dialog.confirm({
+                                    btns:[
+                                        { 'text' : '关闭本页','type':'secondary' },
+                                        { 'text' : '留在本页','isdefault':true,'type':'primary' }
+                                    ],
+                                    content:json.msg
+                                },function () {
+                                    if (json.url) {
+                                        location.href = json.url;
+                                    } else {
+                                        location.reload();
+                                    }
+                                },function () {
+                                    closeThisPage()
+                                });
                             }else{
                                 dialog.error(json.msg);
                             }
                         }
-                    })
+                    });
 
                     return false;
                 },

@@ -80,7 +80,7 @@
                     }else{
                         key += subkey;
                     }
-                    top.createPage(key, $(this).text(), $(this).attr('href'));
+                    top.createPage(key, $(this).text(), $(this).attr('href'), curkey);
                 });
                 $('a[data-nav]').click(function (e) {
                     e.preventDefault();

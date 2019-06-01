@@ -94,8 +94,8 @@ class BaseFinanceModel extends BaseModel
             $order['amount'] = $total['price'];
         }else {
             $order['amount'] = $total_price;
-            if($order['amount'] !== $total['price']){
-                throw new Exception('订单总价计算错误：'.$total['price'].',计算总价:'.$order['amount']);
+            if($order['amount'] != $total['price']){
+                throw new Exception('订单总价计算错误：'.$total['price'].'<br />计算总价:'.$order['amount']);
             }
         }
 
