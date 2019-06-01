@@ -92,7 +92,7 @@
                 }else {
                     var title = $('.breadcrumb').data('title');
                     if (title) {
-                        top.updatePage(curkey, title);
+                        //top.updatePage(curkey, title);
                     }
                 }
 

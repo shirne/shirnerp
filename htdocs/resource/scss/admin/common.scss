@@ -97,6 +97,9 @@ h6 {
           cursor : default;
           border-left:1px #ddd solid;
           background : #F6F6F6;
+          span{
+            white-space: nowrap;
+          }
           a{
             margin-left:10px;
             height:20px;

@@ -175,10 +175,10 @@ jQuery(function ($) {
             if (link.is('.menu_top')) {
                 html.push('<li class="breadcrumb-item"><a href="javascript:"><i class="' + link.find('i').attr('class') + '"></i>&nbsp;' + link.text() + '</a></li>');
             } else {
-                var parent = link.parents('.collapse').eq(0);
+                //var parent = link.parents('.collapse').eq(0);
                 //parent.addClass('show');
                 //link.addClass("active");
-                var topmenu = parent.siblings('.card-header').find('a.menu_top');
+                var topmenu = link.parents('.card').find('.card-header a.menu_top');
                 html.push('<li class="breadcrumb-item"><a href="javascript:"><i class="' + topmenu.find('i').attr('class') + '"></i>&nbsp;' + topmenu.text() + '</a></li>');
                 html.push('<li class="breadcrumb-item"><a href="javascript:">' + link.text() + '</a></li>');
             }
@@ -189,10 +189,6 @@ jQuery(function ($) {
         }
         bread.html(html.join("\n"));
     }
-
-    $(window).on('scroll',function (e) {
-
-    }).trigger('scroll');
 
     //全选、反选按钮
     $('.checkall-btn').click(function (e) {

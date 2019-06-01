@@ -126,15 +126,18 @@
                         fromkey:fromkey
                     });
                     if(pages.length===1){
-                        header_box.append('<li class="noclose h-'+key+'" data-key="'+key+'">'+title+'</li>');
+                        header_box.append('<li class="noclose h-'+key+'" data-key="'+key+'"><span>'+title+'</span></li>');
                     }else {
                         header_box.append('<li class="h-' + key + '" data-key="' + key + '"><a class="float-right" href="javascript:" title="关闭此页"><i class="ion-md-close"></i> </a><span>' + title + '</span></li>');
                     }
+
                     content_box.append('<iframe class="c-'+key+'" data-key="' + key + '" src="'+url+'" frameborder="0"></iframe>');
-                    checkScroll();
+                    setTimeout(checkScroll,10);
                     refresh=true;
                 }
-                activePageByKey(key, refresh);
+                setTimeout(function () {
+                    activePageByKey(key, refresh);
+                },10);
             }
 
             function activePageByKey(key, refresh) {
@@ -226,7 +229,11 @@
                     header_box.find('.h-'+key).remove();
                     content_box.find('.c-'+key).remove();
                     checkScroll();
-                    activePage(exist-1);
+                    if(exist == current_index) {
+                        activePage(exist - 1);
+                    }else{
+                        checkOffset();
+                    }
                 }
             }
 
@@ -238,12 +245,12 @@
             function checkScroll(){
                 wrapperWidth=tabwrapper.width();
                 listWidth=0;
-                var lists = header_box.find('li');
+                var lists = header_box.children();
                 for(var i=0;i<lists.length;i++){
                     listWidth += lists.eq(i).outerWidth();
                 }
                 listWidth=Math.ceil(listWidth);
-                header_box.width(listWidth);
+                header_box.width(listWidth + 200);
                 if(listWidth <= wrapperWidth){
                     setOffset(0);
                     $('.page-tabs .arrow-left,.page-tabs .arrow-right').addClass('d-none');
