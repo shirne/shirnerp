@@ -31,11 +31,10 @@
                 <li class="dropdown user-dropdown">
                     <a href="javascript:" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="ion-md-person"></i> {:lang('Welcome %s',[session('adminname')])} <b class="caret"></b></a>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="/" target="_blank"><i class="ion-md-home"></i> {:lang('Home ')}</a>
                         <a class="dropdown-item" href="{:url('index/clearcache')}"><i class="ion-md-sync"></i> {:lang('Clear Cache')}</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{:url('setting/index')}"><i class="ion-md-options"></i> {:lang('Settings')}</a>
-                        <a class="dropdown-item" href="{:url('index/profile')}"><i class="ion-md-person"></i> {:lang('Profile')}</a>
+                        <a class="dropdown-item" data-tab="setting_index" href="{:url('setting/index')}"><i class="ion-md-options"></i> {:lang('Settings')}</a>
+                        <a class="dropdown-item" data-tab="index_profile" href="{:url('index/profile')}"><i class="ion-md-person"></i> {:lang('Profile')}</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{:url('login/logout')}"><i class="ion-md-log-out"></i> {:lang('Sign out')}</a>
                     </div>
@@ -315,6 +314,10 @@
                     createPageByLink(this);
                 }
             }).eq(0).trigger('click');
+            $('.dropdown-item[data-tab]').click(function (e) {
+                e.preventDefault();
+                createPage($(this).data('tab'),$(this).text(),$(this).attr('href'));
+            });
 
 
             var actions={
