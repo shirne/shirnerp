@@ -1,6 +1,11 @@
-<div class="panel panel-default">
-    <div class="panel-body">
-        <table class="table">
+<extend name="public:base" />
+
+<block name="body">
+    <include file="public/bread" menu="sale_order_index" title="订单详情" />
+    <div id="page-wrapper">
+        <div class="page-header">销售单详情</div>
+        <div class="page-content">
+            <table class="table">
             <tbody>
             <tr>
                 <td>订单号</td>
@@ -73,9 +78,8 @@
             </tr>
             </tbody>
         </table>
-    </div>
-    <div class="panel-body">
-        <table class="table table-bordered">
+
+        <table class="table table-bordered mt-3">
             <thead>
             <tr>
                 <th colspan="4">收款记录</th>
@@ -94,3 +98,9 @@
         </table>
     </div>
 </div>
+</block>
+<block name="script">
+    <script type="text/javascript">
+        window.page_title="销售单[{$customer.title}]"
+    </script>
+</block>

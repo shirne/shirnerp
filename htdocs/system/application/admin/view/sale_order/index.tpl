@@ -85,7 +85,7 @@
                             <if condition="$v['parent_order_id'] EQ 0">
                             <a class="btn btn-outline-warning" data-tab="timestamp" title="退货" href="{:url('saleOrder/back',array('id'=>$v['id']))}" ><i class="ion-md-undo"></i> </a>
                             </if>
-                            <a class="btn btn-outline-primary link-detail" title="详情" href="{:url('saleOrder/detail',array('id'=>$v['id']))}" ><i class="ion-md-document"></i> </a>
+                            <a class="btn btn-outline-primary" data-tab="detail-{$v.id}" title="详情" href="{:url('saleOrder/detail',array('id'=>$v['id']))}" ><i class="ion-md-document"></i> </a>
                         </if>
                     </td>
                 </tr>
@@ -145,7 +145,26 @@
             };
         })(window,jQuery);
         jQuery(function ($) {
-            $('.link-detail').click(function (e) {
+            var linkTpl='<tr>\n' +
+                '      <th scope="row">{@id}</th>\n' +
+                '      <td>{@username}</td>\n' +
+                '      <td>{@remark}</td>\n' +
+                '      <td>{@datetime}</td>\n' +
+                '    </tr>';
+            var tplBox = '<table class="table">\n' +
+                '  <thead>\n' +
+                '    <tr>\n' +
+                '      <th scope="col">#</th>\n' +
+                '      <th scope="col">操作员</th>\n' +
+                '      <th scope="col">操作</th>\n' +
+                '      <th scope="col">日期</th>\n' +
+                '    </tr>\n' +
+                '  </thead>\n' +
+                '  <tbody>\n' +
+                '    {@list}\n' +
+                '  </tbody>\n' +
+                '</table>';
+            $('.link-log').click(function (e) {
                 e.preventDefault();
                 var self=$(this);
                 var dlg = new Dialog({
@@ -153,52 +172,15 @@
                     onshow: function (body) {
                         $.ajax({
                             url: self.attr('href'),
-                            beforeSend: function(request) {
-                                request.setRequestHeader("X-Requested-With","htmlhttp");
-                            },
-                            success: function (text) {
-                                body.html(text);
+                            success: function (json) {
+                                body.html(tplBox.compile({
+                                    list:linkTpl.compile(json.data,true)
+                                }));
                             }
                         });
                     }
-                }).show('<p class="loading">'+lang('loading...')+'</p>','订单详情');
-            })
-        });
-        var linkTpl='<tr>\n' +
-            '      <th scope="row">{@id}</th>\n' +
-            '      <td>{@username}</td>\n' +
-            '      <td>{@remark}</td>\n' +
-            '      <td>{@datetime}</td>\n' +
-            '    </tr>';
-        var tplBox = '<table class="table">\n' +
-            '  <thead>\n' +
-            '    <tr>\n' +
-            '      <th scope="col">#</th>\n' +
-            '      <th scope="col">操作员</th>\n' +
-            '      <th scope="col">操作</th>\n' +
-            '      <th scope="col">日期</th>\n' +
-            '    </tr>\n' +
-            '  </thead>\n' +
-            '  <tbody>\n' +
-            '    {@list}\n' +
-            '  </tbody>\n' +
-            '</table>';
-        $('.link-log').click(function (e) {
-            e.preventDefault();
-            var self=$(this);
-            var dlg = new Dialog({
-                btns: ['确定'],
-                onshow: function (body) {
-                    $.ajax({
-                        url: self.attr('href'),
-                        success: function (json) {
-                            body.html(tplBox.compile({
-                                list:linkTpl.compile(json.data,true)
-                            }));
-                        }
-                    });
-                }
-            }).show('<p class="loading">'+lang('loading...')+'</p>','订单操作记录');
+                }).show('<p class="loading">'+lang('loading...')+'</p>','订单操作记录');
+            });
         });
     </script>
 </block>

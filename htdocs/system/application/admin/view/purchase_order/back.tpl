@@ -128,8 +128,8 @@
                             <th>汇总</th>
                             <td></td>
                             <td>{{total.count}}</td>
-                            <td></td>
                             <td>{{total.weight}} {:getSetting('weight_unit')}</td>
+                            <td></td>
                             <td>
                                 <div class="input-group input-group-sm" v-if="order.diy_price">
                                     <input type="text" v-model="total.price" class="form-control" />

@@ -1,5 +1,10 @@
-<div class="panel panel-default">
-    <div class="panel-body">
+<extend name="public:base" />
+
+<block name="body">
+    <include file="public/bread" menu="purchase_order_index" title="订单详情" />
+    <div id="page-wrapper">
+        <div class="page-header">采购单详情</div>
+        <div class="page-content">
         <table class="table">
             <tbody>
             <tr>
@@ -71,8 +76,7 @@
             </tr>
             </tbody>
         </table>
-    </div>
-    <div class="panel-body">
+
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -92,3 +96,9 @@
         </table>
     </div>
 </div>
+</block>
+<block name="script">
+    <script type="text/javascript">
+        window.page_title="采购单[{$supplier.title}]"
+    </script>
+</block>

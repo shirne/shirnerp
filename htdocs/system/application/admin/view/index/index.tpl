@@ -250,7 +250,7 @@
                     listWidth += lists.eq(i).outerWidth();
                 }
                 listWidth=Math.ceil(listWidth);
-                header_box.width(listWidth + 200);
+                header_box.width(listWidth);
                 if(listWidth <= wrapperWidth){
                     setOffset(0);
                     $('.page-tabs .arrow-left,.page-tabs .arrow-right').addClass('d-none');

@@ -75,7 +75,7 @@
                             <if condition="$v['parent_order_id'] EQ 0">
                             <a class="btn btn-outline-warning" data-tab="timestamp" title="退货" href="{:url('purchaseOrder/back',array('id'=>$v['id']))}" ><i class="ion-md-undo"></i> </a>
                             </if>
-                            <a class="btn btn-outline-primary link-detail" data-id="{$v.id}" title="详情" href="{:url('purchaseOrder/detail',array('id'=>$v['id']))}" ><i class="ion-md-document"></i> </a>
+                            <a class="btn btn-outline-primary" data-tab="detail-{$v.id}" title="详情" href="{:url('purchaseOrder/detail',array('id'=>$v['id']))}" ><i class="ion-md-document"></i> </a>
                         </if>
                     </td>
                 </tr>
@@ -89,24 +89,6 @@
 <block name="script">
     <script type="text/javascript">
         jQuery(function ($) {
-            $('.link-detail').click(function (e) {
-                e.preventDefault();
-                var self=$(this);
-                var dlg = new Dialog({
-                    btns: ['确定'],
-                    onshow: function (body) {
-                        $.ajax({
-                            url: self.attr('href'),
-                            beforeSend: function(request) {
-                                request.setRequestHeader("X-Requested-With","htmlhttp");
-                            },
-                            success: function (text) {
-                                body.html(text);
-                            }
-                        });
-                    }
-                }).show('<p class="loading">'+lang('loading...')+'</p>','订单详情');
-            });
             var linkTpl='<tr>\n' +
                 '      <th scope="row">{@id}</th>\n' +
                 '      <td>{@username}</td>\n' +

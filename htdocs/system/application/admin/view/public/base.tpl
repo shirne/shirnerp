@@ -80,7 +80,9 @@
                     }else{
                         key += subkey;
                     }
-                    top.createPage(key, $(this).text(), $(this).attr('href'), curkey);
+                    var title=$(this).text();
+                    if(!title)title=$(this).attr('title');
+                    top.createPage(key, title, $(this).attr('href'), curkey);
                 });
                 $('a[data-nav]').click(function (e) {
                     e.preventDefault();
@@ -92,7 +94,7 @@
                 }else {
                     var title = $('.breadcrumb').data('title');
                     if (title) {
-                        //top.updatePage(curkey, title);
+                        top.updatePage(curkey, title);
                     }
                 }
 
