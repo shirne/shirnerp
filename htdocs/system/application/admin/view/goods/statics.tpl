@@ -14,7 +14,7 @@
                 <div class="form-row">
                     <div class="form-group col input-group input-group-sm date-range">
                         <div class="input-group-prepend">
-                            <span class="input-group-text">注册时间</span>
+                            <span class="input-group-text">统计时间</span>
                         </div>
                         <input type="text" class="form-control fromdate" name="start_date" placeholder="选择开始日期" value="{$start_date}">
                         <div class="input-group-middle"><span class="input-group-text">-</span></div>

@@ -10,7 +10,7 @@
 
     <div id="page-wrapper">
         <div class="list-header">
-            <form class="noajax" action="{:url('member/statics')}" method="post">
+            <form class="noajax" action="{:url('goods/rank')}" method="post">
                 <div class="form-row">
                     <div class="form-group col input-group input-group-sm date-range">
                         <div class="input-group-prepend">
