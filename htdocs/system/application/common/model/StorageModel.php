@@ -30,7 +30,7 @@ class StorageModel extends BaseModel
             ->whereIn('goods_id',array_column($goods,'goods_id'))->select();
         $storages=array_index($storages,'goods_id');
         foreach ($goods as $good){
-            $count=$good['count'];
+            $count=isset($good['base_count'])?$good['base_count']:$good['count'];
 
             if(isset($storages[$good['goods_id']])){
                 if($count<0){

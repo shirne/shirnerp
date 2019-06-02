@@ -83,27 +83,31 @@
                         </thead>
                         <tbody>
                             <tr v-for="(good,idx) in goods" :key="idx">
-                                <td><input type="text" class="form-control" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
+                                <td><input type="text" class="form-control form-control-sm" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
                                 <td>{{good.storage}}</td>
                                 <td class="counttd">
-                                    <div class="input-group">
+                                    <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.count"/>
-                                        <div class="input-group-append"><span class="input-group-text">{{good.unit}}</span></div>
+                                        <select v-model="good.unit" style="flex:0;width: 50px;" class="form-control">
+                                            <volist name="units" id="unit">
+                                                <option value="{$unit.key}">{$unit.key}</option>
+                                            </volist>
+                                        </select>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="input-group">
+                                    <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.weight"/>
                                         <div class="input-group-append"><span class="input-group-text">{:getSetting('weight_unit')}</span></div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="input-group">
+                                    <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.price"/>
                                         <div class="input-group-middle">
                                             <span class="input-group-text" >/</span>
                                         </div>
-                                        <select v-model="good.price_type" @change="updateRow(idx)" class="form-control">
+                                        <select v-model="good.price_type" @change="updateRow(idx)" style="width:60px;flex:0;" class="form-control">
                                             <option :value="0">{{good.unit}}</option>
                                             <option :value="1">{:getSetting('weight_unit')}</option>
                                         </select>
@@ -122,7 +126,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <select class="form-control" v-model="good.storage_id">
+                                    <select class="form-control form-control-sm" v-model="good.storage_id">
                                         <option :value="0">请选择仓库</option>
                                         <option v-for="storage in storages" :key="storage.id" :value="storage.id">[{{storage.storage_no}}]{{storage.title}}</option>
                                     </select>
@@ -326,7 +330,7 @@
                         diy_price:0,
                         count:'',
                         price_type:0,
-                        unit:'',
+                        unit:'单位',
                         weight:0,
                         price:0,
                         remark:'',
@@ -707,7 +711,7 @@
                             self.ajaxing=false;
                             if(json.code==1){
                                 refreshFromPage();
-                                top.success(json.msg);
+                                top.dialog.success(json.msg);
                                 if(self.order.status==1){
                                     closeThisPage();
                                 }else{

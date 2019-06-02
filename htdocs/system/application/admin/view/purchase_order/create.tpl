@@ -82,7 +82,11 @@
                             <td class="counttd">
                                 <div class="input-group input-group-sm">
                                     <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.count"/>
-                                    <div class="input-group-append"><span class="input-group-text">{{good.unit}}</span></div>
+                                    <select v-model="good.unit" style="flex:0;width: 50px;" class="form-control">
+                                        <volist name="units" id="unit">
+                                            <option value="{$unit.key}">{$unit.key}</option>
+                                        </volist>
+                                    </select>
                                 </div>
                             </td>
                             <td>
@@ -97,7 +101,7 @@
                                     <div class="input-group-middle">
                                         <span class="input-group-text" >/</span>
                                     </div>
-                                    <select v-model="good.price_type" @change="updateRow(idx)" class="form-control">
+                                    <select v-model="good.price_type" @change="updateRow(idx)" style="flex:0;width: 65px;" class="form-control">
                                         <option :value="0">{{good.unit}}</option>
                                         <option :value="1">{:getSetting('weight_unit')}</option>
                                     </select>

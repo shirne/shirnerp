@@ -83,22 +83,26 @@
                         </thead>
                         <tbody>
                             <tr v-for="(good,idx) in goods" :key="idx">
-                                <td><input type="text" class="form-control" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
+                                <td><input type="text" class="form-control form-control-sm" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
                                 <td>{{good.storage}}</td>
                                 <td class="counttd">
-                                    <div class="input-group">
+                                    <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.count"/>
-                                        <div class="input-group-append"><span class="input-group-text">{{good.unit}}</span></div>
+                                        <select v-model="good.unit" style="flex:0;width: 50px;" class="form-control">
+                                            <volist name="units" id="unit">
+                                                <option value="{$unit.key}">{$unit.key}</option>
+                                            </volist>
+                                        </select>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="input-group">
+                                    <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.weight"/>
                                         <div class="input-group-append"><span class="input-group-text">{:getSetting('weight_unit')}</span></div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="input-group">
+                                    <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.price"/>
                                         <div class="input-group-middle">
                                             <span class="input-group-text" >/</span>
@@ -122,7 +126,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <select class="form-control" @change="updateStorage" v-model="good.storage_id">
+                                    <select class="form-control form-control-sm" @change="updateStorage" v-model="good.storage_id">
                                         <option :value="0">请选择仓库</option>
                                         <option v-for="storage in storages" :key="storage.id" :value="storage.id">[{{storage.storage_no}}]{{storage.title}}</option>
                                     </select>
@@ -582,7 +586,7 @@
                             self.ajaxing=false;
                             if(json.code==1){
                                 refreshFromPage();
-                                top.success(json.msg);
+                                top.dialog.success(json.msg);
                                 if(self.order.status==1){
                                     closeThisPage();
                                 }else{

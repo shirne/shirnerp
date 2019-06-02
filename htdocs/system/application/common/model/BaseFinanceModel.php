@@ -63,7 +63,7 @@ class BaseFinanceModel extends BaseModel
                         if(!empty($good['weight'])){
                             $good['count'] = $good['weight'] / $unitData['weight_rate'];
                         }
-                    }else{
+                    }elseif(empty($good['weight'])){
                         if(empty($good['weight'])){
                             $good['weight'] = $good['count'] * $unitData['weight_rate'];
                         }
@@ -75,6 +75,15 @@ class BaseFinanceModel extends BaseModel
             $good['count']=transsymbol($good['count'],$isback?'-':'+');
             $good['price']=tonumber($good['price']);
             $good['base_price'] = CurrencyModel::exchange($good['price'],$order['currency']);
+
+            if($good['goods_unit'] == $oGoods[$goods_id]['unit']){
+                $good['base_count']=$good['count'];
+            }else{
+                $unitData=$units[$oGoods[$goods_id]['unit']];
+                if($unitData['weight_rate']){
+                    $good['base_count'] = $good['weight'] / $unitData['weight_rate'];
+                }
+            }
 
             if($good['diy_price']==1){
                 $amount = transsymbol(tonumber($good['total_price']),$isback?'-':'+');

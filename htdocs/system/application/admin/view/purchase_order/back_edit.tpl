@@ -82,7 +82,11 @@
                             <td class="counttd">
                                 <div class="input-group input-group-sm">
                                     <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.count"/>
-                                    <div class="input-group-append"><span class="input-group-text">{{good.unit}}</span></div>
+                                    <select v-model="good.unit" style="flex:0;width: 50px;" class="form-control">
+                                        <volist name="units" id="unit">
+                                            <option value="{$unit.key}">{$unit.key}</option>
+                                        </volist>
+                                    </select>
                                 </div>
                             </td>
                             <td>
@@ -270,7 +274,7 @@
                         storage:0,
                         orig_title:'',
                         count:'',
-                        unit:'',
+                        unit:'单位',
                         diy_price:0,
                         price_type:0,
                         weight:0,
@@ -534,7 +538,7 @@
                             self.ajaxing=false;
                             if(json.code==1){
                                 refreshFromPage();
-                                top.success(json.msg);
+                                top.dialog.success(json.msg);
                                 if(self.order.status==1){
                                     closeThisPage();
                                 }else{

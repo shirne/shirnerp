@@ -41,7 +41,9 @@ class UtilController extends Controller
 
     public function updatedb()
     {
-        $sqls = ["UPDATE sa_permission set `url`='Index/dashboard' where `id`=1"];
+        $sqls = ["UPDATE sa_permission set `url`='Index/dashboard' where `id`=1",
+            "ALTER TABLE sa_sale_order_goods ADD `base_count` DECIMAL(14,2) DEFAULT '0' AFTER `count`",
+            "ALTER TABLE sa_purchase_order_goods ADD `base_count` DECIMAL(14,2) DEFAULT '0' AFTER `count`"];
         foreach ($sqls as $sql){
             Db::execute($sql);
         }

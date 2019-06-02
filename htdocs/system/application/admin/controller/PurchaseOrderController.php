@@ -70,6 +70,7 @@ class PurchaseOrderController extends BaseController
                 $this->error('开单失败');
             }
         }
+        $this->assign('units',getGoodsUnits());
         $this->assign('currencies',getCurrencies());
         $this->assign('supplier_id',$supplier_id);
         return $this->fetch();
@@ -163,6 +164,7 @@ class PurchaseOrderController extends BaseController
         $this->assign('model',$model);
         $this->assign('supplier',$supplier);
         $this->assign('goods',$goods);
+        $this->assign('units',getGoodsUnits());
         $this->assign('currencies',getCurrencies());
         $this->assign('logs',PurchaseOrderModel::getLogs($id));
         if($mode==0) {
@@ -206,6 +208,7 @@ class PurchaseOrderController extends BaseController
         $this->assign('model',$model);
         $this->assign('supplier',$supplier);
         $this->assign('goods',$goods);
+        $this->assign('units',getGoodsUnits());
         $this->assign('currencies',getCurrencies());
 
         return $this->fetch();

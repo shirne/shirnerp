@@ -70,6 +70,7 @@ class SaleOrderController extends BaseController
                 $this->error('开单失败');
             }
         }
+        $this->assign('units',getGoodsUnits());
         $this->assign('currencies',getCurrencies());
         $this->assign('customer_id',$customer_id);
         return $this->fetch();
@@ -153,6 +154,7 @@ class SaleOrderController extends BaseController
             ->where('sale_order_id',  $id)
             ->order('saleOrderGoods.id ASC')->select();
 
+        $this->assign('units',getGoodsUnits());
         $this->assign('model',$model);
         $this->assign('customer',$customer);
         $this->assign('goods',$goods);
@@ -201,6 +203,7 @@ class SaleOrderController extends BaseController
         }else{
             $model['customer_time']='';
         }
+        $this->assign('units',getGoodsUnits());
         $this->assign('model',$model);
         $this->assign('customer',$customer);
         $this->assign('goods',$goods);
