@@ -46,7 +46,7 @@
     <block name="header"></block>
     <script type="text/javascript">
         if(!window.IS_TOP && !window.frameElement){
-            console.log('{:url("index/index")}?url={:url()}')
+            //console.log('{:url("index/index")}?url={:url()}')
             top.location = '{:url("index/index")}?url={:url()}'
         }
     </script>
@@ -100,7 +100,11 @@
 
                 $('.bread_refresh').click(function (e) {
                     location.reload();
-                })
+                });
+
+                $(document.body).click(function () {
+                    top.$(top.document.body).trigger('click');
+                });
             }
         })();
 
