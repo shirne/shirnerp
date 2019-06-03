@@ -172,6 +172,8 @@ class SaleOrderController extends BaseController
     public function detail($id, $mode=0){
         $model=SaleOrderModel::get($id);
         if(empty($model))$this->error('订单不存在');
+        if($mode==0 && $model['status']==0)$mode=2;
+        if($mode==2 && $model['status']==1)$mode=0;
         if($this->request->isPost()){
             //编辑订单
             if($model['status'] == 1){

@@ -659,7 +659,7 @@
                                     ],
                                     content:json.msg
                                 },function () {
-                                    updateThisTitle({ key:'purchase_order_edit-'+json.data.id });
+                                    updateThisTitle({ key:'purchase_order_index_edit-'+json.data.id });
                                     if (json.url) {
                                         location.href = json.url;
                                     } else {
