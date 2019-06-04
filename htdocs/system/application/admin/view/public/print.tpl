@@ -26,8 +26,8 @@
             padding:0;
         }
         @page {
-          size: auto;  /* auto is the initial value */
-          margin: 0mm; /* this affects the margin in the printer settings */
+          size: A4;  /* auto is the initial value */
+          margin: 10mm; /* this affects the margin in the printer settings */
         }
         #page-wrapper{
             padding:0;

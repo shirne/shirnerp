@@ -1,5 +1,26 @@
 <extend name="public:print" />
-
+<block name="header">
+    <style >
+        @page {
+            size: 10cm 10cm;
+            margin:0;
+        }
+        #page-wrapper{
+            width :380px;
+            padding:0;
+        }
+        .print-page{
+            display: table;
+            width :100%;
+            padding:2cm 0 2cm 0;
+            min-height:8cm;
+        }
+        .print-page .cell{
+            display:table-cell;
+            vertical-align: middle;
+        }
+    </style>
+</block>
 <block name="body">
     <div class="page-wrapper container ml-auto mr-auto mb-3 d-print-none">
         <div class="row">
@@ -13,6 +34,7 @@
         <volist name="orders" id="order">
             <volist name="orderGoods[$order['id']]" id="good">
                 <div class="print-page align-items-center">
+                    <div class="cell">
                     <div class="row">
                         <h1 class="col-4 text-right bigger">客户：</h1>
                         <h1 class="col text-left bigger">{$order.customer_title}</h1>
@@ -25,6 +47,7 @@
                         <h1 class="col-4 text-right bigger">数量：</h1>
                         <h1 class="col text-left bigger">{$good.count} {$good.goods_unit}</h1>
                     </div>
+                    </div>
                 </div>
             </volist>
         </volist>
@@ -33,7 +56,7 @@
 <block name="script">
     <script type="text/javascript">
         jQuery(function ($) {
-            window.print();
+            //window.print();
             $('.print-btn').click(function () {
                 window.print();
             })
