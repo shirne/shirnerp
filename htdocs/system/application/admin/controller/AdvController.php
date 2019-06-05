@@ -6,6 +6,7 @@ namespace app\admin\controller;
 use app\admin\validate\AdvGroupValidate;
 use app\admin\validate\AdvItemValidate;
 use think\Db;
+use think\Exception;
 
 /**
  * 广告功能
@@ -17,6 +18,7 @@ class AdvController extends BaseController
     /**
      * 管理
      * @param $key
+     * @throws Exception
      * @return mixed
      */
     public function index($key=''){
@@ -92,6 +94,9 @@ class AdvController extends BaseController
 
     /**
      * 删除广告位
+     * @param $id
+     * @throws Exception
+     * @return void
      */
     public function delete($id)
     {
