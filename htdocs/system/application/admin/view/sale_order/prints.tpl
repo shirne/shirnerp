@@ -6,17 +6,18 @@
             margin:0;
         }
         #page-wrapper{
-            width :380px;
+            width :300px;
             padding:0;
         }
         .print-page{
-            display: table;
             width :100%;
             padding:2cm 0 2cm 0;
             min-height:8cm;
         }
-        .print-page .cell{
-            display:table-cell;
+        .print-page table{
+            height:100%;
+        }
+        .print-page td{
             vertical-align: middle;
         }
     </style>
@@ -33,21 +34,25 @@
     <div id="page-wrapper" class="container m-auto">
         <volist name="orders" id="order">
             <volist name="orderGoods[$order['id']]" id="good">
-                <div class="print-page align-items-center">
-                    <div class="cell">
-                    <div class="row">
-                        <h1 class="col-4 text-right bigger">客户：</h1>
-                        <h1 class="col text-left bigger">{$order.customer_title}</h1>
-                    </div>
-                    <div class="row">
-                        <h1 class="col-4 text-right bigger">品名：</h1>
-                        <h1 class="col text-left bigger">{$good.goods_title}</h1>
-                    </div>
-                    <div class="row">
-                        <h1 class="col-4 text-right bigger">数量：</h1>
-                        <h1 class="col text-left bigger">{$good.count} {$good.goods_unit}</h1>
-                    </div>
-                    </div>
+                <div class="print-page">
+                    <table class="table">
+                        <tr>
+                            <td>
+                            <div class="row">
+                                <h1 class="col-4 text-right bigger">客户：</h1>
+                                <h1 class="col text-left bigger">{$order.customer_title}</h1>
+                            </div>
+                            <div class="row">
+                                <h1 class="col-4 text-right bigger">品名：</h1>
+                                <h1 class="col text-left bigger">{$good.goods_title}</h1>
+                            </div>
+                            <div class="row">
+                                <h1 class="col-4 text-right bigger">数量：</h1>
+                                <h1 class="col text-left bigger">{$good.count} {$good.goods_unit}</h1>
+                            </div>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </volist>
         </volist>
