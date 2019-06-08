@@ -267,26 +267,28 @@ CREATE TABLE `sa_customer` (
 DROP TABLE IF EXISTS `sa_sale_package`;
 CREATE TABLE `sa_sale_package` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`),
+  `sort` INT(11) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `sa_sale_package_item`;
-CREATE TABLE `sa_sale_package_order` (
+CREATE TABLE `sa_sale_package_item` (
   `id` INT NOT NULL AUTO_INCREMENT,
+  `storage_id` INT(11) NOT NULL,
   `package_id` INT(11) NOT NULL,
   `customer_id` INT(11) NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `sa_sale_package_goods`;
-CREATE TABLE `sa_sale_package` (
+CREATE TABLE `sa_sale_package_goods` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `package_id` INT(11) DEFAULT '0',
   `item_id` INT(11) DEFAULT '0',
   `goods_id` INT(11) DEFAULT '0',
   `count` INT(11) DEFAULT '0',
   `unit` INT(11) DEFAULT '0',
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `sa_sale_order`;
@@ -294,6 +296,7 @@ CREATE TABLE `sa_sale_order` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `manager_id` INT(11) NOT NULL,
   `customer_id` INT(11) NOT NULL,
+  `package_id` INT(11) NOT NULL,
   `storage_id` INT(11) NOT NULL,
   `order_no` VARCHAR(30) NOT NULL,
   `parent_order_id` INT(11) NOT NULL,

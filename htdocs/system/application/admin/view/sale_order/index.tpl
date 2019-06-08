@@ -99,6 +99,9 @@
     <script type="text/javascript">
         (function(w,$){
             w.actionPrints=function(ids){
+                var url="{:url('saleOrder/prints',['order_ids'=>'__ORDER_IDS__','storage_ids'=>'__STORAGE_IDS__'])}".replace('__ORDER_IDS__',ids).replace('__STORAGE_IDS__','');
+                window.open(url);
+                /*
                 var dlg=new Dialog({
                     onshow:function (body) {
                         $.ajax({
@@ -124,6 +127,7 @@
                         return false;
                     }
                 }).show('<div class="row"></div><div class="text-muted">不选择将按全部仓库打印</div>','选择需要打印的仓库');
+                */
             };
             w.actionExport=function(ids){
                 dialog.confirm('确定禁用选中会员？',function() {

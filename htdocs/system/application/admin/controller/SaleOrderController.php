@@ -303,25 +303,53 @@ class SaleOrderController extends BaseController
         if(empty($order_ids)){
             $this->error('请选择订单打印');
         }
-        $order_ids = idArr($order_ids);
-        $storage_ids = idArr($storage_ids);
-        $orders=Db::view('saleOrder','*')
-            ->view('customer',['title'=>'customer_title'],'saleOrder.customer_id=customer.id','LEFT')
-            ->whereIn('saleOrder.id',$order_ids)->select();
-        if(empty($orders))$this->error('订单不存在');
+        if($this->request->isPost()) {
 
-        $goodsModel=Db::view('saleOrderGoods','*')
-            ->view('storage',['title'=>'storage_title'],'storage.id=saleOrderGoods.storage_id','LEFT')
-            ->whereIn('sale_order_id',  $order_ids);
-        if(!empty($storage_ids)){
-            $goodsModel->whereIn('storage_id',$storage_ids);
+            $order_ids = idArr($order_ids);
+            $storage_ids = empty($storage_ids) ? [] : idArr($storage_ids);
+            $orders = Db::view('saleOrder', '*')
+                ->view('customer', ['title' => 'customer_title'], 'saleOrder.customer_id=customer.id', 'LEFT')
+                ->whereIn('saleOrder.id', $order_ids)->select();
+            if (empty($orders)) $this->error('订单不存在');
+
+            $goodsModel = Db::view('saleOrderGoods', '*')
+                ->view('storage', ['title' => 'storage_title'], 'storage.id=saleOrderGoods.storage_id', 'LEFT')
+                ->whereIn('sale_order_id', $order_ids);
+            if (!empty($storage_ids)) {
+                $goodsModel->whereIn('storage_id', $storage_ids);
+            }
+            $goods = $goodsModel->order('saleOrderGoods.id ASC')->select();
+            $orderGoods = array_index($goods, 'sale_order_id', true);
+
+
+            //未打包过的订单，创建一个默认包
+            foreach ($orders as $k => $order) {
+                if (!$order['package_id']) {
+                    $package_id = Db::name('salePackage')->insert(['sort' => 1], false, true);
+                    $orders[$k]['package_id'] = $package_id;
+                    Db::name('saleOrder')->where('id', $order['id'])->update(['package_id' => $package_id]);
+                    Db::name('salePackageItem')->insert(['package_id' => $package_id, 'customer_id' => $order['customer_id'], 'storage_id' => $order['storage_id']]);
+                }
+            }
+
+            $package_ids = array_column($orders, 'package_id');
+            $packages = Db::name('salePackageItem')
+                ->whereIn('package_id', $package_ids)
+                ->select();
+            $packages = array_index($packages, 'package_id', true);
+
+            $packageGoods = Db::name('salePackageGoods')
+                ->whereIn('package_id', $package_ids)
+                ->select();
+            $packageGoods = array_index($packageGoods, 'item_id', true);
+
+            $this->assign('orders', $orders);
+            $this->assign('orderGoods', $orderGoods);
+            $this->assign('packages', $packages);
+            $this->assign('packageGoods', $packageGoods);
         }
-        $goods =$goodsModel->order('saleOrderGoods.id ASC')->select();
-        $orderGoods = array_index($goods,'sale_order_id',true);
-
-        $this->assign('orders',$orders);
-        $this->assign('orderGoods',$orderGoods);
-        $this->assign('storage_ids',$storage_ids);
+        $this->assign('order_ids', $order_ids);
+        $this->assign('storage_ids', $storage_ids);
         return $this->fetch();
     }
 
