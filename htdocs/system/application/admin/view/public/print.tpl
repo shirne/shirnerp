@@ -17,11 +17,7 @@
     <script src="__STATIC__/jquery/jquery.min.js"></script>
     <script src="__STATIC__/bootstrap/js/bootstrap.bundle.min.js"></script>
     <style type="text/css">
-        .print-page{
-            padding:50px 0;
-        }
-    </style>
-    <style media="print">
+
         body{
             padding:0;
         }
@@ -33,6 +29,7 @@
             padding:0;
         }
         .print-page {
+            padding:50px 0;
             font-size:9pt;
             height:100%;
             vertical-align: middle;

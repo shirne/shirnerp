@@ -309,6 +309,7 @@ class SaleOrderController extends BaseController
             $storage_ids = empty($storage_ids) ? [] : idArr($storage_ids);
             $orders = Db::view('saleOrder', '*')
                 ->view('customer', ['title' => 'customer_title'], 'saleOrder.customer_id=customer.id', 'LEFT')
+                ->view('storage', ['title' => 'storage_title'], 'storage.id=saleOrder.storage_id', 'LEFT')
                 ->whereIn('saleOrder.id', $order_ids)->select();
             if (empty($orders)) $this->error('订单不存在');
 
@@ -324,11 +325,18 @@ class SaleOrderController extends BaseController
 
             //未打包过的订单，创建一个默认包
             foreach ($orders as $k => $order) {
+                $orders[$k]['create_date']=date('Y-m-d H:i:s',$order['create_time']);
+                $orders[$k]['customer_date']=date('Y-m-d H:i:s',$order['customer_date']);
                 if (!$order['package_id']) {
                     $package_id = Db::name('salePackage')->insert(['sort' => 1], false, true);
                     $orders[$k]['package_id'] = $package_id;
                     Db::name('saleOrder')->where('id', $order['id'])->update(['package_id' => $package_id]);
-                    Db::name('salePackageItem')->insert(['package_id' => $package_id, 'customer_id' => $order['customer_id'], 'storage_id' => $order['storage_id']]);
+                    Db::name('salePackageItem')->insert([
+                        'title'=>'1',
+                        'package_id' => $package_id,
+                        'customer_id' => $order['customer_id'],
+                        'storage_id' => $order['storage_id']
+                    ]);
                 }
             }
 

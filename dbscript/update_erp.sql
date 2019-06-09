@@ -274,6 +274,7 @@ CREATE TABLE `sa_sale_package` (
 DROP TABLE IF EXISTS `sa_sale_package_item`;
 CREATE TABLE `sa_sale_package_item` (
   `id` INT NOT NULL AUTO_INCREMENT,
+  `title`  VARCHAR(50) DEFAULT '',
   `storage_id` INT(11) NOT NULL,
   `package_id` INT(11) NOT NULL,
   `customer_id` INT(11) NOT NULL,
@@ -286,8 +287,9 @@ CREATE TABLE `sa_sale_package_goods` (
   `package_id` INT(11) DEFAULT '0',
   `item_id` INT(11) DEFAULT '0',
   `goods_id` INT(11) DEFAULT '0',
+  `goods_title`  VARCHAR(50) DEFAULT '',
   `count` INT(11) DEFAULT '0',
-  `unit` INT(11) DEFAULT '0',
+  `goods_unit` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
