@@ -17,7 +17,6 @@
     <script src="__STATIC__/jquery/jquery.min.js"></script>
     <script src="__STATIC__/bootstrap/js/bootstrap.bundle.min.js"></script>
     <style type="text/css">
-
         body{
             padding:0;
         }
@@ -64,6 +63,11 @@
         }
         .print-page h6{
             font-size:9pt;
+        }
+        @media screen {
+            #page-wrapper{
+                margin-bottom:3em !important;
+            }
         }
     </style>
     <block name="header"></block>

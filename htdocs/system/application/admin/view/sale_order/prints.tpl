@@ -67,8 +67,12 @@
             font-size:13px;
         }
         .labelbox{
-            width:8cm;
+            width:17cm;
             flex:0 0 auto;
+        }
+        .btn-addlabel{
+            clear:left;
+            float: left;
         }
         .table thead h3{
             white-space: nowrap;
@@ -98,7 +102,7 @@
             <h2 class="col-md-6">标签打印</h2>
             <div class="col-md-6 text-right ">
                 <a href="javascript:" class="btn btn-info print-btn" @click="savePkg">保存</a>
-                <a href="javascript:" class="btn btn-primary print-btn">打印</a>
+                <a href="javascript:" class="btn btn-primary print-btn" @click="doPrint">打印</a>
             </div>
         </div>
     </div>
@@ -114,7 +118,7 @@
                     <button type="button" class="btn btn-secondary dropdown-toggle" :disabled="good.release_count <= 0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{good.goods_title}}
                         <span class="badge badge-light">{{ formatNumber(good.release_count) }}/{{ formatNumber(good.count) }} {{good.goods_unit}}</span>
-                        <span v-if="good.storage_id != order.storage_id">{{good.storage_title}}</span>
+                        <span class="badge badge-light" v-if="good.storage_id != order.storage_id">{{good.storage_title}}</span>
                     </button>
                     <div class="dropdown-menu">
                         <template  v-for="pkg in packages[order.package_id]">
@@ -125,8 +129,8 @@
                 </div>
             </div>
 
-            <div class="labelbox">
-                <div class="print-page" v-for="pkg in packages[order.package_id]">
+            <div class="labelbox clearfix">
+                <div class="print-page float-left mr-3" v-for="pkg in packages[order.package_id]">
                     <span class="badge badge-secondary labelid">{{pkg.title}}</span>
                     <a class="btn btn-circle btn-delete" title="删除标签" @click="delLabel(pkg.id,order.id)" href="javascript:"><i class="ion-md-close"></i> </a>
                     <a class="btn btn-circle btn-clear" title="清空标签" @click="clearLabel(pkg.id,order.id)" href="javascript:"><i class="ion-md-refresh-circle"></i> </a>
@@ -173,7 +177,7 @@
                         </tbody>
                     </table>
                 </div>
-                <a  href="javascript:" class="btn btn-outline-primary mt-3 d-print-none" @click="addLabel(order.id)">增加标签</a>
+                <a  href="javascript:" class="btn btn-outline-primary btn-addlabel mt-3" @click="addLabel(order.id)">增加标签</a>
             </div>
         </div>
         <div class="d-none d-print-block">
@@ -229,12 +233,6 @@
 <block name="script">
     <script type="text/javascript" src="__STATIC__/js/vue-2.6.min.js"></script>
     <script type="text/javascript">
-        jQuery(function ($) {
-            //window.print();
-            $('.print-btn').click(function () {
-                window.print();
-            })
-        });
 
         function formatNumber(number){
             var num=number.toString().split('.');
@@ -479,6 +477,12 @@
                 },
                 savePkg:function () {
                     
+                },
+                doPrint:function () {
+                    if(confirm('是否保存打包设置')){
+                        this.savePkg();
+                    }
+                    window.print();
                 }
             }
         });
