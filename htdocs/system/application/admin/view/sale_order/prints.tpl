@@ -21,17 +21,37 @@
             position: absolute;
             left:10px;
             top:10px;
+            padding:0;
+            font-size:16px;
+            border-radius:100%;
+            line-height:24px;
+            height : 24px;
+            width : 24px;
+            text-align: center;
         }
         .print-page .btn-circle{
             position: absolute;
+            font-size:22px;
+            padding:0;
+            border-radius:100%;
+            line-height:24px;
+            width:24px;
+            text-align: center;
+        }
+        .print-page .btn-delete{
             color:red;
             right:10px;
             top:10px;
         }
-        .print-page table{
-            height:100%;
+        .print-page .btn-clear{
+            color:#999;
+            right:10px;
+            bottom:10px;
         }
-        .print-page td{
+        .print-page .table{
+            height:90%;
+        }
+        .print-page .table td{
             border-top:0;
             vertical-align: middle;
         }
@@ -50,17 +70,18 @@
             width:8cm;
             flex:0 0 auto;
         }
-        table thead h3{
+        .table thead h3{
             white-space: nowrap;
         }
-        table tbody td{
+        .table tbody td{
             white-space: nowrap;
+            padding:0 0.3cm 0 0.3cm;
             font-size:0.7cm;
         }
-        table tbody tr.middle td{
+        .table tbody tr.middle td{
             font-size:0.5cm;
         }
-        table tbody tr.small td{
+        .table tbody tr.small td{
             font-size:0.3cm;
         }
         @media print {
@@ -76,7 +97,7 @@
         <div class="row">
             <h2 class="col-md-6">标签打印</h2>
             <div class="col-md-6 text-right ">
-                <a href="javascript:" class="btn btn-info print-btn">保存</a>
+                <a href="javascript:" class="btn btn-info print-btn" @click="savePkg">保存</a>
                 <a href="javascript:" class="btn btn-primary print-btn">打印</a>
             </div>
         </div>
@@ -89,10 +110,10 @@
                     下单日期：{{order.create_date}}&nbsp;&nbsp;交货日期：{{order.customer_date}}&nbsp;&nbsp;出库仓：{{order.storage_title}}
                 </div>
                 <hr class="my-3"/>
-                <div class="btn-group dropright mr-3" v-for="good in order.goods">
+                <div class="btn-group dropright mr-3 mt-3" v-for="good in order.goods">
                     <button type="button" class="btn btn-secondary dropdown-toggle" :disabled="good.release_count <= 0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{good.goods_title}}
-                        <span class="badge badge-light">{{good.release_count.toFixed(4)}}/{{good.count.toFixed(4)}} {{good.goods_unit}}</span>
+                        <span class="badge badge-light">{{ formatNumber(good.release_count) }}/{{ formatNumber(good.count) }} {{good.goods_unit}}</span>
                         <span v-if="good.storage_id != order.storage_id">{{good.storage_title}}</span>
                     </button>
                     <div class="dropdown-menu">
@@ -107,27 +128,31 @@
             <div class="labelbox">
                 <div class="print-page" v-for="pkg in packages[order.package_id]">
                     <span class="badge badge-secondary labelid">{{pkg.title}}</span>
-                    <a class="btn btn-circle d-print-none" title="删除标签" @click="delLabel(pkg.id,order.id)" href="javascript:"><i class="ion-md-close"></i> </a>
+                    <a class="btn btn-circle btn-delete" title="删除标签" @click="delLabel(pkg.id,order.id)" href="javascript:"><i class="ion-md-close"></i> </a>
+                    <a class="btn btn-circle btn-clear" title="清空标签" @click="clearLabel(pkg.id,order.id)" href="javascript:"><i class="ion-md-refresh-circle"></i> </a>
                     <table class="table">
                         <thead class="text-center"><tr><td colspan="2"><h3>{{order.customer_title}}</h3></td></tr></thead>
                         <tbody>
                         <template v-if="pkg.goods.length>3">
-                            <tr v-for="good in pkg.goods">
-                                <td class="text-right">
-                                    {{good.goods_title}}:{{good.count.toFixed(4)}} {{good.goods_unit}}
-                                </td>
-                                <td>
-                                    {{good.goods_title}}:{{good.count.toFixed(4)}} {{good.goods_unit}}
-                                </td>
-                            </tr>
+                            <template v-for="idx in Math.ceil(pkg.goods.length * .5)">
+                                <tr class="middle">
+                                    <td class="text-right">
+                                        {{pkg.goods[(idx-1)*2].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2].count)}} {{pkg.goods[(idx-1)*2].goods_unit}}
+                                    </td>
+                                    <td v-if="pkg.goods[(idx-1)*2+1]">
+                                        {{pkg.goods[(idx-1)*2+1].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2+1].count)}} {{pkg.goods[(idx-1)*2+1].goods_unit}}
+                                    </td>
+                                    <td v-else></td>
+                                </tr>
+                            </template>
                         </template>
                         <template v-else-if="pkg.goods.length>1">
-                            <tr v-for="good in pkg.goods">
+                            <tr class="middle" v-for="good in pkg.goods">
                                 <td class="text-right">
                                     {{good.goods_title}}
                                 </td>
                                 <td>
-                                    {{good.count.toFixed(4)}} {{good.goods_unit}}
+                                    {{ formatNumber(good.count)}} {{good.goods_unit}}
                                 </td>
                             </tr>
                         </template>
@@ -140,7 +165,7 @@
                                     </div>
                                     <div class="row">
                                         <h4 class="col-4 text-right">数量：</h4>
-                                        <h4 class="col text-left">{{good.count.toFixed(4)}} {{good.goods_unit}}</h4>
+                                        <h4 class="col text-left">{{ formatNumber(good.count)}} {{good.goods_unit}}</h4>
                                     </div>
                                 </td>
                             </tr>
@@ -158,17 +183,20 @@
                     <thead class="text-center"><tr><td colspan="2"><h3>{{order.customer_title}}</h3></td></tr></thead>
                     <tbody>
                     <template v-if="pkg.goods.length>3">
-                        <tr v-for="good in pkg.goods">
-                            <td class="text-right">
-                                {{good.goods_title}}:{{good.count.toFixed(4)}} {{good.goods_unit}}
-                            </td>
-                            <td>
-                                {{good.goods_title}}:{{good.count.toFixed(4)}} {{good.goods_unit}}
-                            </td>
-                        </tr>
+                        <template v-for="idx in Math.ceil(pkg.goods.length * .5)">
+                            <tr class="middle">
+                                <td class="text-right">
+                                    {{pkg.goods[(idx-1)*2].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2].count)}} {{pkg.goods[(idx-1)*2].goods_unit}}
+                                </td>
+                                <td v-if="pkg.goods[(idx-1)*2+1]">
+                                    {{pkg.goods[(idx-1)*2+1].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2+1].count)}} {{pkg.goods[(idx-1)*2+1].goods_unit}}
+                                </td>
+                                <td v-else></td>
+                            </tr>
+                        </template>
                     </template>
                     <template v-else-if="pkg.goods.length>1">
-                        <tr v-for="good in pkg.goods">
+                        <tr class="middle" v-for="good in pkg.goods">
                             <td class="text-right">
                                 {{good.goods_title}}
                             </td>
@@ -186,7 +214,7 @@
                                 </div>
                                 <div class="row">
                                     <h4 class="col-4 text-right">数量：</h4>
-                                    <h4 class="col text-left">{{good.count.toFixed(4)}} {{good.goods_unit}}</h4>
+                                    <h4 class="col text-left">{{ formatNumber(good.count) }} {{good.goods_unit}}</h4>
                                 </div>
                             </td>
                         </tr>
@@ -206,7 +234,19 @@
             $('.print-btn').click(function () {
                 window.print();
             })
-        })
+        });
+
+        function formatNumber(number){
+            var num=number.toString().split('.');
+            var len=0;
+            if(num.length === 2){
+                len = num[1].length;
+                if(len>4)len=4;
+            }
+            var p=Math.pow(10,len);
+            return (Math.round(number * p)/p).toFixed(len);
+        }
+
         var global_id=-1;
         var app = new Vue({
             el: '#page-wrapper',
@@ -334,24 +374,48 @@
                         return;
                     }
                     var idx = this.findItem(order.package_id, item_id);
+                    if(this.clearLabelAction(order, idx)){
+                        this.packages[order.package_id].splice(idx,1);
+
+                        //删除后重新编号
+                        for(var i=0;i<this.packages[order.package_id].length;i++){
+                            this.packages[order.package_id][i].title = i+1;
+                        }
+                    }
+                },
+                clearLabel:function(item_id, order_id){
+                    var order = this.findOrder(order_id);
+                    if(!order){
+                        alert('订单资料错误');
+                        return;
+                    }
+                    var idx = this.findItem(order.package_id, item_id);
+                    if(this.clearLabelAction(order, idx)){
+                        this.$nextTick(function () {
+                            alert('清除完成');
+                        });
+                    }else{
+                        alert('清除错误');
+                    }
+                },
+                clearLabelAction:function(order, idx){
                     if(idx > -1){
                         var item=this.packages[order.package_id][idx];
                         if(item.goods && item.goods.length>0){
-                            for(var i=0;i<item.goods.length;i++){
+                            var goods=item.goods.splice(0,item.goods.length);
+                            for(var i=0;i<goods.length;i++){
                                 for(var j=0;j<order.goods.length;j++){
-                                    if(order.goods[j].goods_id == item.goods[i].goods_id){
-                                        if(order.from_order_id>0){
-                                            order.goods[j].count -= item.goods[i].count;
-                                        }else {
-                                            order.goods[j].count += item.goods[i].count;
-                                        }
+                                    if(order.goods[j].goods_id === goods[i].goods_id){
+                                        order.goods[j].release_count += goods[i].count;
                                         break;
                                     }
                                 }
                             }
+
                         }
-                        this.packages[order.package_id].splice(idx,1);
+                        return true;
                     }
+                    return false;
                 },
                 initCount:function(){
                     for(var i=0;i<this.orders.length;i++){
@@ -412,6 +476,9 @@
                         }
                     }
                     return -1;
+                },
+                savePkg:function () {
+                    
                 }
             }
         });
