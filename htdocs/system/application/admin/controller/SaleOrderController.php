@@ -304,6 +304,62 @@ class SaleOrderController extends BaseController
             $this->error('请选择订单打印');
         }
         if($this->request->isPost()) {
+            $packages = $this->request->put('packages');
+            if(!empty($packages)){
+                foreach ($packages as $pkg_id=>$items){
+                    if($pkg_id > 0 ){
+                        if(empty($items)){
+                            Db::name('salePackageItem')->where('package_id', $pkg_id)->delete();
+                            Db::name('salePackageGoods')->where('package_id', $pkg_id)->delete();
+                        }else {
+                            $item_ids = array_column($items, 'id');
+                            Db::name('salePackageItem')->where('package_id', $pkg_id)
+                                ->whereNotIn('id', $item_ids)->delete();
+                            foreach ($items as $item){
+                                if($item['id']<1){
+                                    $item['id'] = Db::name('salePackageItem')->insert([
+                                        'title'=>$item['title'],
+                                        'package_id' => $pkg_id,
+                                        'customer_id' => $item['customer_id'],
+                                        'storage_id' => $item['storage_id']
+                                    ], false,true);
+                                }else{
+                                    Db::name('salePackageItem')->where([
+                                        'id'=>$item['id'],
+                                        'package_id' => $pkg_id
+                                    ])->update([
+                                        'title'=>$item['title'],
+                                        'customer_id' => $item['customer_id'],
+                                        'storage_id' => $item['storage_id']
+                                    ]);
+                                }
+                                if(empty($item['goods'])){
+                                    Db::name('salePackageGoods')->where('package_id', $pkg_id)
+                                        ->where('item_id', $item['id'])->delete();
+                                }else {
+                                    $goods_id = array_column($item['goods'],'goods_id');
+                                    Db::name('salePackageGoods')->where('package_id', $pkg_id)
+                                        ->where('item_id', $item['id'])
+                                        ->whereNotIn('goods_id', $goods_id)->delete();
+
+                                    foreach ($item['goods'] as $goods) {
+
+                                        Db::name('salePackageGoods')->insert([
+                                            'package_id' => $pkg_id,
+                                            'item_id' => $item['id'],
+                                            'goods_id' => $goods['goods_id'],
+                                            'goods_title' => $goods['goods_title'],
+                                            'count' => $goods['count'],
+                                            'goods_unit' => $goods['goods_unit'],
+                                        ],true);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                $this->success('保存成功');
+            }
 
             $order_ids = idArr($order_ids);
             $storage_ids = empty($storage_ids) ? [] : idArr($storage_ids);
@@ -326,7 +382,7 @@ class SaleOrderController extends BaseController
             //未打包过的订单，创建一个默认包
             foreach ($orders as $k => $order) {
                 $orders[$k]['create_date']=date('Y-m-d H:i:s',$order['create_time']);
-                $orders[$k]['customer_date']=date('Y-m-d H:i:s',$order['customer_date']);
+                $orders[$k]['customer_date']=$order['customer_date']>0?date('Y-m-d H:i:s',$order['customer_date']):'-';
                 if (!$order['package_id']) {
                     $package_id = Db::name('salePackage')->insert(['sort' => 1], false, true);
                     $orders[$k]['package_id'] = $package_id;
@@ -343,11 +399,13 @@ class SaleOrderController extends BaseController
             $package_ids = array_column($orders, 'package_id');
             $packages = Db::name('salePackageItem')
                 ->whereIn('package_id', $package_ids)
+                ->order('id ASC')
                 ->select();
             $packages = array_index($packages, 'package_id', true);
 
             $packageGoods = Db::name('salePackageGoods')
                 ->whereIn('package_id', $package_ids)
+                ->order('id ASC')
                 ->select();
             $packageGoods = array_index($packageGoods, 'item_id', true);
 

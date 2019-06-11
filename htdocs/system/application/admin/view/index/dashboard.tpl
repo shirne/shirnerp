@@ -92,7 +92,7 @@
                 <div class="card-footer announcement-bottom">
                     <nav class="nav nav-fill">
                         <a class="nav-item nav-link" data-nav="sale_order_index" href="{:url('saleOrder/index')}"><i class="ion-md-navicon"></i> 管理销售单 </a>
-                        <a class="nav-item nav-link" data-tab="timestamp" href="{:url('saleOrder/create')}"><i class="ion-md-document"></i> 销售开单 </a>
+                        <a class="nav-item nav-link" target="_blank" href="{:url('index/printLabel')}"><i class="ion-md-document"></i> 打印标签 </a>
                     </nav>
                 </div>
             </div>

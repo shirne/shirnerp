@@ -72,6 +72,10 @@ class IndexController extends BaseController{
         return $this->fetch();
     }
 
+    public function printLabel(){
+        return $this->fetch();
+    }
+
     public function settle($start_date='',$end_date=''){
         //波比
         $inout=cache('settle_inout');

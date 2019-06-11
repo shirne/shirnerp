@@ -97,23 +97,35 @@
     </style>
 </block>
 <block name="body">
-    <div id="app">
     <div class="page-wrapper container ml-auto mr-auto mb-3 d-print-none">
         <div class="row">
             <h2 class="col-md-6">标签打印</h2>
             <div class="col-md-6 text-right ">
-                <a href="javascript:" class="btn btn-info print-btn" @click="savePkg">保存</a>
                 <a href="javascript:" class="btn btn-primary print-btn" @click="doPrint">打印</a>
             </div>
         </div>
     </div>
     <div id="page-wrapper" class="container m-auto">
-
         <div class="orderwrapper d-print-none" v-for="order in orders">
             <div class="goodsbox pr-3">
-                <h3 class="mt-3">订单：{{order.order_no}}</h3>
+                <h3 class="mt-3">{{order.order_no}}</h3>
                 <div class="lead">
-                    下单日期：{{order.create_date}}&nbsp;&nbsp;交货日期：{{order.customer_date}}&nbsp;&nbsp;出库仓：{{order.storage_title}}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">品种</span>
+                        </div>
+                        <input type="text" class="form-control" v-model="goods.title" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                        <div class="input-group-middle">
+                            <span class="input-group-text">数量</span>
+                        </div>
+                        <input type="text" class="form-control" v-model="goods.count" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                        <select name="" class="form-control">
+
+                        </select>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" @click="addGoods" type="button">添加品种</button>
+                        </div>
+                    </div>
                 </div>
                 <hr class="my-3"/>
                 <div class="btn-group dropright mr-3 mt-3" v-for="good in order.goods">
@@ -124,7 +136,7 @@
                     </button>
                     <div class="dropdown-menu">
                         <template  v-for="pkg in packages[order.package_id]">
-                        <a class="dropdown-item" href="javascript:" @click="addtoLabel(order.id, good.goods_id, pkg.id)">打包到 {{pkg.title}}</a>
+                            <a class="dropdown-item" href="javascript:" @click="addtoLabel(order.id, good.goods_id, pkg.id)">打包到 {{pkg.title}}</a>
                             <a class="dropdown-item" href="javascript:" @click="addtoLabel(order.id, good.goods_id, pkg.id, 1)">全部打包到 {{pkg.title}}</a>
                         </template>
                     </div>
@@ -182,55 +194,55 @@
                 <a  href="javascript:" class="btn btn-outline-primary btn-addlabel mt-3" @click="addLabel(order.id)">增加标签</a>
             </div>
         </div>
+        <a  href="javascript:" class="btn btn-outline-primary d-print-none btn-addorder m-3" @click="createOrder()">增加订单</a>
         <div class="d-none d-print-block">
             <template v-for="order in orders">
-            <div class="print-page" v-for="pkg in packages[order.package_id]">
-                <table class="table">
-                    <thead class="text-center"><tr><td colspan="2"><h3>{{order.customer_title}}</h3></td></tr></thead>
-                    <tbody>
-                    <template v-if="pkg.goods.length>3">
-                        <template v-for="idx in Math.ceil(pkg.goods.length * .5)">
-                            <tr class="middle">
+                <div class="print-page" v-for="pkg in packages[order.package_id]">
+                    <table class="table">
+                        <thead class="text-center"><tr><td colspan="2"><h3>{{order.customer_title}}</h3></td></tr></thead>
+                        <tbody>
+                        <template v-if="pkg.goods.length>3">
+                            <template v-for="idx in Math.ceil(pkg.goods.length * .5)">
+                                <tr class="middle">
+                                    <td class="text-right">
+                                        {{pkg.goods[(idx-1)*2].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2].count)}} {{pkg.goods[(idx-1)*2].goods_unit}}
+                                    </td>
+                                    <td v-if="pkg.goods[(idx-1)*2+1]">
+                                        {{pkg.goods[(idx-1)*2+1].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2+1].count)}} {{pkg.goods[(idx-1)*2+1].goods_unit}}
+                                    </td>
+                                    <td v-else></td>
+                                </tr>
+                            </template>
+                        </template>
+                        <template v-else-if="pkg.goods.length>1">
+                            <tr class="middle" v-for="good in pkg.goods">
                                 <td class="text-right">
-                                    {{pkg.goods[(idx-1)*2].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2].count)}} {{pkg.goods[(idx-1)*2].goods_unit}}
+                                    {{good.goods_title}}
                                 </td>
-                                <td v-if="pkg.goods[(idx-1)*2+1]">
-                                    {{pkg.goods[(idx-1)*2+1].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2+1].count)}} {{pkg.goods[(idx-1)*2+1].goods_unit}}
+                                <td>
+                                    {{good.count}} {{good.goods_unit}}
                                 </td>
-                                <td v-else></td>
                             </tr>
                         </template>
-                    </template>
-                    <template v-else-if="pkg.goods.length>1">
-                        <tr class="middle" v-for="good in pkg.goods">
-                            <td class="text-right">
-                                {{good.goods_title}}
-                            </td>
-                            <td>
-                                {{good.count}} {{good.goods_unit}}
-                            </td>
-                        </tr>
-                    </template>
-                    <template v-else>
-                        <tr v-for="good in pkg.goods">
-                            <td>
-                                <div class="row">
-                                    <h4 class="col-4 text-right">品名：</h4>
-                                    <h4 class="col text-left">{{good.goods_title}}</h4>
-                                </div>
-                                <div class="row">
-                                    <h4 class="col-4 text-right">数量：</h4>
-                                    <h4 class="col text-left">{{ formatNumber(good.count) }} {{good.goods_unit}}</h4>
-                                </div>
-                            </td>
-                        </tr>
-                    </template>
-                    </tbody>
-                </table>
-            </div>
+                        <template v-else>
+                            <tr v-for="good in pkg.goods">
+                                <td>
+                                    <div class="row">
+                                        <h4 class="col-4 text-right">品名：</h4>
+                                        <h4 class="col text-left">{{good.goods_title}}</h4>
+                                    </div>
+                                    <div class="row">
+                                        <h4 class="col-4 text-right">数量：</h4>
+                                        <h4 class="col text-left">{{ formatNumber(good.count) }} {{good.goods_unit}}</h4>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                        </tbody>
+                    </table>
+                </div>
             </template>
         </div>
-    </div>
     </div>
 </block>
 <block name="script">
@@ -238,7 +250,6 @@
     <script type="text/javascript">
 
         function formatNumber(number){
-            if(!number)return 0;
             var num=number.toString().split('.');
             var len=0;
             if(num.length === 2){
@@ -250,13 +261,21 @@
         }
 
         var global_id=-1;
+        var order_id=0;
+        var item_id=0;
         var app = new Vue({
-            el: '#app',
+            el: '#page-wrapper',
             data: {
-                ischanged:false,
+                goods:{
+                    title:'',
+                    id:0,
+                    count:0,
+                    unit:''
+                },
                 orders:[],
-                packages:[],
-                storage_ids:[]
+                packages: {
+
+                }
             },
             watch: {
 
@@ -266,42 +285,42 @@
             },
             methods: {
                 initData:function () {
-                    var self=this;
-                    $.ajax({
-                        url:'',
-                        method:'POST',
-                        data:{
-                            test:1
-                        },
-                        success:function (json) {
-                            if(json.code===1) {
-                                var data = json.data;
-                                for(var i in data.orders){
-                                    if(data.orderGoods[data.orders[i].id]){
-                                        var goods=data.orderGoods[data.orders[i].id];
-                                        goods.release_count=0;
-                                        data.orders[i].goods=goods;
-                                    }else{
-                                        data.orders[i].goods=[];
-                                    }
-                                }
-                                for(var package_id in data.packages){
-                                    for(var i=0;i<data.packages[package_id].length;i++ ){
-                                        var item_id=data.packages[package_id][i].id;
-                                        if(data.packageGoods[item_id]){
-                                            data.packages[package_id][i].goods=data.packageGoods[item_id];
-                                        }else{
-                                            data.packages[package_id][i].goods=[];
-                                        }
-
-                                    }
-                                }
-                                self.orders = data.orders;
-                                self.packages = data.packages;
-                                self.initCount();
-                            }
+                    this.createOrder();
+                },
+                createOrder:function(){
+                    var order = {
+                        id:++order_id,
+                        package_id:order_id,
+                        goods:[],
+                        order_no:order_id+' 号订单',
+                        customer_id:0,
+                        customer_title:''
+                    };
+                    this.orders.push(order);
+                    this.packages[order.package_id]=[
+                        {
+                            id:++item_id,
+                            title:1,
+                            package_id:order.package_id,
+                            goods:[]
                         }
-                    });
+                    ];
+
+                },
+                deleteOrder:function(order_id){
+                    for(var i=0;i<this.orders.length;i++){
+                        if(this.orders[i].id === order_id){
+                            this.orders.splice(i,1);
+                            delete this.packages[this.orders[i].package_id];
+                            break;
+                        }
+                    }
+                },
+                addGoods:function(){
+
+                },
+                delGoods:function(){
+
                 },
                 addtoLabel:function(order_id, goods_id, item_id, isall){
                     var order = this.findOrder(order_id);
@@ -346,7 +365,6 @@
                         });
                     }
                     good.release_count -= count;
-                    this.ischanged=true;
 
                 },
                 addLabel:function (order_id) {
@@ -356,7 +374,7 @@
                         return;
                     }
                     if(!this.packages[order.package_id]){
-                        Vue.set(this.packages,order.package_id,[]);
+                        this.packages[order.package_id]=[];
                     }
                     this.packages[order.package_id].push({
                         id:global_id,
@@ -366,12 +384,7 @@
                         customer_id:order.customer_id,
                         goods:[]
                     });
-                    //添加后重新编号
-                    for(var i=0;i<this.packages[order.package_id].length;i++){
-                        this.packages[order.package_id][i].title = i+1;
-                    }
                     global_id -= 1;
-                    this.ischanged=true;
                 },
                 delLabel:function (item_id, order_id) {
                     var order = this.findOrder(order_id);
@@ -391,7 +404,6 @@
                             this.packages[order.package_id][i].title = i+1;
                         }
                     }
-                    this.ischanged=true;
                 },
                 clearLabel:function(item_id, order_id){
                     var order = this.findOrder(order_id);
@@ -407,7 +419,6 @@
                     }else{
                         alert('清除错误');
                     }
-                    this.ischanged=true;
                 },
                 clearLabelAction:function(order, idx){
                     if(idx > -1){
@@ -488,29 +499,7 @@
                     }
                     return -1;
                 },
-                savePkg:function (e) {
-                    $.ajax({
-                        url:'',
-                        data: {
-                            packages:this.packages
-                        },
-                        dataType:'JSON',
-                        type:'POST',
-                        success:function(json){
-
-                            if(json.code==1){
-                                alert(json.msg);
-                                location.reload();
-                            }else{
-                                alert('保存失败')
-                            }
-                        }
-                    })
-                },
-                doPrint:function (e) {
-                    if(this.ischanged && confirm('是否保存打包设置')){
-                        this.savePkg(null);
-                    }
+                doPrint:function () {
                     window.print();
                 }
             }

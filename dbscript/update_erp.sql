@@ -289,8 +289,9 @@ CREATE TABLE `sa_sale_package_goods` (
   `goods_id` INT(11) DEFAULT '0',
   `goods_title`  VARCHAR(50) DEFAULT '',
   `count` INT(11) DEFAULT '0',
-  `goods_unit` INT(11) DEFAULT '0',
-  PRIMARY KEY (`id`)
+  `goods_unit` VARCHAR(5) DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `unique` (`item_id` ASC, `package_id` ASC, `goods_id` ASC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `sa_sale_order`;
