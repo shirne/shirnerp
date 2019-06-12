@@ -19,15 +19,15 @@
         </div>
     </div>
     <div id="page-wrapper" class="container m-auto">
-        <div class="orderwrapper d-print-none" v-for="order in orders">
-            <div class="goodsbox pr-3">
+        <div class="orderwrapper d-print-none" v-for="(order,index) in orders">
+            <div class="goodsbox">
                 <h3 class="mt-3">{{order.order_no}}</h3>
                 <div class="lead">
                     <div class="input-group input-group-sm">
                         <div class="input-group-prepend">
                             <span class="input-group-text">客户</span>
                         </div>
-                        <input type="text" class="form-control" @focus="showCustomer" @blur="hideCustomer"  v-model="order.customer_key" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                        <input type="text" class="form-control" :data-idx="index" @focus="showCustomer" @blur="hideCustomer" @keyup="loadCustomer"  v-model="order.customer_key" placeholder="" aria-label="" aria-describedby="basic-addon1">
                     </div>
                 </div>
                 <div class="lead mt-2">
@@ -35,24 +35,24 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">品种</span>
                         </div>
-                        <input type="text" class="form-control" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="order.goods.title" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                        <input type="text" class="form-control" :data-idx="index" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="order.goodspick.title" placeholder="" aria-label="" aria-describedby="basic-addon1">
                         <div class="input-group-middle">
                             <span class="input-group-text">数量</span>
                         </div>
-                        <input type="text" class="form-control" v-model="order.goods.count" placeholder="" aria-label="" aria-describedby="basic-addon1">
-                        <select name="unit" v-model="order.goods.unit" class="form-control">
+                        <input type="text" class="form-control" v-model="order.goodspick.count" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                        <select name="unit" v-model="order.goodspick.unit" class="form-control">
                             <option value="">单位</option>
                             <volist name="units" id="u">
                                 <option value="{$u.key}">{$u.key}</option>
                             </volist>
                         </select>
                         <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" @click="addGoods" type="button">添加品种</button>
+                            <button class="btn btn-outline-secondary" @click="addGoods(index)" type="button">添加品种</button>
                         </div>
                     </div>
                 </div>
                 <hr class="my-3"/>
-                <div class="btn-group dropright mr-3 mt-3" v-for="good in order.goods">
+                <div class="btn-group dropright mr-3 mb-3" v-for="good in order.goods">
                     <button type="button" class="btn btn-secondary dropdown-toggle" :disabled="good.release_count <= 0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{good.goods_title}}
                         <span class="badge badge-light">{{ formatNumber(good.release_count) }}/{{ formatNumber(good.count) }} {{good.goods_unit}}</span>
@@ -63,22 +63,32 @@
                             <a class="dropdown-item" href="javascript:" @click="addtoLabel(order.id, good.goods_id, pkg.id)">打包到 {{pkg.title}}</a>
                             <a class="dropdown-item" href="javascript:" @click="addtoLabel(order.id, good.goods_id, pkg.id, 1)">全部打包到 {{pkg.title}}</a>
                         </template>
+                        <a class="dropdown-item" href="javascript:" @click="delGoods(index, good.goods_id)">移除</a>
                     </div>
                 </div>
             </div>
 
             <div class="labelbox clearfix">
-                <div class="print-page float-left mr-3" v-for="pkg in packages[order.package_id]">
+                <div class="print-page float-left ml-3" v-for="pkg in packages[order.package_id]">
                     <span class="badge badge-secondary labelid">{{pkg.title}}</span>
                     <a class="btn btn-circle btn-delete" title="删除标签" @click="delLabel(pkg.id,order.id)" href="javascript:"><i class="ion-md-close"></i> </a>
                     <a class="btn btn-circle btn-clear" title="清空标签" @click="clearLabel(pkg.id,order.id)" href="javascript:"><i class="ion-md-refresh-circle"></i> </a>
                     <table class="table">
-                        <thead class="text-center"><tr><td colspan="2"><h3>{{order.customer_title}}</h3></td></tr></thead>
+                        <thead class="text-center">
+                        <tr>
+                            <td colspan="2">
+                                <h3>
+                                    <span v-if="order.customer_id">{{order.customer_title}}</span>
+                                    <span class="text-muted" v-else>客户名称</span>
+                                </h3>
+                            </td>
+                        </tr>
+                        </thead>
                         <tbody>
                         <template v-if="pkg.goods.length>3">
                             <template v-for="idx in Math.ceil(pkg.goods.length * .5)">
                                 <tr class="middle">
-                                    <td class="text-right">
+                                    <td>
                                         {{pkg.goods[(idx-1)*2].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2].count)}} {{pkg.goods[(idx-1)*2].goods_unit}}
                                     </td>
                                     <td v-if="pkg.goods[(idx-1)*2+1]">
@@ -93,7 +103,7 @@
                                 <td class="text-right">
                                     {{good.goods_title}}
                                 </td>
-                                <td>
+                                <td class="text-left">
                                     {{ formatNumber(good.count)}} {{good.goods_unit}}
                                 </td>
                             </tr>
@@ -115,7 +125,7 @@
                         </tbody>
                     </table>
                 </div>
-                <a  href="javascript:" class="btn btn-outline-primary btn-addlabel mt-3" @click="addLabel(order.id)">增加标签</a>
+                <a  href="javascript:" class="btn btn-outline-primary btn-addlabel mt-3 ml-3" @click="addLabel(order.id)">增加标签</a>
             </div>
         </div>
         <a  href="javascript:" class="btn btn-outline-primary d-print-none btn-addorder m-3" @click="createOrder()">增加订单</a>
@@ -138,7 +148,7 @@
                         <template v-if="pkg.goods.length>3">
                             <template v-for="idx in Math.ceil(pkg.goods.length * .5)">
                                 <tr class="middle">
-                                    <td class="text-right">
+                                    <td>
                                         {{pkg.goods[(idx-1)*2].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2].count)}} {{pkg.goods[(idx-1)*2].goods_unit}}
                                     </td>
                                     <td v-if="pkg.goods[(idx-1)*2+1]">
@@ -153,7 +163,7 @@
                                 <td class="text-right">
                                     {{good.goods_title}}
                                 </td>
-                                <td>
+                                <td class="text-left">
                                     {{good.count}} {{good.goods_unit}}
                                 </td>
                             </tr>
@@ -185,6 +195,7 @@
     <script type="text/javascript">
 
         function formatNumber(number){
+            if(!number)return 0;
             var num=number.toString().split('.');
             var len=0;
             if(num.length === 2){
@@ -199,6 +210,9 @@
         var order_id=0;
         var item_id=0;
 
+        var lastGoodsKey=null;
+        var lastCustomerKey=null;
+
         var hideTimeout=0;
         var currentInput=null;
         var hideCustomerTimeout=0;
@@ -206,6 +220,8 @@
         var app = new Vue({
             el: '#app',
             data: {
+                current_index:0,
+
                 goodslist:[],
                 customers:[],
                 listStyle:{
@@ -250,7 +266,7 @@
                             title:'',
                             orig_title:'',
                             id:0,
-                            count:0,
+                            count:'',
                             unit:''
                         }
                     };
@@ -274,11 +290,60 @@
                         }
                     }
                 },
-                addGoods:function(){
-
+                addGoods:function(index){
+                    var goods = this.orders[index].goodspick;
+                    if(goods.count===0){
+                        alert('请填写数量');
+                        return false;
+                    }
+                    var idx = this.findGoods(this.orders[index].goods, goods.id, true);
+                    var order=this.orders[index];
+                    if(idx>-1){
+                        order.goods[idx].count+=goods.count;
+                        order.goods[idx].release_count+=goods.count;
+                        if(order.goods[idx].goods_unit != goods.unit) {
+                            order.goods[idx].goods_unit = goods.unit;
+                            var items = this.packages[order.package_id];
+                            for (var i = 0; i < items.length; i++) {
+                                for (var j = 0; j < items[i].goods; j++) {
+                                    if (items[i].goods[j].goods_id == goods.id){
+                                        items[i].goods[j].goods_unit=goods.unit;
+                                    }
+                                }
+                            }
+                        }
+                    }else {
+                        order.goods.push({
+                            goods_id:goods.id,
+                            goods_title: goods.title,
+                            count: goods.count,
+                            goods_unit: goods.unit,
+                            release_count:goods.count
+                        });
+                    }
+                    goods.id=0;
+                    goods.title='';
+                    goods.unit='';
+                    goods.count='';
+                    goods.orig_title='';
                 },
-                delGoods:function(){
-
+                delGoods:function(index, goods_id){
+                    var order=this.orders[index];
+                    var idx = this.findGoods(order.goods, goods_id, true);
+                    if(idx>-1){
+                        var goods=order.goods.splice(idx, 1);
+                        if(goods[0].count>goods[0].release_count){
+                            var items = this.packages[order.package_id];
+                            for (var i = 0; i < items.length; i++) {
+                                for (var j = 0; j < items[i].goods; j++) {
+                                    if (items[i].goods[j].goods_id == goods_id){
+                                        items[i].goods.splice(j,1);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 },
                 addtoLabel:function(order_id, goods_id, item_id, isall){
                     var order = this.findOrder(order_id);
@@ -473,17 +538,16 @@
                     this.listStyle.left=offset.left+'px';
                     this.listStyle.width=width+'px';
                     this.listStyle.display='block';
-                    this.key = $(e.target).val();
+                    this.current_index = $(e.target).data('idx');
+
                     $(document.body).on('keyup',this.listenKeyup);
                     this.getGoodsList(e);
                 },
                 hideGoods:function (e) {
                     if(e){
                         var target=e.target;
-                        /*var idx = $(target).data('idx');
-                        if(this.goods[idx]) {
-                            this.goods[idx].title = this.goods[idx].orig_title;
-                        }*/
+                        var goods_pick=this.orders[this.current_index].goodspick;
+                        goods_pick.title=goods_pick.orig_title;
                     }
                     var self=this;
                     hideTimeout=setTimeout(function () {
@@ -493,9 +557,6 @@
                     },500);
                 },
                 loadGoods:function (e) {
-                    var key = $(e.target).val();
-                    if(key == this.key)return;
-                    this.key = key;
                     this.getGoodsList(e);
                 },
                 activeThis:function (e) {
@@ -540,20 +601,12 @@
                         var idx=hover.data('idx');
                         var good = this.goodslist[idx];
                         if(good){
-                            /*for(var i=0;i<this.goods.length;i++){
-                                if(i != idx && this.goods[i].goods_id == good.id){
-                                    dialog.alert('商品重复');
-                                    return false;
-                                }
-                            }*/
-                            /*idx = $(currentInput).data('idx');
-                            this.goods[idx].goods_id=good.id;
-                            this.goods[idx].title=good.title;
-                            this.goods[idx].orig_title=good.title;
-                            this.goods[idx].storage=good.storage?good.storage:0;
-                            this.goods[idx].unit=good.unit;
-                            this.goods[idx].price_type=good.price_type;
-                            $(currentInput).parents('tr').find('.counttd input').focus();*/
+                            var goods = this.orders[this.current_index].goodspick;
+                            goods.title = good.title;
+                            goods.id = good.id;
+                            goods.unit = good.unit;
+                            goods.orig_title = good.title;
+                            $(currentInput).nextAll('input').focus();
 
                             return true;
                         }
@@ -562,17 +615,20 @@
                 },
                 getGoodsList:function (e) {
                     var self=this;
-                    var key = this.key;
+                    var ckey=this.orders[this.current_index].goodspick.title.toString();
+                    if(ckey===lastGoodsKey)return;
+                    lastGoodsKey = ckey;
+
                     $.ajax({
                         url: '{:url("goods/search")}',
                         type: 'GET',
                         dataType: 'JSON',
                         data: {
-                            key: key
+                            key: ckey
                         },
                         success: function (json) {
                             if (json.code == 1) {
-                                if (key == self.key) self.goodslist = json.data;
+                                if(ckey===lastGoodsKey)self.goodslist= json.data;
                             }
                         }
                     });
@@ -590,15 +646,14 @@
                     this.customerStyle.left=offset.left+'px';
                     this.customerStyle.width=width+'px';
                     this.customerStyle.display='block';
-                    this.cKey = $(e.target).val();
+                    this.current_index = $(e.target).data('idx');
+                    //this.cKey = $(e.target).val();
                     $(document.body).on('keyup',this.listenCustomerKeyup);
                     this.getCustomerList(e);
                 },
                 hideCustomer:function (e) {
                     if(e){
-                        if(this.cKey != this.order.customer_title) {
-                            this.cKey = this.order.customer_title;
-                        }
+                        this.orders[this.current_index].customer_key=this.orders[this.current_index].customer_title;
                     }
                     var self=this;
                     clearTimeout(hideCustomerTimeout);
@@ -607,12 +662,9 @@
                         self.customerStyle.display='none';
                     },500);
                 },
-                /*loadCustomer:function (e) {
-                    var ckey = $(e.target).val();
-                    if(ckey == this.cKey)return;
-                    this.cKey = ckey;
+                loadCustomer:function (e) {
                     this.getCustomerList(e);
-                },*/
+                },
                 activeThisCustomer:function (e) {
                     var self=$(e.target);
                     var parent=self.parents('.list-group').eq(0);
@@ -655,10 +707,9 @@
                         var idx=hover.data('idx');
                         var customer = this.customers[idx];
                         if(customer){
-                            this.order.customer_id=customer.id;
-                            this.order.customer_title=customer.title;
-                            this.cKey = customer.title;
-                            updateThisTitle('销售单['+customer.title+']');
+                            this.orders[this.current_index].customer_id=customer.id;
+                            this.orders[this.current_index].customer_key=customer.title;
+                            this.orders[this.current_index].customer_title=customer.title;
                             return true;
                         }
                     }
@@ -666,7 +717,9 @@
                 },
                 getCustomerList:function (e) {
                     var self=this;
-                    var ckey = this.cKey;
+                    var ckey=this.orders[this.current_index].customer_key.toString();
+                    if(ckey===lastCustomerKey)return;
+                    lastCustomerKey = ckey;
 
                     $.ajax({
                         url: '{:url("customer/search")}',
@@ -677,7 +730,7 @@
                         },
                         success: function (json) {
                             if (json.code == 1) {
-                                self.customers = json.data;
+                                if(ckey===lastCustomerKey)self.customers= json.data;
                             }
                         }
                     });

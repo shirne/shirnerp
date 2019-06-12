@@ -14,7 +14,7 @@
                             <div class="col-6 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">供应商</span></div>
-                                    <input type="text" class="form-control" @focus="showSupplier" @blur="hideSupplier" v-model="cKey"/>
+                                    <input type="text" class="form-control" @focus="showSupplier" @blur="hideSupplier"   @keyup="loadSupplier" v-model="cKey"/>
                                 </div>
                             </div>
                             <div class="col-3 mt-3">
@@ -192,6 +192,8 @@
         var hideTimeout=0;
         var currentInput=null;
         var hideSupplierTimeout=0;
+        var lastCustomerKey=null;
+        var lastGoodsKey=null;
         window.page_title = '采购单[{$supplier.title}]';
         var app = new Vue({
             el: '#page-wrapper',
@@ -230,9 +232,6 @@
                     this.listGoods=[];
                     this.emptyGoods=[];
                     this.updateStorage();
-                },
-                cKey:function (val, oVal) {
-                    this.getSupplierList();
                 }
             },
             mounted:function(){
@@ -558,12 +557,9 @@
                         self.supplierStyle.display='none';
                     },500);
                 },
-                /*loadSupplier:function (e) {
-                    //var ckey = $(e.target).val();
-                    if(ckey == this.cKey)return;
-                    this.cKey = ckey;
+                loadSupplier:function (e) {
                     this.getSupplierList(e);
-                },*/
+                },
                 activeThisSupplier:function (e) {
                     var self=$(e.target);
                     var parent=self.parents('.list-group').eq(0);
@@ -618,7 +614,9 @@
                 },
                 getSupplierList:function (e) {
                     var self=this;
-                    var ckey = this.cKey;
+                    var ckey = this.cKey.toString();
+                    if(ckey === lastCustomerKey)return;
+                    lastCustomerKey=ckey;
 
                     $.ajax({
                         url: '{:url("supplier/search")}',
@@ -629,7 +627,7 @@
                         },
                         success: function (json) {
                             if (json.code == 1) {
-                                self.suppliers = json.data;
+                                if(ckey===lastCustomerKey)self.suppliers = json.data;
                             }
                         }
                     });

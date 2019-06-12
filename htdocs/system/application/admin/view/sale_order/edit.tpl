@@ -14,7 +14,7 @@
                             <div class="col-6 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">客户</span></div>
-                                    <input type="text" class="form-control" @focus="showCustomer" @blur="hideCustomer" v-model="cKey"/>
+                                    <input type="text" class="form-control" @focus="showCustomer" @blur="hideCustomer"  @keyup="loadCustomer" v-model="cKey"/>
                                 </div>
                             </div>
                             <div class="col-3 mt-3">
@@ -209,6 +209,8 @@
         var hideTimeout=0;
         var currentInput=null;
         var hideCustomerTimeout=0;
+        var lastCustomerKey=null;
+        var lastGoodsKey=null;
         window.page_title = '销售单[{$customer.title}]';
         var app = new Vue({
             el: '#page-wrapper',
@@ -254,9 +256,6 @@
                         }
                     }
                     this.updateStorage();
-                },
-                cKey:function (val, oVal) {
-                    this.getCustomerList();
                 }
             },
             mounted:function(){
@@ -610,12 +609,9 @@
                         self.customerStyle.display='none';
                     },500);
                 },
-                /*loadCustomer:function (e) {
-                    var ckey = $(e.target).val();
-                    if(ckey == this.cKey)return;
-                    this.cKey = ckey;
+                loadCustomer:function (e) {
                     this.getCustomerList(e);
-                },*/
+                },
                 activeThisCustomer:function (e) {
                     var self=$(e.target);
                     var parent=self.parents('.list-group').eq(0);
@@ -668,7 +664,9 @@
                 },
                 getCustomerList:function (e) {
                     var self=this;
-                    var ckey = this.cKey;
+                    var ckey = this.cKey.toString();
+                    if(ckey === lastCustomerKey)return;
+                    lastCustomerKey=ckey;
 
                     $.ajax({
                         url: '{:url("customer/search")}',
@@ -679,7 +677,7 @@
                         },
                         success: function (json) {
                             if (json.code == 1) {
-                                self.customers = json.data;
+                                if(ckey===lastCustomerKey)self.customers = json.data;
                             }
                         }
                     });

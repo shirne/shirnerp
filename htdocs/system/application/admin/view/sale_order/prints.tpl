@@ -22,13 +22,13 @@
     <div id="page-wrapper" class="container m-auto">
 
         <div class="orderwrapper d-print-none" v-for="order in orders">
-            <div class="goodsbox pr-3">
+            <div class="goodsbox">
                 <h3 class="mt-3">订单：{{order.order_no}}</h3>
                 <div class="lead">
                     下单日期：{{order.create_date}}&nbsp;&nbsp;交货日期：{{order.customer_date}}&nbsp;&nbsp;出库仓：{{order.storage_title}}
                 </div>
                 <hr class="my-3"/>
-                <div class="btn-group dropright mr-3 mt-3" v-for="good in order.goods">
+                <div class="btn-group dropright mr-3 mb-3" v-for="good in order.goods">
                     <button type="button" class="btn btn-secondary dropdown-toggle" :disabled="good.release_count <= 0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{good.goods_title}}
                         <span class="badge badge-light">{{ formatNumber(good.release_count) }}/{{ formatNumber(good.count) }} {{good.goods_unit}}</span>
@@ -44,7 +44,7 @@
             </div>
 
             <div class="labelbox clearfix">
-                <div class="print-page float-left mr-3" v-for="pkg in packages[order.package_id]">
+                <div class="print-page float-left ml-3" v-for="pkg in packages[order.package_id]">
                     <span class="badge badge-secondary labelid">{{pkg.title}}</span>
                     <a class="btn btn-circle btn-delete" title="删除标签" @click="delLabel(pkg.id,order.id)" href="javascript:"><i class="ion-md-close"></i> </a>
                     <a class="btn btn-circle btn-clear" title="清空标签" @click="clearLabel(pkg.id,order.id)" href="javascript:"><i class="ion-md-refresh-circle"></i> </a>
@@ -54,7 +54,7 @@
                         <template v-if="pkg.goods.length>3">
                             <template v-for="idx in Math.ceil(pkg.goods.length * .5)">
                                 <tr class="middle">
-                                    <td class="text-right">
+                                    <td>
                                         {{pkg.goods[(idx-1)*2].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2].count)}} {{pkg.goods[(idx-1)*2].goods_unit}}
                                     </td>
                                     <td v-if="pkg.goods[(idx-1)*2+1]">
@@ -69,7 +69,7 @@
                                 <td class="text-right">
                                     {{good.goods_title}}
                                 </td>
-                                <td>
+                                <td class="text-left">
                                     {{ formatNumber(good.count)}} {{good.goods_unit}}
                                 </td>
                             </tr>
@@ -91,7 +91,7 @@
                         </tbody>
                     </table>
                 </div>
-                <a  href="javascript:" class="btn btn-outline-primary btn-addlabel mt-3" @click="addLabel(order.id)">增加标签</a>
+                <a  href="javascript:" class="btn btn-outline-primary btn-addlabel mt-3 ml-3" @click="addLabel(order.id)">增加标签</a>
             </div>
         </div>
         <div class="d-none d-print-block">
@@ -103,7 +103,7 @@
                     <template v-if="pkg.goods.length>3">
                         <template v-for="idx in Math.ceil(pkg.goods.length * .5)">
                             <tr class="middle">
-                                <td class="text-right">
+                                <td>
                                     {{pkg.goods[(idx-1)*2].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2].count)}} {{pkg.goods[(idx-1)*2].goods_unit}}
                                 </td>
                                 <td v-if="pkg.goods[(idx-1)*2+1]">
@@ -118,7 +118,7 @@
                             <td class="text-right">
                                 {{good.goods_title}}
                             </td>
-                            <td>
+                            <td class="text-left">
                                 {{good.count}} {{good.goods_unit}}
                             </td>
                         </tr>
