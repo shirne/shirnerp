@@ -73,6 +73,7 @@ class IndexController extends BaseController{
     }
 
     public function printLabel(){
+        $this->assign('units',getGoodsUnits());
         return $this->fetch();
     }
 

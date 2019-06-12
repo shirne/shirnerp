@@ -2,101 +2,14 @@
 <block name="header">
     <style >
         @page {
-            size: 10cm 10cm;
+            size: 8cm 6cm;
             margin:0;
-        }
-        #page-wrapper{
-
-        }
-        .print-page{
-            width :8cm;
             padding:0;
-            height:6cm;
-            margin-top:1em;
-            position: relative;
-            border-radius:5px;
-            box-shadow: 1px 2px 5px rgba(0,0,0,.2);
-        }
-        .print-page .labelid{
-            position: absolute;
-            left:10px;
-            top:10px;
-            padding:0;
-            font-size:16px;
-            border-radius:100%;
-            line-height:24px;
-            height : 24px;
-            width : 24px;
-            text-align: center;
-        }
-        .print-page .btn-circle{
-            position: absolute;
-            font-size:22px;
-            padding:0;
-            border-radius:100%;
-            line-height:24px;
-            width:24px;
-            text-align: center;
-        }
-        .print-page .btn-delete{
-            color:red;
-            right:10px;
-            top:10px;
-        }
-        .print-page .btn-clear{
-            color:#999;
-            right:10px;
-            bottom:10px;
-        }
-        .print-page .table{
-            height:90%;
-        }
-        .print-page .table td{
-            border-top:0;
-            vertical-align: middle;
-        }
-        .orderwrapper{
-            padding:10px;
-            border-bottom:1px #ddd solid;
-            display:flex;
-        }
-        .goodsbox{
-            flex:1;
-        }
-        .goodsbox .lead{
-            font-size:13px;
-        }
-        .labelbox{
-            width:17cm;
-            flex:0 0 auto;
-        }
-        .btn-addlabel{
-            clear:left;
-            float: left;
-        }
-        .table thead h3{
-            white-space: nowrap;
-        }
-        .table tbody td{
-            white-space: nowrap;
-            padding:0 0.3cm 0 0.3cm;
-            font-size:0.7cm;
-        }
-        .table tbody tr.middle td{
-            font-size:0.5cm;
-        }
-        .table tbody tr.small td{
-            font-size:0.3cm;
-        }
-        @media print {
-            .orderwrapper{
-                padding:0;
-                border:0;
-            }
         }
     </style>
 </block>
 <block name="body">
+    <div id="app" class="labelpage">
     <div class="page-wrapper container ml-auto mr-auto mb-3 d-print-none">
         <div class="row">
             <h2 class="col-md-6">标签打印</h2>
@@ -110,17 +23,28 @@
             <div class="goodsbox pr-3">
                 <h3 class="mt-3">{{order.order_no}}</h3>
                 <div class="lead">
-                    <div class="input-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">客户</span>
+                        </div>
+                        <input type="text" class="form-control" @focus="showCustomer" @blur="hideCustomer"  v-model="order.customer_key" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                    </div>
+                </div>
+                <div class="lead mt-2">
+                    <div class="input-group input-group-sm">
                         <div class="input-group-prepend">
                             <span class="input-group-text">品种</span>
                         </div>
-                        <input type="text" class="form-control" v-model="goods.title" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                        <input type="text" class="form-control" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="order.goods.title" placeholder="" aria-label="" aria-describedby="basic-addon1">
                         <div class="input-group-middle">
                             <span class="input-group-text">数量</span>
                         </div>
-                        <input type="text" class="form-control" v-model="goods.count" placeholder="" aria-label="" aria-describedby="basic-addon1">
-                        <select name="" class="form-control">
-
+                        <input type="text" class="form-control" v-model="order.goods.count" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                        <select name="unit" v-model="order.goods.unit" class="form-control">
+                            <option value="">单位</option>
+                            <volist name="units" id="u">
+                                <option value="{$u.key}">{$u.key}</option>
+                            </volist>
                         </select>
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" @click="addGoods" type="button">添加品种</button>
@@ -176,13 +100,13 @@
                         </template>
                         <template v-else>
                             <tr v-for="good in pkg.goods">
-                                <td>
+                                <td colspan="2">
                                     <div class="row">
-                                        <h4 class="col-4 text-right">品名：</h4>
+                                        <h4 class="col-5 text-right">品名：</h4>
                                         <h4 class="col text-left">{{good.goods_title}}</h4>
                                     </div>
                                     <div class="row">
-                                        <h4 class="col-4 text-right">数量：</h4>
+                                        <h4 class="col-5 text-right">数量：</h4>
                                         <h4 class="col text-left">{{ formatNumber(good.count)}} {{good.goods_unit}}</h4>
                                     </div>
                                 </td>
@@ -195,6 +119,16 @@
             </div>
         </div>
         <a  href="javascript:" class="btn btn-outline-primary d-print-none btn-addorder m-3" @click="createOrder()">增加订单</a>
+        <ul class="list-group auto-complete goods-complete d-print-none" :style="listStyle">
+            <li class="list-group-item" v-for="(good,idx) in goodslist" :data-idx="idx" :key="good.id" @click="selectThis" @mouseenter="activeThis">
+                [{{good.goods_no}}]{{good.title}}
+            </li>
+        </ul>
+        <ul class="list-group auto-complete customer-complete d-print-none" :style="customerStyle">
+            <li class="list-group-item" v-for="(customer,idx) in customers" :data-idx="idx" :key="customer.id" @click="selectThisCustomer" @mouseenter="activeThisCustomer">
+                [{{customer.id}}]{{customer.title}}
+            </li>
+        </ul>
         <div class="d-none d-print-block">
             <template v-for="order in orders">
                 <div class="print-page" v-for="pkg in packages[order.package_id]">
@@ -226,13 +160,13 @@
                         </template>
                         <template v-else>
                             <tr v-for="good in pkg.goods">
-                                <td>
+                                <td colspan="2">
                                     <div class="row">
-                                        <h4 class="col-4 text-right">品名：</h4>
+                                        <h4 class="col-5 text-right">品名：</h4>
                                         <h4 class="col text-left">{{good.goods_title}}</h4>
                                     </div>
                                     <div class="row">
-                                        <h4 class="col-4 text-right">数量：</h4>
+                                        <h4 class="col-5 text-right">数量：</h4>
                                         <h4 class="col text-left">{{ formatNumber(good.count) }} {{good.goods_unit}}</h4>
                                     </div>
                                 </td>
@@ -243,6 +177,7 @@
                 </div>
             </template>
         </div>
+    </div>
     </div>
 </block>
 <block name="script">
@@ -263,14 +198,29 @@
         var global_id=-1;
         var order_id=0;
         var item_id=0;
+
+        var hideTimeout=0;
+        var currentInput=null;
+        var hideCustomerTimeout=0;
+
         var app = new Vue({
-            el: '#page-wrapper',
+            el: '#app',
             data: {
-                goods:{
-                    title:'',
-                    id:0,
-                    count:0,
-                    unit:''
+                goodslist:[],
+                customers:[],
+                listStyle:{
+                    display:'none',
+                    position:'absolute',
+                    left:0,
+                    top:0,
+                    width:0
+                },
+                customerStyle:{
+                    display:'none',
+                    position:'absolute',
+                    left:0,
+                    top:0,
+                    width:0
                 },
                 orders:[],
                 packages: {
@@ -294,24 +244,32 @@
                         goods:[],
                         order_no:order_id+' 号订单',
                         customer_id:0,
-                        customer_title:''
+                        customer_key:'',
+                        customer_title:'',
+                        goodspick:{
+                            title:'',
+                            orig_title:'',
+                            id:0,
+                            count:0,
+                            unit:''
+                        }
                     };
                     this.orders.push(order);
-                    this.packages[order.package_id]=[
+                    Vue.set(this.packages,order.package_id,[
                         {
                             id:++item_id,
                             title:1,
                             package_id:order.package_id,
                             goods:[]
                         }
-                    ];
+                    ]);
 
                 },
                 deleteOrder:function(order_id){
                     for(var i=0;i<this.orders.length;i++){
                         if(this.orders[i].id === order_id){
                             this.orders.splice(i,1);
-                            delete this.packages[this.orders[i].package_id];
+                            Vue.delete(this.packages,this.orders[i].package_id);
                             break;
                         }
                     }
@@ -374,7 +332,7 @@
                         return;
                     }
                     if(!this.packages[order.package_id]){
-                        this.packages[order.package_id]=[];
+                        Vue.set(this.packages,order.package_id,[]);
                     }
                     this.packages[order.package_id].push({
                         id:global_id,
@@ -501,6 +459,228 @@
                 },
                 doPrint:function () {
                     window.print();
+                },
+
+                //============= goods autocomplete
+                showGoods:function (e) {
+                    clearTimeout(hideTimeout);
+                    var target=e.target;
+                    currentInput = target;
+                    var offset=$(target).offset();
+                    var width=$(target).outerWidth();
+                    var height=$(target).outerHeight();
+                    this.listStyle.top=(offset.top+height)+'px';
+                    this.listStyle.left=offset.left+'px';
+                    this.listStyle.width=width+'px';
+                    this.listStyle.display='block';
+                    this.key = $(e.target).val();
+                    $(document.body).on('keyup',this.listenKeyup);
+                    this.getGoodsList(e);
+                },
+                hideGoods:function (e) {
+                    if(e){
+                        var target=e.target;
+                        /*var idx = $(target).data('idx');
+                        if(this.goods[idx]) {
+                            this.goods[idx].title = this.goods[idx].orig_title;
+                        }*/
+                    }
+                    var self=this;
+                    hideTimeout=setTimeout(function () {
+                        currentInput=null;
+                        $(document.body).off('keyup',self.listenKeyup);
+                        self.listStyle.display='none';
+                    },500);
+                },
+                loadGoods:function (e) {
+                    var key = $(e.target).val();
+                    if(key == this.key)return;
+                    this.key = key;
+                    this.getGoodsList(e);
+                },
+                activeThis:function (e) {
+                    var self=$(e.target);
+                    var parent=self.parents('.list-group').eq(0);
+                    parent.find('.list-group-item').removeClass('hover');
+                    self.addClass('hover');
+                },
+                listenKeyup:function (e) {
+                    var lists=$('.goods-complete .list-group-item');
+                    var idx=lists.index($('.goods-complete .hover'));
+
+                    switch (e.keyCode){
+                        case 40://down
+                            if(idx < lists.length-1){
+                                idx++;
+                                lists.removeClass('hover').eq(idx).addClass('hover');
+                            }
+                            break;
+                        case 38://up
+                            if(idx > 0){
+                                idx--;
+                            }
+                            lists.removeClass('hover').eq(idx).addClass('hover');
+
+                            break;
+                        case 13://enter
+                            if(this.selectGoods()) {
+                                this.hideGoods();
+                            }
+                            break;
+                    }
+                },
+                selectThis:function (e) {
+                    if(this.selectGoods()) {
+                        this.hideGoods();
+                    }
+                },
+                selectGoods:function () {
+                    var hover=$('.goods-complete .hover');
+                    if(hover.length>0 && currentInput){
+                        var idx=hover.data('idx');
+                        var good = this.goodslist[idx];
+                        if(good){
+                            /*for(var i=0;i<this.goods.length;i++){
+                                if(i != idx && this.goods[i].goods_id == good.id){
+                                    dialog.alert('商品重复');
+                                    return false;
+                                }
+                            }*/
+                            /*idx = $(currentInput).data('idx');
+                            this.goods[idx].goods_id=good.id;
+                            this.goods[idx].title=good.title;
+                            this.goods[idx].orig_title=good.title;
+                            this.goods[idx].storage=good.storage?good.storage:0;
+                            this.goods[idx].unit=good.unit;
+                            this.goods[idx].price_type=good.price_type;
+                            $(currentInput).parents('tr').find('.counttd input').focus();*/
+
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                getGoodsList:function (e) {
+                    var self=this;
+                    var key = this.key;
+                    $.ajax({
+                        url: '{:url("goods/search")}',
+                        type: 'GET',
+                        dataType: 'JSON',
+                        data: {
+                            key: key
+                        },
+                        success: function (json) {
+                            if (json.code == 1) {
+                                if (key == self.key) self.goodslist = json.data;
+                            }
+                        }
+                    });
+
+                },
+
+                //====================== customer autocomplete
+                showCustomer:function (e) {
+                    clearTimeout(hideCustomerTimeout);
+                    var target=e.target;
+                    var offset=$(target).offset();
+                    var width=$(target).outerWidth();
+                    var height=$(target).outerHeight();
+                    this.customerStyle.top=(offset.top+height)+'px';
+                    this.customerStyle.left=offset.left+'px';
+                    this.customerStyle.width=width+'px';
+                    this.customerStyle.display='block';
+                    this.cKey = $(e.target).val();
+                    $(document.body).on('keyup',this.listenCustomerKeyup);
+                    this.getCustomerList(e);
+                },
+                hideCustomer:function (e) {
+                    if(e){
+                        if(this.cKey != this.order.customer_title) {
+                            this.cKey = this.order.customer_title;
+                        }
+                    }
+                    var self=this;
+                    clearTimeout(hideCustomerTimeout);
+                    hideCustomerTimeout=setTimeout(function () {
+                        $(document.body).off('keyup',self.listenCustomerKeyup);
+                        self.customerStyle.display='none';
+                    },500);
+                },
+                /*loadCustomer:function (e) {
+                    var ckey = $(e.target).val();
+                    if(ckey == this.cKey)return;
+                    this.cKey = ckey;
+                    this.getCustomerList(e);
+                },*/
+                activeThisCustomer:function (e) {
+                    var self=$(e.target);
+                    var parent=self.parents('.list-group').eq(0);
+                    parent.find('.list-group-item').removeClass('hover');
+                    self.addClass('hover');
+                },
+                listenCustomerKeyup:function (e) {
+                    var lists=$('.customer-complete .list-group-item');
+                    var idx=lists.index($('.customer-complete .hover'));
+
+                    switch (e.keyCode){
+                        case 40://down
+                            if(idx < lists.length-1){
+                                idx++;
+                                lists.removeClass('hover').eq(idx).addClass('hover');
+                            }
+                            break;
+                        case 38://up
+                            if(idx > 0){
+                                idx--;
+                            }
+                            lists.removeClass('hover').eq(idx).addClass('hover');
+
+                            break;
+                        case 13://enter
+                            if(this.selectCustomer()) {
+                                this.hideCustomer();
+                            }
+                            break;
+                    }
+                },
+                selectThisCustomer:function (e) {
+                    if(this.selectCustomer()) {
+                        this.hideCustomer();
+                    }
+                },
+                selectCustomer:function () {
+                    var hover=$('.customer-complete .hover');
+                    if(hover.length>0){
+                        var idx=hover.data('idx');
+                        var customer = this.customers[idx];
+                        if(customer){
+                            this.order.customer_id=customer.id;
+                            this.order.customer_title=customer.title;
+                            this.cKey = customer.title;
+                            updateThisTitle('销售单['+customer.title+']');
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                getCustomerList:function (e) {
+                    var self=this;
+                    var ckey = this.cKey;
+
+                    $.ajax({
+                        url: '{:url("customer/search")}',
+                        type: 'GET',
+                        dataType: 'JSON',
+                        data: {
+                            key: ckey
+                        },
+                        success: function (json) {
+                            if (json.code == 1) {
+                                self.customers = json.data;
+                            }
+                        }
+                    });
                 }
             }
         });

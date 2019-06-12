@@ -2,102 +2,14 @@
 <block name="header">
     <style >
         @page {
-            size: 10cm 10cm;
+            size: 8cm 6cm;
             margin:0;
-        }
-        #page-wrapper{
-
-        }
-        .print-page{
-            width :8cm;
             padding:0;
-            height:6cm;
-            margin-top:1em;
-            position: relative;
-            border-radius:5px;
-            box-shadow: 1px 2px 5px rgba(0,0,0,.2);
-        }
-        .print-page .labelid{
-            position: absolute;
-            left:10px;
-            top:10px;
-            padding:0;
-            font-size:16px;
-            border-radius:100%;
-            line-height:24px;
-            height : 24px;
-            width : 24px;
-            text-align: center;
-        }
-        .print-page .btn-circle{
-            position: absolute;
-            font-size:22px;
-            padding:0;
-            border-radius:100%;
-            line-height:24px;
-            width:24px;
-            text-align: center;
-        }
-        .print-page .btn-delete{
-            color:red;
-            right:10px;
-            top:10px;
-        }
-        .print-page .btn-clear{
-            color:#999;
-            right:10px;
-            bottom:10px;
-        }
-        .print-page .table{
-            height:90%;
-        }
-        .print-page .table td{
-            border-top:0;
-            vertical-align: middle;
-        }
-        .orderwrapper{
-            padding:10px;
-            border-bottom:1px #ddd solid;
-            display:flex;
-        }
-        .goodsbox{
-            flex:1;
-        }
-        .goodsbox .lead{
-            font-size:13px;
-        }
-        .labelbox{
-            width:17cm;
-            flex:0 0 auto;
-        }
-        .btn-addlabel{
-            clear:left;
-            float: left;
-        }
-        .table thead h3{
-            white-space: nowrap;
-        }
-        .table tbody td{
-            white-space: nowrap;
-            padding:0 0.3cm 0 0.3cm;
-            font-size:0.7cm;
-        }
-        .table tbody tr.middle td{
-            font-size:0.5cm;
-        }
-        .table tbody tr.small td{
-            font-size:0.3cm;
-        }
-        @media print {
-            .orderwrapper{
-                padding:0;
-                border:0;
-            }
         }
     </style>
 </block>
 <block name="body">
-    <div id="app">
+    <div id="app" class="labelpage">
     <div class="page-wrapper container ml-auto mr-auto mb-3 d-print-none">
         <div class="row">
             <h2 class="col-md-6">标签打印</h2>
@@ -164,13 +76,13 @@
                         </template>
                         <template v-else>
                             <tr v-for="good in pkg.goods">
-                                <td>
+                                <td colspan="2">
                                     <div class="row">
-                                        <h4 class="col-4 text-right">品名：</h4>
+                                        <h4 class="col-5 text-right">品名：</h4>
                                         <h4 class="col text-left">{{good.goods_title}}</h4>
                                     </div>
                                     <div class="row">
-                                        <h4 class="col-4 text-right">数量：</h4>
+                                        <h4 class="col-5 text-right">数量：</h4>
                                         <h4 class="col text-left">{{ formatNumber(good.count)}} {{good.goods_unit}}</h4>
                                     </div>
                                 </td>
@@ -213,13 +125,13 @@
                     </template>
                     <template v-else>
                         <tr v-for="good in pkg.goods">
-                            <td>
+                            <td colspan="2">
                                 <div class="row">
-                                    <h4 class="col-4 text-right">品名：</h4>
+                                    <h4 class="col-5 text-right">品名：</h4>
                                     <h4 class="col text-left">{{good.goods_title}}</h4>
                                 </div>
                                 <div class="row">
-                                    <h4 class="col-4 text-right">数量：</h4>
+                                    <h4 class="col-5 text-right">数量：</h4>
                                     <h4 class="col text-left">{{ formatNumber(good.count) }} {{good.goods_unit}}</h4>
                                 </div>
                             </td>

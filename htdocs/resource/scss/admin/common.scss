@@ -143,6 +143,7 @@ h6 {
 
 .auto-complete{
   min-width: 300px;
+  z-index: 9;
   .list-group-item{
     white-space: nowrap;
     overflow: hidden;
@@ -160,8 +161,7 @@ h6 {
 }
 
 .chgstatus{
-  padding:4px 8px;
-  padding-left: 24px;
+  padding:4px 8px 4px 24px;
   position: relative;
   background:#17a2b8;
   border-radius:30px;
@@ -920,6 +920,107 @@ table {
     h3{
       color:#00a2d4;
       text-align: center;
+      margin:0;
+    }
+  }
+}
+
+.labelpage{
+  .print-page{
+    width :8cm;
+    padding:0;
+    height:6cm;
+    margin-top:1em;
+    position: relative;
+    border-radius:5px;
+    box-shadow: 1px 2px 5px rgba(0,0,0,.2);
+  }
+  .print-page .labelid{
+    position: absolute;
+    left:10px;
+    top:10px;
+    padding:0;
+    font-size:16px;
+    border-radius:100%;
+    line-height:24px;
+    height : 24px;
+    width : 24px;
+    text-align: center;
+  }
+  .print-page .btn-circle{
+    position: absolute;
+    font-size:22px;
+    padding:0;
+    border-radius:100%;
+    line-height:24px;
+    width:24px;
+    text-align: center;
+  }
+  .print-page .btn-delete{
+    color:red;
+    right:10px;
+    top:10px;
+  }
+  .print-page .btn-clear{
+    color:#999;
+    right:10px;
+    bottom:10px;
+  }
+  .print-page .table{
+    height:90%;
+    font-size: .5cm;
+  }
+  .print-page .table td{
+    border:1px #eee solid;
+    font-weight: bold;
+    vertical-align: middle;
+  }
+  .orderwrapper{
+    padding:10px;
+    border-bottom:1px #ddd solid;
+    display:flex;
+  }
+  .goodsbox{
+    flex:1;
+  }
+  .goodsbox .lead{
+    font-size:13px;
+  }
+  .labelbox{
+    width:17cm;
+    flex:0 0 auto;
+  }
+  .btn-addlabel{
+    clear:left;
+    float: left;
+  }
+  .table thead h3{
+    font-size:.8cm;
+    white-space: nowrap;
+  }
+  .table tbody td{
+    white-space: nowrap;
+    padding:0 0.3cm 0 0.3cm;
+    font-size:0.7cm;
+  }
+  .table tbody tr.middle td{
+    font-size:0.5cm;
+  }
+  .table tbody tr.small td{
+    font-size:0.3cm;
+  }
+}
+
+@media print {
+  .labelpage {
+    #page-wrapper{
+      padding:0;
+    }
+    .orderwrapper {
+      padding: 0;
+      border: 0;
+    }
+    .print-page{
       margin:0;
     }
   }
