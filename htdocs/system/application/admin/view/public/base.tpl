@@ -68,9 +68,10 @@
             if(!window.IS_TOP){
                 var curkey = $(window.frameElement).data('key');
 
-                $('a[data-tab]').click(function (e) {
+                $('a[data-tab],.alert a').click(function (e) {
                     e.preventDefault();
                     var islist = window.IS_LIST;
+                    var url=$(this).attr('href');
                     var subkey = $(this).data('tab');
                     var key = curkey + '_';
                     if(subkey === 'random') {
@@ -78,11 +79,12 @@
                     }else if(subkey === 'timestamp'){
                         key += new Date().getTime();
                     }else{
+                        if(!subkey)subkey=url.replace(/[^a-zA-Z0-9]/g,'_');
                         key += subkey;
                     }
                     var title=$(this).text();
                     if(!title)title=$(this).attr('title');
-                    top.createPage(key, title, $(this).attr('href'), curkey);
+                    top.createPage(key, title, url, curkey);
                 });
                 $('a[data-nav]').click(function (e) {
                     e.preventDefault();
