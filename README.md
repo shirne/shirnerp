@@ -1,66 +1,33 @@
-ShirneCMS
+ShirneERP
 ===============
 
-基于[ThinkPHP5.1](https://github.com/top-think/think/tree/5.1)+[bootstrap4.x](https://v4.bootcss.com/docs/4.0/getting-started/introduction/)开发的后台管理系统,集成会员管理，文章管理，产品管理，微信接入，第三方登录等功能
+基于[ThinkPHP5.1](https://github.com/top-think/think/tree/5.1)+[bootstrap4.x](https://v4.bootcss.com/docs/4.0/getting-started/introduction/)开发的进存销系统
 
 > 运行环境要求PHP7.1.3以上，Mysql5.5以上<br />
 > PHP扩展：gd,mysql,pdo,cURL,OpenSSL,SimpleXML,fileinfo,cli。
 
-## 相关项目
-[小程序企业官网](https://gitee.com/shirnecn/website_mapp)
-[小程序商城](https://gitee.com/shirnecn/shop_mapp)
-
 ## 功能说明
+* 商品管理,商品单位
+* 销售,退货, 客户管理, 标签打印
+* 采购,退货, 供应商管理
+* 各种订单统计及导出功能
+* 币种
+* 财务
 
-本项目侧重于二次开发使用，后台功能在逐步完善。前台功能仅用于功能演示。目前个人及团队的一些订制项目均基于此后台开发。
-* 后台管理员登录验证，基于方法名的全局权限验证系统
-* 管理员/会员操作日志
-* 系统配置，可后台自定义配置项
-* 会员/会员组 可自定义分销层级
-* 无限级分类/文章系统，分类可独立设置模板
-* 无限级分类/产品/订单  产品采用多选项SKU模式
-* 广告管理（多用于网站banner图）/公告/链接/留言 等独立小功能
-* 基于bs的Modal写的Dialog组件，支持alert,prompt,confirm,以及常用的列表搜索/选择对话框，地图位置选择对话框（支持腾讯/高德/百度/谷哥地图）
-* 后台表单异步提交/文件上传进度显示
-* bs日期组件本地化，自动初始化
-* excel封装类，第三方接口（短信/快递等），文件上传封装 等便于开发的优化
-* 图片自动处理/缓存 上传文件夹中的图片在地址后加入w/h/q/m参数可按指定需求自动裁剪，按\[原文件名.参数.原后缀\]调用的地址会自动裁剪并缓存
-* 微信基本功能接入(自动登录，接口绑定，支付，公众号菜单)
-* API模块采用简单的OAuth模式实现登录授权，微信授权，token刷新等
-
-## 计划功能
-
-### 商城系统
-- [x] 无限级分类
-- [x] 商品属性
-- [x] 商品规格，分类绑定规格
-- [x] 购物车
-- [x] SKU管理
-- [x] 订单管理……需优化流程
-- [x] 商品品牌p……测试中
-- [x] 优惠券……开发中
-- [ ] 邮费模板
-- [ ] 促销功能
-
-### 多语言支持
-- [x] 前台多语言切换逻辑
-- [ ] 前后台多语言翻译（中/英）……开发中
- 
-### 微信功能完善
-- [x] 粉丝管理 
-- [x] 自动回复……待测试
-- [x] 素材管理……待测试
-- [ ] 二维码管理
-- [ ] 客服管理
-
-### API部分功能完善
-- [x] 通用接口，批量接口
-- [x] 文章接口（含分类）
-- [x] 登录接口（账号密码登录，小程序授权登录）
-- [x] 产品接口
-- [x] 购物车接口
-- [x] 订单及支付接口……待测试
-- [x] 会员相关功能接口……待测试
+## 注意事项
+* ThinkPHP 升级
+> 由于目录与默认ThinkPHP项目的差异，升级ThinkPHP时需要修改Loader.php
+```php
+  // 获取应用根目录
+  public static function getRootPath()
+  {
+      if(defined('APP_PATH')){
+          return dirname(APP_PATH). DIRECTORY_SEPARATOR;
+      }else {
+          //...  原方法代码
+      }
+  }
+```
 
 ## 前端库引用
 
@@ -109,9 +76,6 @@ htdocs/public 网站根目录
 > 修改数据库配置文件 config/database.php<br />
 > 手动安装数据库脚本 或者 通过命令行(php think install)或网页安装(/task/util/install)
 
-后台默认登录账号 [演示网站](http://host3.shirne.net/admin)
->admin<br />
-密码：123456
 
 ## 模板说明
 
@@ -122,17 +86,3 @@ htdocs/public 网站根目录
 弹出框组件说明 [Dialog](DIALOG.md)
 
 导航配置 navigator.php
-
-## 后台功能截图
-![登录](screenshot/login.jpg "登录")
-![主面板](screenshot/dashboard.jpg "主面板")
-![分类管理](screenshot/category.jpg "分类管理")
-![添加分类](screenshot/category-add.jpg "添加分类")
-![发布文章](screenshot/article-add.jpg "发布文章")
-![发布商品](screenshot/product-add.jpg "发布商品")
-![发布商品](screenshot/product-add2.jpg "发布商品")
-![订单统计](screenshot/order-static.jpg "订单统计")
-![广告管理](screenshot/ad.jpg "广告管理")
-![系统设置](screenshot/setting.jpg "系统设置")
-![会员组](screenshot/user-level.jpg "会员组")
-![微信菜单](screenshot/wechat-menu.jpg "微信菜单")
