@@ -506,7 +506,7 @@ class GoodsController extends BaseController
         ]);
         foreach ($data['goods'] as $good){
             $excel->addRow([
-                $good['id'],$good['goods_title'],$good['goods_unit'],
+                $good['id'],$good['title'],$good['unit'],
                 $good['purchase']['total_count'],$good['purchase']['total_amount'],$good['purchase']['price'],$good['purchase']['min_price'],$good['purchase']['max_price'],
                 $good['sale']['total_count'],$good['sale']['total_amount'],$good['sale']['price'],$good['sale']['min_price'],$good['sale']['max_price']
             ]);
