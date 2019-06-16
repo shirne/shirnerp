@@ -513,15 +513,30 @@ class GoodsController extends BaseController
             $pmodel->where('create_time','<=',$end_time);
             $smodel->where('create_time','<=',$end_time);
         }
-        $pdata = $pmodel->field('sum(count) as total_count,goods_id,goods_title,goods_unit')
-            ->group('goods_id')->order('total_count DESC')
+        $pdata = $pmodel->field('sum(count) as total_count,sum(base_amount) as total_amount, goods_id,goods_title,goods_unit')
+            ->group('goods_id,goods_unit')->order('total_count DESC')
             ->select();
-        $sdata = $pmodel->field('sum(count) as total_count,goods_id,goods_title,goods_unit')
-            ->group('goods_id')->order('total_count DESC')
+        $sdata = $smodel->field('sum(count) as total_count,sum(base_amount) as total_amount, goods_id,goods_title,goods_unit')
+            ->group('goods_id,goods_unit')->order('total_count DESC')
             ->select();
+
+        $goods_ids = array_column($pdata,'goods_id');
+        $goods_ids = array_merge($goods_ids,array_column($sdata,'goods_id'));
+        $goods_ids = array_unique($goods_ids, SORT_NUMERIC );
+
+        $allgoods = Db::name('goods')->whereIn('id',$goods_ids)->field('id,goods_no,title,unit')->select();
+        $allgoods = array_index($allgoods, 'id');
+
 
         $purchaseData=[];
         foreach ($pdata as $k=>$row){
+            $goods_id = $row['goods_id'];
+            if($row['goods_unit'] == $allgoods[$goods_id]['unit']){
+                $allgoods[$goods_id]['purchase'] = $row;
+            }else{
+                $allgoods[$goods_id]['other'][$row['goods_unit']]['purchase']=$row;
+            }
+            $pdata[$k]['price'] = $row['count']>0?round($row['total_amount']/$row['total_count'],2):0;
             $purchaseData[]=[
                 'value'=> $row['total_count'],
                 'label'=> $row['goods_title'].'('.$row['goods_unit'].')'
@@ -530,6 +545,13 @@ class GoodsController extends BaseController
 
         $saleData=[];
         foreach ($sdata as $k=>$row){
+            $goods_id = $row['goods_id'];
+            if($row['goods_unit'] == $allgoods[$goods_id]['unit']){
+                $allgoods[$goods_id]['sale'] = $row;
+            }else{
+                $allgoods[$goods_id]['other'][$row['goods_unit']]['sale']=$row;
+            }
+            $sdata[$k]['price'] = $row['count']>0?round($row['total_amount']/$row['total_count'],2):0;
             $saleData[]=[
                 'value'=> $row['total_count'],
                 'label'=> $row['goods_title'].'('.$row['goods_unit'].')'
@@ -540,6 +562,7 @@ class GoodsController extends BaseController
         $this->assign(compact('start_date','end_date'));
         $this->assign('purchaseStatics',$purchaseData);
         $this->assign('saleStatics',$saleData);
+        $this->assign('goods',$allgoods);
 
         return $this->fetch();
     }

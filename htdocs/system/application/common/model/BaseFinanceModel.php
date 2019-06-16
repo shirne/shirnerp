@@ -27,6 +27,16 @@ class BaseFinanceModel extends BaseModel
         return $logs;
     }
 
+    /**
+     * 整理订单及商品数据
+     * @param $order
+     * @param $goods
+     * @param $total
+     * @throws Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public static function fixOrderDatas(&$order, &$goods, &$total)
     {
         $isback = $order['parent_order_id']>0;

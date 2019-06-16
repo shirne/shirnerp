@@ -77,6 +77,7 @@ class SaleOrderModel extends BaseFinanceModel
                 'base_price'=>$good['base_price'],
                 'remark'=>$good['remark'],
                 'amount'=>$good['amount'],
+                'base_amount'=>$good['amount'],
             ];
 
         }
@@ -130,6 +131,7 @@ class SaleOrderModel extends BaseFinanceModel
                 'price'=>$good['price'],
                 'base_price'=>$good['base_price'],
                 'amount'=>$good['amount'],
+                'base_amount'=>$good['amount'],
                 'remark'=>$good['remark'],
                 'update_time'=>$time
             ];
