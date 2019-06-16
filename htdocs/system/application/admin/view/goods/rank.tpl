@@ -23,6 +23,9 @@
                     <div class="form-group col">
                         <input type="submit" class="btn btn-primary btn-sm btn-submit ml-2" value="确定"/>
                     </div>
+                    <div class="form-group mr-3">
+                        <a href="{:url('rankExport',['start_date'=>$start_date,'end_date'=>$end_date])}" class="btn btn-info btn-sm" target="_blank"><i class="ion-md-download"></i> 导出</a>
+                    </div>
                     <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
                         <label class="btn btn-outline-primary active">
                             <input type="radio" name="viewmode" value="chars" autocomplete="off" checked> 图表
@@ -45,10 +48,10 @@
                     <th>#</th>
                     <th>品名</th>
                     <th>采购量</th>
-                    <th>采购总价</th>
+                    <th>采购金额</th>
                     <th>采购单价</th>
                     <th>销售量</th>
-                    <th>销售总价</th>
+                    <th>销售金额</th>
                     <th>销售单价</th>
                 </tr>
                 </thead>

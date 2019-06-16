@@ -9,6 +9,7 @@ use app\common\facade\GoodsCategoryFacade;
 use app\common\model\GoodsCategoryModel;
 use app\common\model\GoodsModel;
 use shirne\common\Notation;
+use shirne\excel\Excel;
 use think\Db;
 
 class GoodsController extends BaseController
@@ -487,155 +488,94 @@ class GoodsController extends BaseController
 
     public function rank($start_date='', $end_date='')
     {
-        $pmodel = Db::name('purchaseOrderGoods');
-        $smodel = Db::name('saleOrderGoods');
-        $start_time=0;
-        $end_time=0;
-        if($start_date) {
-            $start_time = strtotime($start_date);
-            if ($start_time) $start_date = date('Y-m-d H:i:s', $start_time);
-        }
 
-        if($end_date) {
-            $end_time = strtotime($end_date);
-            if ($end_time) $end_date = date('Y-m-d H:i:s', $end_time);
-        }
+        $data = GoodsModel::statics($start_date, $end_date);
 
-        if($start_time){
-            if($end_time){
-                $pmodel->whereBetween('create_time',[$start_time,$end_time]);
-                $smodel->whereBetween('create_time',[$start_time,$end_time]);
-            }else{
-                $pmodel->where('create_time','>=',$start_time);
-                $smodel->where('create_time','>=',$start_time);
-            }
-        }elseif($end_time){
-            $pmodel->where('create_time','<=',$end_time);
-            $smodel->where('create_time','<=',$end_time);
-        }
-        $pdata = $pmodel->field('sum(count) as total_count,sum(base_amount) as total_amount,min(base_price) as min_price,max(base_price) as max_price, goods_id,goods_title,goods_unit')
-            ->group('goods_id,goods_unit')->order('total_count DESC')
-            ->select();
-        $sdata = $smodel->field('sum(count) as total_count,sum(base_amount) as total_amount,min(base_price) as min_price,max(base_price) as max_price, goods_id,goods_title,goods_unit')
-            ->group('goods_id,goods_unit')->order('total_count DESC')
-            ->select();
-
-        $goods_ids = array_column($pdata,'goods_id');
-        $goods_ids = array_merge($goods_ids,array_column($sdata,'goods_id'));
-        $goods_ids = array_unique($goods_ids, SORT_NUMERIC );
-
-        $allgoods = Db::name('goods')->whereIn('id',$goods_ids)->field('id,goods_no,title,unit')->select();
-        $allgoods = array_index($allgoods, 'id');
-
-
-        $purchaseData=[];
-        foreach ($pdata as $k=>$row){
-            $goods_id = $row['goods_id'];
-            if($row['goods_unit'] == $allgoods[$goods_id]['unit']){
-                $allgoods[$goods_id]['purchase'] = $row;
-            }else{
-                $allgoods[$goods_id]['other'][$row['goods_unit']]['purchase']=$row;
-            }
-            $pdata[$k]['price'] = $row['count']>0?round($row['total_amount']/$row['total_count'],2):0;
-            $purchaseData[]=[
-                'value'=> $row['total_count'],
-                'label'=> $row['goods_title'].'('.$row['goods_unit'].')'
-            ];
-        }
-
-        $saleData=[];
-        foreach ($sdata as $k=>$row){
-            $goods_id = $row['goods_id'];
-            if($row['goods_unit'] == $allgoods[$goods_id]['unit']){
-                $allgoods[$goods_id]['sale'] = $row;
-            }else{
-                $allgoods[$goods_id]['other'][$row['goods_unit']]['sale']=$row;
-            }
-            $sdata[$k]['price'] = $row['count']>0?round($row['total_amount']/$row['total_count'],2):0;
-            $saleData[]=[
-                'value'=> $row['total_count'],
-                'label'=> $row['goods_title'].'('.$row['goods_unit'].')'
-            ];
-        }
-
-
-        $this->assign(compact('start_date','end_date'));
-        $this->assign('purchaseStatics',$purchaseData);
-        $this->assign('saleStatics',$saleData);
-        $this->assign('goods',$allgoods);
+        $this->assign($data);
 
         return $this->fetch();
     }
 
+    public function rankExport($start_date='', $end_date=''){
+        $data = GoodsModel::statics($start_date, $end_date);
+
+        $excel=new Excel('Xlsx');
+
+        $excel->setHeader([
+            '编号','品名','单位','采购量','采购金额','采购单价','采购最低价','采购最高价','销售量','销售金额','销售单价','销售最低价','销售最高价',
+        ]);
+        foreach ($data['goods'] as $good){
+            $excel->addRow([
+                $good['id'],$good['goods_title'],$good['goods_unit'],
+                $good['purchase']['total_count'],$good['purchase']['total_amount'],$good['purchase']['price'],$good['purchase']['min_price'],$good['purchase']['max_price'],
+                $good['sale']['total_count'],$good['sale']['total_amount'],$good['sale']['price'],$good['sale']['min_price'],$good['sale']['max_price']
+            ]);
+            if(!empty($good['other'])){
+                foreach ($good['other'] as $vgood) {
+                    $excel->addRow([
+                        $vgood['id'], $vgood['goods_title'], $vgood['goods_unit'],
+                        $vgood['purchase']['total_count'], $vgood['purchase']['total_amount'], $vgood['purchase']['price'], $vgood['purchase']['min_price'], $vgood['purchase']['max_price'],
+                        $vgood['sale']['total_count'], $vgood['sale']['total_amount'], $vgood['sale']['price'], $vgood['sale']['min_price'], $vgood['sale']['max_price']
+                    ]);
+                }
+            }
+        }
+        $datestr = '';
+        if(!empty($data['start_date'])){
+            $datestr = '['.$data['start_date'].'-'.$data['end_date'].']';
+        }
+
+        $excel->output('品种统计'.$datestr);
+    }
+
     public function statics($goods_id, $start_date='', $end_date='')
     {
-        $goods = Db::name('goods')->where('id',$goods_id)->find();
+        $goods = GoodsModel::get($goods_id);
         if(empty($goods)){
             $this->error('品种错误');
         }
-        $format ="'%Y-%m-%d'";
-        $pmodel = Db::name('purchaseOrderGoods')->where('goods_id',$goods_id);
-        $smodel = Db::name('saleOrderGoods')->where('goods_id',$goods_id);
-        $start_time=0;
-        $end_time=0;
-        if($start_date) {
-            $start_time = strtotime($start_date);
-            if ($start_time) $start_date = date('Y-m-d H:i:s', $start_time);
-        }
+        $data =$goods->staticGoods($start_date, $end_date);
 
-        if($end_date) {
-            $end_time = strtotime($end_date);
-            if ($end_time) $end_date = date('Y-m-d H:i:s', $end_time);
-        }
-
-        if($start_time){
-            if($end_time){
-                $pmodel->whereBetween('create_time',[$start_time,$end_time]);
-                $smodel->whereBetween('create_time',[$start_time,$end_time]);
-            }else{
-                $pmodel->where('create_time','>=',$start_time);
-                $smodel->where('create_time','>=',$start_time);
-            }
-        }elseif($end_time){
-            $pmodel->where('create_time','<=',$end_time);
-            $smodel->where('create_time','<=',$end_time);
-        }
-        $pdata = $pmodel->field('sum(count) as total_count,min(base_price) as min_price,max(base_price) as max_price,sum(base_amount) as total_amount,goods_unit,date_format(from_unixtime(create_time),'.$format. ') as awdate')
-            ->group('awdate, goods_unit')->order('awdate ASC')
-            ->select();
-        $sdata = $smodel->field('sum(count) as total_count,min(base_price) as min_price,max(base_price) as max_price,sum(base_amount) as total_amount,goods_unit,date_format(from_unixtime(create_time),'.$format. ') as awdate')
-            ->group('awdate, goods_unit')->order('awdate ASC')
-            ->select();
-
-        $statics = [];
-        $saleStatics = [];
-        $purchaseStatics = [];
-        foreach ($pdata as $row){
-            $row['price'] = $row['total_count']>0?round($row['total_amount']/$row['total_count'],2):0;
-            $adate=$row['awdate'];
-            if($row['goods_unit'] == $goods['unit']) {
-                $statics[$adate]['purchase'] = $row;
-                $purchaseStatics[]=$row;
-            }else{
-                $statics[$adate]['other'][$row['goods_unit']]['purchase'] = $row;
-            }
-        }
-        foreach ($sdata as $row){
-            $row['price'] = $row['total_count']>0?round($row['total_amount']/$row['total_count'],2):0;
-            $adate=$row['awdate'];
-            if($row['goods_unit'] == $goods['unit']) {
-                $statics[$adate]['sale'] = $row;
-                $saleStatics[]=$row;
-            }else{
-                $statics[$adate]['other'][$row['goods_unit']]['sale'] = $row;
-            }
-        }
-
-        $this->assign(compact('start_date','end_date'));
-        $this->assign(compact('statics','saleStatics','purchaseStatics'));
+        $this->assign($data);
         $this->assign('goods',$goods);
 
         return $this->fetch();
+    }
+
+    public function staticsExport($goods_id, $start_date='', $end_date=''){
+        $goods = GoodsModel::get($goods_id);
+        if(empty($goods)){
+            $this->error('品种错误');
+        }
+        $data =$goods->staticGoods($start_date, $end_date);
+
+        $excel=new Excel('Xlsx');
+
+        $excel->setHeader([
+            '编号','品名','日期','单位','采购量','采购金额','采购单价','采购最低价','采购最高价','销售量','销售金额','销售单价','销售最低价','销售最高价',
+        ]);
+        foreach ($data['statics'] as $date=>$good){
+            $excel->addRow([
+                $goods['id'],$goods['title'],$date,$goods['unit'],
+                $good['purchase']['total_count'],$good['purchase']['total_amount'],$good['purchase']['price'],$good['purchase']['min_price'],$good['purchase']['max_price'],
+                $good['sale']['total_count'],$good['sale']['total_amount'],$good['sale']['price'],$good['sale']['min_price'],$good['sale']['max_price']
+            ]);
+            if(!empty($good['other'])){
+                foreach ($good['other'] as $k=>$vgood) {
+                    $excel->addRow([
+                        $goods['id'],$goods['title'],$date, $k,
+                        $vgood['purchase']['total_count'], $vgood['purchase']['total_amount'], $vgood['purchase']['price'], $vgood['purchase']['min_price'], $vgood['purchase']['max_price'],
+                        $vgood['sale']['total_count'], $vgood['sale']['total_amount'], $vgood['sale']['price'], $vgood['sale']['min_price'], $vgood['sale']['max_price']
+                    ]);
+                }
+            }
+        }
+        $datestr = '';
+        if(!empty($data['start_date'])){
+            $datestr = '['.$data['start_date'].'-'.$data['end_date'].']';
+        }
+
+        $excel->output('['.$goods['title'].']统计'.$datestr);
     }
 
     /**
