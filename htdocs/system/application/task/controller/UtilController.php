@@ -5,6 +5,7 @@ namespace app\task\controller;
 
 use app\common\command\Install;
 use app\common\model\ArticleModel;
+use app\common\model\CurrencyModel;
 use app\common\model\MemberRechargeModel;
 use app\common\model\PayOrderModel;
 use app\common\model\ProductModel;
@@ -46,6 +47,39 @@ class UtilController extends Controller
             Db::execute($sql);
         }
         exit;
+    }
+
+    public function fixOrderData(){
+        exit;
+        $ogoods = Db::name('saleOrderGoods')->where('base_amount',0)->group('sale_order_id')->field('count(id), sale_order_id')->select();
+        $orders = Db::name('saleOrder')->whereIn('id',array_column($ogoods,'sale_order_id'))->select();
+
+        foreach ($orders as $order){
+            $ogoods = Db::name('saleOrderGoods')->where('base_amount',0)->where('sale_order_id',$order['id'])->select();
+            foreach ($ogoods as $goods){
+                if($goods['base_amount'] == 0){
+                    Db::name('saleOrderGoods')->where('id',$goods['id'])->update([
+                        'base_amount'=>CurrencyModel::exchange($goods['amount'],$order['currency']),
+                        'base_price'=>CurrencyModel::exchange($goods['price'],$order['currency']),
+                    ]);
+                }
+            }
+        }
+
+        $ogoods = Db::name('purchaseOrderGoods')->where('base_amount',0)->group('purchase_order_id')->field('count(id), purchase_order_id')->select();
+        $orders = Db::name('purchaseOrder')->whereIn('id',array_column($ogoods,'purchase_order_id'))->select();
+
+        foreach ($orders as $order){
+            $ogoods = Db::name('purchaseOrderGoods')->where('base_amount',0)->where('purchase_order_id',$order['id'])->select();
+            foreach ($ogoods as $goods){
+                if($goods['base_amount'] == 0){
+                    Db::name('purchaseOrderGoods')->where('id',$goods['id'])->update([
+                        'base_amount'=>CurrencyModel::exchange($goods['amount'],$order['currency']),
+                        'base_price'=>CurrencyModel::exchange($goods['price'],$order['currency']),
+                    ]);
+                }
+            }
+        }
     }
 
     public function truncate(){

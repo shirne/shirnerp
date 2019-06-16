@@ -21,13 +21,104 @@
                         <input type="text" class="form-control todate" name="end_date" placeholder="选择结束日期" value="{$end_date}">
                     </div>
                     <div class="form-group col">
+                        <input type="hidden" name="goods_id" value="{$goods.id}"/>
                         <input type="submit" class="btn btn-primary btn-sm btn-submit ml-2" value="确定"/>
+                    </div>
+                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-primary active">
+                            <input type="radio" name="viewmode" value="chars" autocomplete="off" checked> 图表
+                        </label>
+                        <label class="btn btn-outline-primary">
+                            <input type="radio" name="viewmode" value="table" autocomplete="off"> 表格
+                        </label>
                     </div>
                 </div>
             </form>
         </div>
         <div class="chart-box">
             <canvas id="myChart" width="800" height="400"></canvas>
+            <span class="text-muted">图表统计不包含非商品默认单位的采购/销售</span>
+        </div>
+        <div class="table-box d-none">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>单位</th>
+                    <th>采购量</th>
+                    <th>采购总价</th>
+                    <th>采购单价</th>
+                    <th>销售量</th>
+                    <th>销售总价</th>
+                    <th>销售单价</th>
+                </tr>
+                </thead>
+                <tbody>
+                <empty name="statics">{:list_empty(8)}</empty>
+                <volist name="statics" id="v" >
+                    <tr>
+                        <td>{$key}</td>
+                        <td>{$goods.unit}</td>
+                        <td>
+                            {$v.purchase.total_count}
+                        </td>
+                        <td>{$v.purchase.total_amount}</td>
+                        <td>
+                            <if condition="$v['purchase']['total_count'] GT 0">
+                                {:round($v['purchase']['total_amount']/$v['purchase']['total_count'],2)}<br />
+                                <span class="badge badge-secondary">{$v.purchase.min_price} ~ {$v.purchase.max_price}</span>
+                                <else/>
+                                -
+                            </if>
+                        </td>
+                        <td>
+                            {$v.sale.total_count}
+                        </td>
+                        <td>{$v.sale.total_amount}</td>
+                        <td>
+                            <if condition="$v['sale']['total_count'] GT 0">
+                                {:round($v['sale']['total_amount']/$v['sale']['total_count'],2)}<br />
+                                <span class="badge badge-secondary">{$v.sale.min_price} ~ {$v.sale.max_price}</span>
+                                <else/>
+                                -
+                            </if>
+                        </td>
+                    </tr>
+                    <if condition="!empty($v['other'])">
+                        <volist name="$v['other']" id="ov" >
+                            <tr>
+                                <td> - </td>
+                                <td>{$key} </td>
+                                <td>
+                                    {$ov.purchase.total_count}
+                                </td>
+                                <td>{$ov.purchase.total_amount}</td>
+                                <td>
+                                    <if condition="$ov['purchase']['total_count'] GT 0">
+                                        {:round($ov['purchase']['total_amount']/$ov['purchase']['total_count'],2)}<br />
+                                        <span class="badge badge-secondary">{$ov.purchase.min_price} ~ {$ov.purchase.max_price}</span>
+                                        <else/>
+                                        -
+                                    </if>
+                                </td>
+                                <td>
+                                    {$ov.sale.total_count}
+                                </td>
+                                <td>{$ov.sale.total_amount}</td>
+                                <td>
+                                    <if condition="$ov['sale']['total_count'] GT 0">
+                                        {:round($ov['sale']['total_amount']/$ov['sale']['total_count'],2)}<br />
+                                        <span class="badge badge-secondary">{$ov.sale.min_price} ~ {$ov.sale.max_price}</span>
+                                        <else/>
+                                        -
+                                    </if>
+                                </td>
+                            </tr>
+                        </volist>
+                    </if>
+                </volist>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -35,6 +126,7 @@
 <block name="script">
     <script type="text/javascript" src="__STATIC__/chart/Chart.bundle.min.js"></script>
     <script type="text/javascript">
+        window.page_title="[{$goods['title']}]统计";
         var ctx = document.getElementById("myChart");
         var bgColors=[
             'rgba(255, 99, 132, 0.2)',
@@ -59,28 +151,28 @@
                 datasets: [
                     {
                         label: '商品销售量',
-                        data: JSON.parse('{:json_encode(array_column($statics,"total_s_count"))}'),
+                        data: JSON.parse('{:json_encode(array_column($saleStatics,"total_count"))}'),
                         backgroundColor: bgColors[0],
                         borderColor: bdColors[0],
                         borderWidth: 1
                     },
                     {
                         label: '商品销售价格',
-                        data: JSON.parse('{:json_encode(array_column($statics,"s_price"))}'),
+                        data: JSON.parse('{:json_encode(array_column($saleStatics,"price"))}'),
                         backgroundColor:bgColors[1],
                         borderColor: bdColors[1],
                         borderWidth: 1
                     },
                     {
                         label: '商品采购量',
-                        data: JSON.parse('{:json_encode(array_column($statics,"total_p_count"))}'),
+                        data: JSON.parse('{:json_encode(array_column($purchaseStatics,"total_count"))}'),
                         backgroundColor:bgColors[2],
                         borderColor: bdColors[2],
                         borderWidth: 1
                     },
                     {
                         label: '商品采购价格',
-                        data: JSON.parse('{:json_encode(array_column($statics,"p_price"))}'),
+                        data: JSON.parse('{:json_encode(array_column($purchaseStatics,"price"))}'),
                         backgroundColor:bgColors[3],
                         borderColor: bdColors[3],
                         borderWidth: 1
@@ -97,5 +189,18 @@
                 }
             }
         });
+        jQuery(function ($) {
+            $('[name=viewmode]').change(function (e) {
+                if(!this.checked) return;
+                var val=$(this).val();
+                if(val == 'table'){
+                    $('.chart-box').addClass('d-none');
+                    $('.table-box').removeClass('d-none');
+                }else{
+                    $('.table-box').addClass('d-none');
+                    $('.chart-box').removeClass('d-none');
+                }
+            })
+        })
     </script>
 </block>

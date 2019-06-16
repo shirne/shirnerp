@@ -64,7 +64,8 @@
                         <td>{$v.purchase.total_amount}</td>
                         <td>
                             <if condition="$v['purchase']['total_count'] GT 0">
-                                {:round($v['purchase']['total_amount']/$v['purchase']['total_count'],2)}
+                                {:round($v['purchase']['total_amount']/$v['purchase']['total_count'],2)}<br />
+                                <span class="badge badge-secondary">{$v.purchase.min_price} ~ {$v.purchase.max_price}</span>
                                 <else/>
                                 -
                             </if>
@@ -75,7 +76,8 @@
                         <td>{$v.sale.total_amount}</td>
                         <td>
                             <if condition="$v['sale']['total_count'] GT 0">
-                                {:round($v['sale']['total_amount']/$v['sale']['total_count'],2)}
+                                {:round($v['sale']['total_amount']/$v['sale']['total_count'],2)}<br />
+                                <span class="badge badge-secondary">{$v.sale.min_price} ~ {$v.sale.max_price}</span>
                                 <else/>
                                 -
                             </if>
@@ -92,7 +94,8 @@
                                 <td>{$ov.purchase.total_amount}</td>
                                 <td>
                                     <if condition="$ov['purchase']['total_count'] GT 0">
-                                        {:round($ov['purchase']['total_amount']/$ov['purchase']['total_count'],2)}
+                                        {:round($ov['purchase']['total_amount']/$ov['purchase']['total_count'],2)}<br />
+                                        <span class="badge badge-secondary">{$ov.purchase.min_price} ~ {$ov.purchase.max_price}</span>
                                         <else/>
                                         -
                                     </if>
@@ -103,7 +106,8 @@
                                 <td>{$ov.sale.total_amount}</td>
                                 <td>
                                     <if condition="$ov['sale']['total_count'] GT 0">
-                                        {:round($ov['sale']['total_amount']/$ov['sale']['total_count'],2)}
+                                        {:round($ov['sale']['total_amount']/$ov['sale']['total_count'],2)}<br />
+                                        <span class="badge badge-secondary">{$ov.sale.min_price} ~ {$ov.sale.max_price}</span>
                                         <else/>
                                         -
                                     </if>

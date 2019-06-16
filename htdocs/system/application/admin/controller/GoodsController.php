@@ -513,10 +513,10 @@ class GoodsController extends BaseController
             $pmodel->where('create_time','<=',$end_time);
             $smodel->where('create_time','<=',$end_time);
         }
-        $pdata = $pmodel->field('sum(count) as total_count,sum(base_amount) as total_amount, goods_id,goods_title,goods_unit')
+        $pdata = $pmodel->field('sum(count) as total_count,sum(base_amount) as total_amount,min(base_price) as min_price,max(base_price) as max_price, goods_id,goods_title,goods_unit')
             ->group('goods_id,goods_unit')->order('total_count DESC')
             ->select();
-        $sdata = $smodel->field('sum(count) as total_count,sum(base_amount) as total_amount, goods_id,goods_title,goods_unit')
+        $sdata = $smodel->field('sum(count) as total_count,sum(base_amount) as total_amount,min(base_price) as min_price,max(base_price) as max_price, goods_id,goods_title,goods_unit')
             ->group('goods_id,goods_unit')->order('total_count DESC')
             ->select();
 
@@ -569,6 +569,10 @@ class GoodsController extends BaseController
 
     public function statics($goods_id, $start_date='', $end_date='')
     {
+        $goods = Db::name('goods')->where('id',$goods_id)->find();
+        if(empty($goods)){
+            $this->error('品种错误');
+        }
         $format ="'%Y-%m-%d'";
         $pmodel = Db::name('purchaseOrderGoods')->where('goods_id',$goods_id);
         $smodel = Db::name('saleOrderGoods')->where('goods_id',$goods_id);
@@ -596,22 +600,40 @@ class GoodsController extends BaseController
             $pmodel->where('create_time','<=',$end_time);
             $smodel->where('create_time','<=',$end_time);
         }
-        $pdata = $pmodel->field('sum(count) as total_p_count,avg(base_price) as p_price,date_format(from_unixtime(create_time),'.$format. ') as awdate')
-            ->group('awdate')->order('awdate ASC')
+        $pdata = $pmodel->field('sum(count) as total_count,min(base_price) as min_price,max(base_price) as max_price,sum(base_amount) as total_amount,goods_unit,date_format(from_unixtime(create_time),'.$format. ') as awdate')
+            ->group('awdate, goods_unit')->order('awdate ASC')
             ->select();
-        $sdata = $pmodel->field('sum(count) as total_s_count,avg(base_price) as s_price,date_format(from_unixtime(create_time),'.$format. ') as awdate')
-            ->group('awdate')->order('awdate ASC')
+        $sdata = $smodel->field('sum(count) as total_count,min(base_price) as min_price,max(base_price) as max_price,sum(base_amount) as total_amount,goods_unit,date_format(from_unixtime(create_time),'.$format. ') as awdate')
+            ->group('awdate, goods_unit')->order('awdate ASC')
             ->select();
-        $sdata = array_index($sdata,'awdate');
 
         $statics = [];
+        $saleStatics = [];
+        $purchaseStatics = [];
         foreach ($pdata as $row){
-            $srow = $sdata[$row['awdate']]?:['total_s_count'=>0,'s_price'=>0];
-            $statics[]=array_merge($row,$srow);
+            $row['price'] = $row['total_count']>0?round($row['total_amount']/$row['total_count'],2):0;
+            $adate=$row['awdate'];
+            if($row['goods_unit'] == $goods['unit']) {
+                $statics[$adate]['purchase'] = $row;
+                $purchaseStatics[]=$row;
+            }else{
+                $statics[$adate]['other'][$row['goods_unit']]['purchase'] = $row;
+            }
+        }
+        foreach ($sdata as $row){
+            $row['price'] = $row['total_count']>0?round($row['total_amount']/$row['total_count'],2):0;
+            $adate=$row['awdate'];
+            if($row['goods_unit'] == $goods['unit']) {
+                $statics[$adate]['sale'] = $row;
+                $saleStatics[]=$row;
+            }else{
+                $statics[$adate]['other'][$row['goods_unit']]['sale'] = $row;
+            }
         }
 
         $this->assign(compact('start_date','end_date'));
-        $this->assign('statics',$statics);
+        $this->assign(compact('statics','saleStatics','purchaseStatics'));
+        $this->assign('goods',$goods);
 
         return $this->fetch();
     }
