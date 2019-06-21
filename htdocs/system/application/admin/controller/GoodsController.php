@@ -11,6 +11,7 @@ use app\common\model\GoodsModel;
 use shirne\common\Notation;
 use shirne\excel\Excel;
 use think\Db;
+use think\Exception;
 
 class GoodsController extends BaseController
 {
@@ -603,6 +604,7 @@ class GoodsController extends BaseController
      * 图集
      * @param $aid
      * @return mixed
+     * @throws Exception
      */
     public function imagelist($aid){
         $model = Db::name('goodsImages');

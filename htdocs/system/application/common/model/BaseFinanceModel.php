@@ -159,7 +159,7 @@ class BaseFinanceModel extends BaseModel
         return $data;
     }
 
-    public function getStatics($from_time, $to_time,$type='day'){
+    public function getStatics($start_date, $end_date,$type='day', $condition=[]){
         $format="'%Y-%m-%d'";
         if($type == 'month'){
             $format="'%Y-%m'";
@@ -167,13 +167,44 @@ class BaseFinanceModel extends BaseModel
             $format="'%x-%v'";
         }elseif($type=='year'){
             $format="'%Y'";
+        }elseif($type !== 'day' && $type !== 'date'){
+            $format="";
         }
 
-        return Db::name($this->name)
-            ->field('count(id) as order_count,sum(base_amount) as order_amount,date_format(from_unixtime(create_time),' . $format . ') as awdate')
-            ->whereBetween('create_time',[$from_time, $to_time])
-            ->where('delete_time',0)
-            ->group('awdate')->select();
+        $model = Db::name($this->name)
+            ->where('delete_time',0);
+
+        $start_time=0;
+        $end_time=0;
+        if($start_date) {
+            $start_time = is_int($start_date)?$start_date:strtotime($start_date);
+        }
+
+        if($end_date) {
+            $end_time = is_int($end_date)?$end_date:strtotime($end_date);
+        }
+        if($start_time){
+            if($end_time){
+                $model->whereBetween('create_time',[$start_time,$end_time]);
+            }else{
+                $model->where('create_time','>=',$start_time);
+            }
+        }elseif($end_time){
+            $model->where('create_time','<=',$end_time);
+        }
+
+        if(!empty($condition)){
+            foreach ($condition as $k=>$v) {
+                $model->where($k, $v);
+            }
+        }
+
+        if($format) {
+            $model->field('count(id) as order_count,sum(base_amount) as order_amount,date_format(from_unixtime(create_time),' . $format . ') as awdate')->group('awdate');
+        }else{
+            $model->field('count(id) as order_count,sum(base_amount) as order_amount,'.$type)->group($type);
+        }
+        return $model->select();
     }
 
     public function getFinance($isBack=false){

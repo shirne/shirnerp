@@ -216,6 +216,13 @@ class PurchaseOrderController extends BaseController
         return $this->fetch();
     }
 
+    /**
+     * @param $id
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function exportOne($id){
         $model=Db::name('purchaseOrder')->where('id',$id)->find();
         if(empty($model))$this->error('订单不存在');
@@ -336,6 +343,7 @@ class PurchaseOrderController extends BaseController
     /**
      * 删除订单
      * @param $id
+     * @throws \Exception
      */
     public function delete($id)
     {
@@ -349,5 +357,21 @@ class PurchaseOrderController extends BaseController
         }else{
             $this->error(lang('Delete failed!'));
         }
+    }
+
+    public function statics($start_date='', $end_date='', $type='day'){
+        if($this->request->isPost()){
+            if(!in_array($type,['date','week','month','year']))$type='date';
+            return redirect(url('',['type'=>$type,'start_date'=>$start_date,'end_date'=>$end_date]));
+        }
+        $start_date=format_date($start_date,'Y-m-d');
+        $end_date=format_date($end_date,'Y-m-d');
+        $purchaseModel = new PurchaseOrderModel();
+        $statics = $purchaseModel->getStatics(strtotime($start_date), strtotime($end_date), $type);
+        $this->assign('statics',$statics);
+        $this->assign('static_type',$type);
+        $this->assign('start_date',$start_date);
+        $this->assign('end_date',$end_date);
+        return $this->fetch();
     }
 }

@@ -1,0 +1,147 @@
+<extend name="public:base" />
+<block name="header">
+    <style type="text/css">
+        html{overflow-y:scroll;}
+    </style>
+</block>
+<block name="body">
+
+    <include file="public/bread" menu="customer_index" title="供应商排行" />
+
+    <div id="page-wrapper">
+        <div class="list-header">
+            <form class="noajax" action="{:url('customer/rank')}" method="post">
+                <div class="form-row">
+                    <div class="form-group col input-group input-group-sm date-range">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">统计时间</span>
+                        </div>
+                        <input type="text" class="form-control fromdate" name="start_date" placeholder="选择开始日期" value="{$start_date}">
+                        <div class="input-group-middle"><span class="input-group-text">-</span></div>
+                        <input type="text" class="form-control todate" name="end_date" placeholder="选择结束日期" value="{$end_date}">
+                    </div>
+                    <div class="form-group col">
+                        <input type="submit" class="btn btn-primary btn-sm btn-submit ml-2" value="确定"/>
+                    </div>
+                    <div class="form-group mr-3">
+                        <a href="{:url('rankExport',['start_date'=>$start_date,'end_date'=>$end_date])}" class="btn btn-info btn-sm" target="_blank"><i class="ion-md-download"></i> 导出</a>
+                    </div>
+                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-primary active">
+                            <input type="radio" name="viewmode" value="chars" autocomplete="off" checked> 图表
+                        </label>
+                        <label class="btn btn-outline-primary">
+                            <input type="radio" name="viewmode" value="table" autocomplete="off"> 表格
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row chart-box">
+            <div class="col"><canvas id="purchaseChart" width="400" height="400"></canvas></div>
+            <div class="col"><canvas id="saleChart" width="400" height="400"></canvas></div>
+        </div>
+        <div class="table-box d-none">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>客户</th>
+                    <th>销售量</th>
+                    <th>销售金额</th>
+                    <th>销售单价</th>
+                </tr>
+                </thead>
+                <tbody>
+                <empty name="goods">{:list_empty(8)}</empty>
+                <volist name="goods" id="v" >
+                    <tr>
+                        <td><input type="checkbox" name="id" value="{$v.id}" /></td>
+                        <td>{$v.title} <span class="badge badge-info">{$v.unit}</span> </td>
+                        <td>
+                            {$v.sale.total_count}
+                        </td>
+                        <td>{$v.sale.total_amount}</td>
+                        <td>
+                            <if condition="$v['sale']['total_count'] GT 0">
+                                {:round($v['sale']['total_amount']/$v['sale']['total_count'],2)}<br />
+                                <span class="badge badge-secondary">{$v.sale.min_price} ~ {$v.sale.max_price}</span>
+                                <else/>
+                                -
+                            </if>
+                        </td>
+                    </tr>
+                    <if condition="!empty($v['other'])">
+                        <volist name="$v['other']" id="ov" >
+                            <tr>
+                                <td> - </td>
+                                <td>{$v.title} <span class="badge badge-info">{$key}</span> </td>
+                                <td>
+                                    {$ov.sale.total_count}
+                                </td>
+                                <td>{$ov.sale.total_amount}</td>
+                                <td>
+                                    <if condition="$ov['sale']['total_count'] GT 0">
+                                        {:round($ov['sale']['total_amount']/$ov['sale']['total_count'],2)}<br />
+                                        <span class="badge badge-secondary">{$ov.sale.min_price} ~ {$ov.sale.max_price}</span>
+                                        <else/>
+                                        -
+                                    </if>
+                                </td>
+                            </tr>
+                        </volist>
+                    </if>
+                </volist>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</block>
+<block name="script">
+    <script type="text/javascript" src="__STATIC__/chart/Chart.bundle.min.js"></script>
+    <script type="text/javascript">
+        var schart = document.getElementById("saleChart");
+        var bgColors = [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+        ];
+        var bdColors=[];
+        var options={
+
+        };
+        var saleChart = new Chart(schart, {
+            type: 'pie',
+            data: {
+                labels: JSON.parse('{:json_encode(array_column($purchaseStatics,"label"))}'),
+                datasets: [{
+                    label: '商品采购量',
+                    data: JSON.parse('{:json_encode(array_column($purchaseStatics,"value"))}'),
+                    backgroundColor: bgColors,
+                    borderColor: bdColors,
+                    borderWidth: 1
+                }]
+            },
+            options: options
+        });
+        
+        jQuery(function ($) {
+            $('[name=viewmode]').change(function (e) {
+                if(!this.checked) return;
+                var val=$(this).val();
+                if(val == 'table'){
+                    $('.chart-box').addClass('d-none');
+                    $('.table-box').removeClass('d-none');
+                }else{
+                    $('.table-box').addClass('d-none');
+                    $('.chart-box').removeClass('d-none');
+                }
+            })
+        })
+
+    </script>
+</block>

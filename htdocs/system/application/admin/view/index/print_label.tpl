@@ -12,8 +12,11 @@
     <div id="app" class="labelpage">
     <div class="page-wrapper container ml-auto mr-auto mb-3 d-print-none">
         <div class="row">
-            <h2 class="col-md-6">标签打印</h2>
-            <div class="col-md-6 text-right ">
+            <div class="col-8">
+                <h2>标签打印</h2>
+                <span class="text-muted">本功能仅供临时打印标签使用，如已有订单打印，请在<b>销售订单管理</b>中打印标签</span>
+            </div>
+            <div class="col-4 text-right ">
                 <a href="javascript:" class="btn btn-primary print-btn" @click="doPrint">打印</a>
             </div>
         </div>

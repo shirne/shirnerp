@@ -198,4 +198,96 @@ class CustomerController extends BaseController
             $this->error(lang('Delete failed!'));
         }
     }
+
+    public function rank($start_date='', $end_date='')
+    {
+
+        $data = CustomerModel::ranks($start_date, $end_date);
+
+        $this->assign($data);
+
+        return $this->fetch();
+    }
+
+    public function rankExport($start_date='', $end_date=''){
+        $data = CustomerModel::ranks($start_date, $end_date);
+
+        $excel=new Excel('Xlsx');
+
+        $excel->setHeader([
+            '编号','品名','单位','采购量','采购金额','采购单价','采购最低价','采购最高价','销售量','销售金额','销售单价','销售最低价','销售最高价',
+        ]);
+        foreach ($data['goods'] as $good){
+            $excel->addRow([
+                $good['id'],$good['title'],$good['unit'],
+                $good['purchase']['total_count'],$good['purchase']['total_amount'],$good['purchase']['price'],$good['purchase']['min_price'],$good['purchase']['max_price'],
+                $good['sale']['total_count'],$good['sale']['total_amount'],$good['sale']['price'],$good['sale']['min_price'],$good['sale']['max_price']
+            ]);
+            if(!empty($good['other'])){
+                foreach ($good['other'] as $vgood) {
+                    $excel->addRow([
+                        $vgood['id'], $vgood['goods_title'], $vgood['goods_unit'],
+                        $vgood['purchase']['total_count'], $vgood['purchase']['total_amount'], $vgood['purchase']['price'], $vgood['purchase']['min_price'], $vgood['purchase']['max_price'],
+                        $vgood['sale']['total_count'], $vgood['sale']['total_amount'], $vgood['sale']['price'], $vgood['sale']['min_price'], $vgood['sale']['max_price']
+                    ]);
+                }
+            }
+        }
+        $datestr = '';
+        if(!empty($data['start_date'])){
+            $datestr = '['.$data['start_date'].'-'.$data['end_date'].']';
+        }
+
+        $excel->output('品种统计'.$datestr);
+    }
+
+    public function statics($goods_id, $start_date='', $end_date='')
+    {
+        $goods = CustomerModel::get($goods_id);
+        if(empty($goods)){
+            $this->error('品种错误');
+        }
+        $data =$goods->statics($start_date, $end_date);
+
+        $this->assign($data);
+        $this->assign('goods',$goods);
+
+        return $this->fetch();
+    }
+
+    public function staticsExport($goods_id, $start_date='', $end_date=''){
+        $goods = CustomerModel::get($goods_id);
+        if(empty($goods)){
+            $this->error('品种错误');
+        }
+        $data =$goods->statics($start_date, $end_date);
+
+        $excel=new Excel('Xlsx');
+
+        $excel->setHeader([
+            '编号','品名','日期','单位','采购量','采购金额','采购单价','采购最低价','采购最高价','销售量','销售金额','销售单价','销售最低价','销售最高价',
+        ]);
+        foreach ($data['statics'] as $date=>$good){
+            $excel->addRow([
+                $goods['id'],$goods['title'],$date,$goods['unit'],
+                $good['purchase']['total_count'],$good['purchase']['total_amount'],$good['purchase']['price'],$good['purchase']['min_price'],$good['purchase']['max_price'],
+                $good['sale']['total_count'],$good['sale']['total_amount'],$good['sale']['price'],$good['sale']['min_price'],$good['sale']['max_price']
+            ]);
+            if(!empty($good['other'])){
+                foreach ($good['other'] as $k=>$vgood) {
+                    $excel->addRow([
+                        $goods['id'],$goods['title'],$date, $k,
+                        $vgood['purchase']['total_count'], $vgood['purchase']['total_amount'], $vgood['purchase']['price'], $vgood['purchase']['min_price'], $vgood['purchase']['max_price'],
+                        $vgood['sale']['total_count'], $vgood['sale']['total_amount'], $vgood['sale']['price'], $vgood['sale']['min_price'], $vgood['sale']['max_price']
+                    ]);
+                }
+            }
+        }
+        $datestr = '';
+        if(!empty($data['start_date'])){
+            $datestr = '['.$data['start_date'].'-'.$data['end_date'].']';
+        }
+
+        $excel->output('['.$goods['title'].']统计'.$datestr);
+    }
 }
