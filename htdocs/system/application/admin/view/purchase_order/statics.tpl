@@ -6,11 +6,11 @@
 </block>
 <block name="body">
 
-    <include file="public/bread" menu="sale_order_statics" title="销售单统计" />
+    <include file="public/bread" menu="purchase_order_statics" title="入库单统计" />
 
     <div id="page-wrapper">
         <div class="list-header">
-            <form class="noajax" action="{:url('saleOrder/statics')}" method="post">
+            <form class="noajax" action="{:url('purchaseOrder/statics')}" method="post">
                 <div class="form-row">
                     <div class="form-group col input-group input-group-sm date-range">
                         <div class="input-group-prepend">
@@ -85,7 +85,7 @@
                 labels: JSON.parse('{:json_encode(array_column($statics,"awdate"))}'),
                 datasets: [
                     {
-                        label: '销售单数量',
+                        label: '入库单数量',
                         data: JSON.parse('{:json_encode(array_column($statics,"order_count"))}'),
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)',
@@ -96,7 +96,7 @@
                         borderWidth: 1
                     },
                     {
-                        label: '销售单金额',
+                        label: '入库单金额',
                         data: JSON.parse('{:json_encode(array_column($statics,"order_amount"))}'),
                         backgroundColor: [
                             'rgba(54, 162, 235, 0.2)',

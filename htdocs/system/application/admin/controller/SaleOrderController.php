@@ -305,6 +305,7 @@ class SaleOrderController extends BaseController
         }
         if($this->request->isPost()) {
             $packages = $this->request->put('packages');
+            //数据不为空，是提交数据保存。数据为空，是异步获取初始数据
             if(!empty($packages)){
                 foreach ($packages as $pkg_id=>$items){
                     if($pkg_id > 0 ){
