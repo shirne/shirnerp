@@ -25,7 +25,7 @@
                         <input type="submit" class="btn btn-primary btn-sm btn-submit ml-2" value="确定"/>
                     </div>
                     <div class="form-group mr-3">
-                        <a href="{:url('staticsExport',['customer_id'=>$goods['id'],'start_date'=>$start_date,'end_date'=>$end_date])}" class="btn btn-info btn-sm" target="_blank"><i class="ion-md-download"></i> 导出</a>
+                        <a href="{:url('staticsExport',['customer_id'=>$customer['id'],'start_date'=>$start_date,'end_date'=>$end_date])}" class="btn btn-info btn-sm" target="_blank"><i class="ion-md-download"></i> 导出</a>
                     </div>
                     <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
                         <label class="btn btn-outline-primary active">
@@ -40,14 +40,13 @@
         </div>
         <div class="chart-box">
             <canvas id="myChart" width="800" height="400"></canvas>
-            <span class="text-muted">图表统计不包含非商品默认单位的采购/销售</span>
         </div>
         <div class="table-box d-none">
             <table class="table table-hover table-striped">
                 <thead>
                 <tr>
                     <th>日期</th>
-                    <th>单位</th>
+                    <th>客户</th>
                     <th>销售量</th>
                     <th>销售金额</th>
                     <th>销售单价</th>
@@ -57,41 +56,20 @@
                 <empty name="statics">{:list_empty(8)}</empty>
                 <volist name="statics" id="v" >
                     <tr>
-                        <td>{$key}</td>
-                        <td>{$goods.unit}</td>
+                        <td>{$v.awdate}</td>
+                        <td>{$customer.title}</td>
                         <td>
-                            {$v.sale.total_count}
+                            {$v.order_count}
                         </td>
-                        <td>{$v.sale.total_amount}</td>
+                        <td>{$v.order_amount}</td>
                         <td>
-                            <if condition="$v['sale']['total_count'] GT 0">
-                                {:round($v['sale']['total_amount']/$v['sale']['total_count'],2)}<br />
-                                <span class="badge badge-secondary">{$v.sale.min_price} ~ {$v.sale.max_price}</span>
+                            <if condition="$v['order_count'] GT 0">
+                                {:round($v['order_amount']/$v['order_count'],2)}
                                 <else/>
                                 -
                             </if>
                         </td>
                     </tr>
-                    <if condition="!empty($v['other'])">
-                        <volist name="$v['other']" id="ov" >
-                            <tr>
-                                <td> - </td>
-                                <td>{$key} </td>
-                                <td>
-                                    {$ov.sale.total_count}
-                                </td>
-                                <td>{$ov.sale.total_amount}</td>
-                                <td>
-                                    <if condition="$ov['sale']['total_count'] GT 0">
-                                        {:round($ov['sale']['total_amount']/$ov['sale']['total_count'],2)}<br />
-                                        <span class="badge badge-secondary">{$ov.sale.min_price} ~ {$ov.sale.max_price}</span>
-                                        <else/>
-                                        -
-                                    </if>
-                                </td>
-                            </tr>
-                        </volist>
-                    </if>
                 </volist>
                 </tbody>
             </table>
@@ -102,7 +80,7 @@
 <block name="script">
     <script type="text/javascript" src="__STATIC__/chart/Chart.bundle.min.js"></script>
     <script type="text/javascript">
-        window.page_title="[{$goods['title']}]统计";
+        window.page_title="[{$customer['title']}]统计";
         var ctx = document.getElementById("myChart");
         var bgColors=[
             'rgba(255, 99, 132, 0.2)',
@@ -127,14 +105,14 @@
                 datasets: [
                     {
                         label: '商品销售量',
-                        data: JSON.parse('{:json_encode(array_column($saleStatics,"total_count"))}'),
+                        data: JSON.parse('{:json_encode(array_column($statics,"order_count"))}'),
                         backgroundColor: bgColors[0],
                         borderColor: bdColors[0],
                         borderWidth: 1
                     },
                     {
                         label: '商品销售价格',
-                        data: JSON.parse('{:json_encode(array_column($saleStatics,"price"))}'),
+                        data: JSON.parse('{:json_encode(array_column($statics,"order_amount"))}'),
                         backgroundColor:bgColors[1],
                         borderColor: bdColors[1],
                         borderWidth: 1

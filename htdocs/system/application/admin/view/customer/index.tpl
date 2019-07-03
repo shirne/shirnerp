@@ -45,6 +45,7 @@
                 <td>{$v.phone}</td>
                 <td>{$v.create_time|showdate}<br />{$v.update_time|showdate}</td>
                 <td class="operations">
+                        <a href="{:url('statics',['customer_id'=>$v['id']])}" data-tab="stat-{$v.id}" title="供应商统计" class="btn btn-outline-primary btn-sm"><i class="ion-md-stats"></i></a>
                     <a class="btn btn-outline-primary btn-edit-customer" data-id="{$v.id}" title="编辑" href="{:url('customer/update',array('id'=>$v['id']))}"><i class="ion-md-create"></i> </a>
                     <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="删除后将无法恢复!\n请确认!!!" href="{:url('customer/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
                 </td>

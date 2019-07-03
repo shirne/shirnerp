@@ -236,12 +236,12 @@ class CustomerController extends BaseController
     {
         $customer = CustomerModel::get($customer_id);
         if(empty($customer)){
-            $this->error('品种错误');
+            $this->error('参数错误');
         }
-        $data =$customer->statics($start_date, $end_date);
+        $statics =$customer->statics($start_date, $end_date);
 
-        $this->assign($data);
-        $this->assign('goods',$goods);
+        $this->assign('statics',$statics);
+        $this->assign('customer',$customer);
 
         return $this->fetch();
     }
@@ -249,36 +249,27 @@ class CustomerController extends BaseController
     public function staticsExport($customer_id, $start_date='', $end_date=''){
         $customer = CustomerModel::get($customer_id);
         if(empty($customer)){
-            $this->error('品种错误');
+            $this->error('参数错误');
         }
-        $data =$customer->statics($start_date, $end_date);
+        $statics =$customer->statics($start_date, $end_date);
 
         $excel=new Excel('Xlsx');
 
         $excel->setHeader([
-            '编号','品名','日期','单位','采购量','采购金额','采购单价','采购最低价','采购最高价','销售量','销售金额','销售单价','销售最低价','销售最高价',
+            '客户','日期','采购单数','采购总金额','订单均额'
         ]);
-        foreach ($data['statics'] as $date=>$good){
+        foreach ($statics as $item){
             $excel->addRow([
-                $goods['id'],$goods['title'],$date,$goods['unit'],
-                $good['purchase']['total_count'],$good['purchase']['total_amount'],$good['purchase']['price'],$good['purchase']['min_price'],$good['purchase']['max_price'],
-                $good['sale']['total_count'],$good['sale']['total_amount'],$good['sale']['price'],$good['sale']['min_price'],$good['sale']['max_price']
+                $customer['title'],$item['awdate'],
+                $item['order_count'],$item['order_amount'],
+                $item['order_count']>0?round($item['order_amount']/$item['order_count']):0
             ]);
-            if(!empty($good['other'])){
-                foreach ($good['other'] as $k=>$vgood) {
-                    $excel->addRow([
-                        $goods['id'],$goods['title'],$date, $k,
-                        $vgood['purchase']['total_count'], $vgood['purchase']['total_amount'], $vgood['purchase']['price'], $vgood['purchase']['min_price'], $vgood['purchase']['max_price'],
-                        $vgood['sale']['total_count'], $vgood['sale']['total_amount'], $vgood['sale']['price'], $vgood['sale']['min_price'], $vgood['sale']['max_price']
-                    ]);
-                }
-            }
         }
         $datestr = '';
         if(!empty($data['start_date'])){
             $datestr = '['.$data['start_date'].'-'.$data['end_date'].']';
         }
 
-        $excel->output('['.$goods['title'].']统计'.$datestr);
+        $excel->output('['.$customer['title'].']统计'.$datestr);
     }
 }

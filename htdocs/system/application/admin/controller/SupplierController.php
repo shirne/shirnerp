@@ -230,4 +230,45 @@ class SupplierController extends BaseController
 
         $excel->output('供应商统计'.$datestr);
     }
+
+    public function statics($supplier_id, $start_date='', $end_date='')
+    {
+        $supplier = SupplierModel::get($supplier_id);
+        if(empty($supplier)){
+            $this->error('参数错误');
+        }
+        $statics =$supplier->statics($start_date, $end_date);
+
+        $this->assign('statics',$statics);
+        $this->assign('supplier',$supplier);
+
+        return $this->fetch();
+    }
+
+    public function staticsExport($supplier_id, $start_date='', $end_date=''){
+        $supplier = SupplierModel::get($supplier_id);
+        if(empty($supplier)){
+            $this->error('参数错误');
+        }
+        $statics =$supplier->statics($start_date, $end_date);
+
+        $excel=new Excel('Xlsx');
+
+        $excel->setHeader([
+            '客户','日期','采购单数','采购总金额','订单均额'
+        ]);
+        foreach ($statics as $item){
+            $excel->addRow([
+                $supplier['title'],$item['awdate'],
+                $item['order_count'],$item['order_amount'],
+                $item['order_count']>0?round($item['order_amount']/$item['order_count']):0
+            ]);
+        }
+        $datestr = '';
+        if(!empty($data['start_date'])){
+            $datestr = '['.$data['start_date'].'-'.$data['end_date'].']';
+        }
+
+        $excel->output('['.$supplier['title'].']统计'.$datestr);
+    }
 }

@@ -6,7 +6,7 @@
 </block>
 <block name="body">
 
-    <include file="public/bread" menu="supplier_index" title="商品统计" />
+    <include file="public/bread" menu="supplier_index" title="供应商统计" />
 
     <div id="page-wrapper">
         <div class="list-header">
@@ -21,11 +21,11 @@
                         <input type="text" class="form-control todate" name="end_date" placeholder="选择结束日期" value="{$end_date}">
                     </div>
                     <div class="form-group col">
-                        <input type="hidden" name="goods_id" value="{$goods.id}"/>
+                        <input type="hidden" name="supplier_id" value="{$supplier.id}"/>
                         <input type="submit" class="btn btn-primary btn-sm btn-submit ml-2" value="确定"/>
                     </div>
                     <div class="form-group mr-3">
-                        <a href="{:url('staticsExport',['goods_id'=>$goods['id'],'start_date'=>$start_date,'end_date'=>$end_date])}" class="btn btn-info btn-sm" target="_blank"><i class="ion-md-download"></i> 导出</a>
+                        <a href="{:url('staticsExport',['supplier_id'=>$supplier['id'],'start_date'=>$start_date,'end_date'=>$end_date])}" class="btn btn-info btn-sm" target="_blank"><i class="ion-md-download"></i> 导出</a>
                     </div>
                     <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
                         <label class="btn btn-outline-primary active">
@@ -40,58 +40,34 @@
         </div>
         <div class="chart-box">
             <canvas id="myChart" width="800" height="400"></canvas>
-            <span class="text-muted">图表统计不包含非商品默认单位的采购/销售</span>
         </div>
         <div class="table-box d-none">
             <table class="table table-hover table-striped">
                 <thead>
                 <tr>
                     <th>日期</th>
-                    <th>单位</th>
-                    <th>采购量</th>
-                    <th>采购金额</th>
-                    <th>采购单价</th>
+                    <th>订单数</th>
+                    <th>总金额</th>
+                    <th>单均金额</th>
                 </tr>
                 </thead>
                 <tbody>
-                <empty name="statics">{:list_empty(8)}</empty>
+                <empty name="statics">{:list_empty(4)}</empty>
                 <volist name="statics" id="v" >
                     <tr>
-                        <td>{$key}</td>
-                        <td>{$goods.unit}</td>
+                        <td>{$v.awdate}</td>
+                        <td>{$v.order_count}</td>
                         <td>
-                            {$v.purchase.total_count}
+                            {$v.order_amount}
                         </td>
-                        <td>{$v.purchase.total_amount}</td>
                         <td>
-                            <if condition="$v['purchase']['total_count'] GT 0">
-                                {:round($v['purchase']['total_amount']/$v['purchase']['total_count'],2)}<br />
-                                <span class="badge badge-secondary">{$v.purchase.min_price} ~ {$v.purchase.max_price}</span>
+                            <if condition="$v['order_count'] GT 0">
+                                {:round($v['order_amount']/$v['order_count'],2)}
                                 <else/>
                                 -
                             </if>
                         </td>
                     </tr>
-                    <if condition="!empty($v['other'])">
-                        <volist name="$v['other']" id="ov" >
-                            <tr>
-                                <td> - </td>
-                                <td>{$key} </td>
-                                <td>
-                                    {$ov.purchase.total_count}
-                                </td>
-                                <td>{$ov.purchase.total_amount}</td>
-                                <td>
-                                    <if condition="$ov['purchase']['total_count'] GT 0">
-                                        {:round($ov['purchase']['total_amount']/$ov['purchase']['total_count'],2)}<br />
-                                        <span class="badge badge-secondary">{$ov.purchase.min_price} ~ {$ov.purchase.max_price}</span>
-                                        <else/>
-                                        -
-                                    </if>
-                                </td>
-                            </tr>
-                        </volist>
-                    </if>
                 </volist>
                 </tbody>
             </table>
@@ -102,7 +78,7 @@
 <block name="script">
     <script type="text/javascript" src="__STATIC__/chart/Chart.bundle.min.js"></script>
     <script type="text/javascript">
-        window.page_title="[{$goods['title']}]统计";
+        window.page_title="[{$supplier['title']}]统计";
         var ctx = document.getElementById("myChart");
         var bgColors=[
             'rgba(255, 99, 132, 0.2)',
@@ -126,15 +102,15 @@
                 labels: JSON.parse('{:json_encode(array_column($statics,"awdate"))}'),
                 datasets: [
                     {
-                        label: '商品采购量',
-                        data: JSON.parse('{:json_encode(array_column($purchaseStatics,"total_count"))}'),
+                        label: '订单数量',
+                        data: JSON.parse('{:json_encode(array_column($statics,"order_count"))}'),
                         backgroundColor:bgColors[2],
                         borderColor: bdColors[2],
                         borderWidth: 1
                     },
                     {
-                        label: '商品采购价格',
-                        data: JSON.parse('{:json_encode(array_column($purchaseStatics,"price"))}'),
+                        label: '订单总金额',
+                        data: JSON.parse('{:json_encode(array_column($statics,"order_amount"))}'),
                         backgroundColor:bgColors[3],
                         borderColor: bdColors[3],
                         borderWidth: 1
