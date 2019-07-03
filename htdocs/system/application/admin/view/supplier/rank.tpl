@@ -38,58 +38,38 @@
             </form>
         </div>
         <div class="row chart-box">
-            <div class="col"><canvas id="purchaseChart" width="400" height="400"></canvas></div>
+            <div class="col"><canvas id="countChart" width="400" height="400"></canvas></div>
+            <div class="col"><canvas id="amountChart" width="400" height="400"></canvas></div>
         </div>
         <div class="table-box d-none">
             <table class="table table-hover table-striped">
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>供应商</th>
+                    <th>客户</th>
                     <th>采购量</th>
                     <th>采购金额</th>
-                    <th>采购单价</th>
+                    <th>平均金额</th>
                 </tr>
                 </thead>
                 <tbody>
-                <empty name="goods">{:list_empty(8)}</empty>
-                <volist name="goods" id="v" >
+                <empty name="statics">{:list_empty(5)}</empty>
+                <volist name="statics" id="v" >
                     <tr>
-                        <td><input type="checkbox" name="id" value="{$v.id}" /></td>
-                        <td>{$v.title} <span class="badge badge-info">{$v.unit}</span> </td>
+                        <td>{$v.supplier_id}</td>
+                        <td>{$v.supplier} </td>
                         <td>
-                            {$v.purchase.total_count}
+                            {$v.order_count}
                         </td>
-                        <td>{$v.purchase.total_amount}</td>
+                        <td>{$v.order_amount}</td>
                         <td>
-                            <if condition="$v['purchase']['total_count'] GT 0">
-                                {:round($v['purchase']['total_amount']/$v['purchase']['total_count'],2)}<br />
-                                <span class="badge badge-secondary">{$v.purchase.min_price} ~ {$v.purchase.max_price}</span>
+                            <if condition="$v['order_count'] GT 0">
+                                {:round($v['order_amount']/$v['order_count'],2)}
                                 <else/>
                                 -
                             </if>
                         </td>
                     </tr>
-                    <if condition="!empty($v['other'])">
-                        <volist name="$v['other']" id="ov" >
-                            <tr>
-                                <td> - </td>
-                                <td>{$v.title} <span class="badge badge-info">{$key}</span> </td>
-                                <td>
-                                    {$ov.purchase.total_count}
-                                </td>
-                                <td>{$ov.purchase.total_amount}</td>
-                                <td>
-                                    <if condition="$ov['purchase']['total_count'] GT 0">
-                                        {:round($ov['purchase']['total_amount']/$ov['purchase']['total_count'],2)}<br />
-                                        <span class="badge badge-secondary">{$ov.purchase.min_price} ~ {$ov.purchase.max_price}</span>
-                                        <else/>
-                                        -
-                                    </if>
-                                </td>
-                            </tr>
-                        </volist>
-                    </if>
                 </volist>
                 </tbody>
             </table>
@@ -100,7 +80,8 @@
 <block name="script">
     <script type="text/javascript" src="__STATIC__/chart/Chart.bundle.min.js"></script>
     <script type="text/javascript">
-        var pchart = document.getElementById("purchaseChart");
+        var cchart = document.getElementById("countChart");
+        var achart = document.getElementById("amountChart");
         var bgColors = [
             'rgba(255, 99, 132, 0.2)',
             'rgba(54, 162, 235, 0.2)',
@@ -113,13 +94,28 @@
         var options={
 
         };
-        var purchaseChart = new Chart(pchart, {
+        var countChart = new Chart(cchart, {
             type: 'pie',
             data: {
-                labels: JSON.parse('{:json_encode(array_column($saleStatics,"label"))}'),
+                labels: JSON.parse('{:json_encode(array_column($statics,"supplier"))}'),
                 datasets: [{
-                    label: '商品销售量',
-                    data: JSON.parse('{:json_encode(array_column($saleStatics,"value"))}'),
+                    label: '采购订单数',
+                    data: JSON.parse('{:json_encode(array_column($statics,"order_count"))}'),
+                    backgroundColor: bgColors,
+                    borderColor: bdColors,
+                    borderWidth: 1
+                }]
+            },
+            options: options
+        });
+        var amountChart = new Chart(achart, {
+            type: 'pie',
+            data: {
+                labels: JSON.parse('{:json_encode(array_column($statics,"supplier"))}'),
+                datasets: [
+                {
+                    label: '采购金额',
+                    data: JSON.parse('{:json_encode(array_column($statics,"order_amount"))}'),
                     backgroundColor: bgColors,
                     borderColor: bdColors,
                     borderWidth: 1

@@ -197,4 +197,37 @@ class SupplierController extends BaseController
             $this->error(lang('Delete failed!'));
         }
     }
+
+    public function rank($start_date='', $end_date='')
+    {
+
+        $data = SupplierModel::ranks($start_date, $end_date);
+
+        $this->assign('statics',$data);
+
+        return $this->fetch();
+    }
+
+    public function rankExport($start_date='', $end_date=''){
+        $statics = SupplierModel::ranks($start_date, $end_date);
+
+        $excel=new Excel('Xlsx');
+
+        $excel->setHeader([
+            '编号','客户','单数','金额','平均金额'
+        ]);
+        foreach ($statics as $good){
+            $excel->addRow([
+                $good['supplier_id'],$good['supplier'],
+                $good['order_count'],$good['order_amount'],
+                $good['order_count']>0?round($good['order_amount']/$good['order_count'],2):0
+            ]);
+        }
+        $datestr = '';
+        if(!empty($data['start_date'])){
+            $datestr = '['.$data['start_date'].'-'.$data['end_date'].']';
+        }
+
+        $excel->output('供应商统计'.$datestr);
+    }
 }

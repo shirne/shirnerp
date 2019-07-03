@@ -6,7 +6,7 @@
 </block>
 <block name="body">
 
-    <include file="public/bread" menu="customer_index" title="供应商排行" />
+    <include file="public/bread" menu="customer_index" title="客户排行" />
 
     <div id="page-wrapper">
         <div class="list-header">
@@ -38,8 +38,8 @@
             </form>
         </div>
         <div class="row chart-box">
-            <div class="col"><canvas id="purchaseChart" width="400" height="400"></canvas></div>
-            <div class="col"><canvas id="saleChart" width="400" height="400"></canvas></div>
+            <div class="col"><canvas id="countChart" width="400" height="400"></canvas></div>
+            <div class="col"><canvas id="amountChart" width="400" height="400"></canvas></div>
         </div>
         <div class="table-box d-none">
             <table class="table table-hover table-striped">
@@ -49,48 +49,27 @@
                     <th>客户</th>
                     <th>销售量</th>
                     <th>销售金额</th>
-                    <th>销售单价</th>
+                    <th>平均金额</th>
                 </tr>
                 </thead>
                 <tbody>
-                <empty name="goods">{:list_empty(8)}</empty>
-                <volist name="goods" id="v" >
+                <empty name="statics">{:list_empty(5)}</empty>
+                <volist name="statics" id="v" >
                     <tr>
-                        <td><input type="checkbox" name="id" value="{$v.id}" /></td>
-                        <td>{$v.title} <span class="badge badge-info">{$v.unit}</span> </td>
+                        <td>{$v.customer_id}</td>
+                        <td>{$v.customer} </td>
                         <td>
-                            {$v.sale.total_count}
+                            {$v.order_count}
                         </td>
-                        <td>{$v.sale.total_amount}</td>
+                        <td>{$v.order_amount}</td>
                         <td>
-                            <if condition="$v['sale']['total_count'] GT 0">
-                                {:round($v['sale']['total_amount']/$v['sale']['total_count'],2)}<br />
-                                <span class="badge badge-secondary">{$v.sale.min_price} ~ {$v.sale.max_price}</span>
+                            <if condition="$v['order_count'] GT 0">
+                                {:round($v['order_amount']/$v['order_count'],2)}
                                 <else/>
                                 -
                             </if>
                         </td>
                     </tr>
-                    <if condition="!empty($v['other'])">
-                        <volist name="$v['other']" id="ov" >
-                            <tr>
-                                <td> - </td>
-                                <td>{$v.title} <span class="badge badge-info">{$key}</span> </td>
-                                <td>
-                                    {$ov.sale.total_count}
-                                </td>
-                                <td>{$ov.sale.total_amount}</td>
-                                <td>
-                                    <if condition="$ov['sale']['total_count'] GT 0">
-                                        {:round($ov['sale']['total_amount']/$ov['sale']['total_count'],2)}<br />
-                                        <span class="badge badge-secondary">{$ov.sale.min_price} ~ {$ov.sale.max_price}</span>
-                                        <else/>
-                                        -
-                                    </if>
-                                </td>
-                            </tr>
-                        </volist>
-                    </if>
                 </volist>
                 </tbody>
             </table>
@@ -101,7 +80,8 @@
 <block name="script">
     <script type="text/javascript" src="__STATIC__/chart/Chart.bundle.min.js"></script>
     <script type="text/javascript">
-        var schart = document.getElementById("saleChart");
+        var cchart = document.getElementById("countChart");
+        var achart = document.getElementById("amountChart");
         var bgColors = [
             'rgba(255, 99, 132, 0.2)',
             'rgba(54, 162, 235, 0.2)',
@@ -114,13 +94,28 @@
         var options={
 
         };
-        var saleChart = new Chart(schart, {
+        var countChart = new Chart(cchart, {
             type: 'pie',
             data: {
-                labels: JSON.parse('{:json_encode(array_column($purchaseStatics,"label"))}'),
+                labels: JSON.parse('{:json_encode(array_column($statics,"customer"))}'),
                 datasets: [{
-                    label: '商品采购量',
-                    data: JSON.parse('{:json_encode(array_column($purchaseStatics,"value"))}'),
+                    label: '销售订单数',
+                    data: JSON.parse('{:json_encode(array_column($statics,"order_count"))}'),
+                    backgroundColor: bgColors,
+                    borderColor: bdColors,
+                    borderWidth: 1
+                }]
+            },
+            options: options
+        });
+        var amountChart = new Chart(achart, {
+            type: 'pie',
+            data: {
+                labels: JSON.parse('{:json_encode(array_column($statics,"customer"))}'),
+                datasets: [
+                {
+                    label: '销售金额',
+                    data: JSON.parse('{:json_encode(array_column($statics,"order_amount"))}'),
                     backgroundColor: bgColors,
                     borderColor: bdColors,
                     borderWidth: 1

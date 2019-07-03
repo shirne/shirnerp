@@ -20,7 +20,7 @@ class SupplierModel extends BaseModel
 
             foreach ($statics as &$item){
                 if($item['supplier_id'] && isset($suppliers[$item['supplier_id']])) {
-                    $item['supplier'] = $suppliers[$item['supplier_id']];
+                    $item['supplier'] = $suppliers[$item['supplier_id']]['title'];
                 }
             }
         }

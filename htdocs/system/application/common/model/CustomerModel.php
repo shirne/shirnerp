@@ -20,7 +20,7 @@ class CustomerModel extends BaseModel
 
             foreach ($statics as &$item){
                 if($item['customer_id'] && isset($customers[$item['customer_id']])) {
-                    $item['customer'] = $customers[$item['customer_id']];
+                    $item['customer'] = $customers[$item['customer_id']]['title'];
                 }
             }
         }

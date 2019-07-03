@@ -200,9 +200,9 @@ class BaseFinanceModel extends BaseModel
         }
 
         if($format) {
-            $model->field('count(id) as order_count,sum(base_amount) as order_amount,date_format(from_unixtime(create_time),' . $format . ') as awdate')->group('awdate');
+            $model->field('count(id) as order_count,sum(base_amount) as order_amount,date_format(from_unixtime(create_time),' . $format . ') as awdate')->group('awdate')->order('awdate');
         }else{
-            $model->field('count(id) as order_count,sum(base_amount) as order_amount,'.$type)->group($type);
+            $model->field('count(id) as order_count,sum(base_amount) as order_amount,'.$type)->group($type)->order('order_amount DESC');
         }
         return $model->select();
     }
