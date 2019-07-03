@@ -930,7 +930,8 @@ table {
     width :8cm;
     padding:0;
     height:6cm;
-    margin-top:1em;
+    margin-top:0.5cm;
+    overflow:hidden;
     position: relative;
     border-radius:5px;
     box-shadow: 1px 2px 5px rgba(0,0,0,.2);
@@ -968,10 +969,9 @@ table {
   }
   .print-page .table{
     height:90%;
-    font-size: .5cm;
+    font-size: 0.6cm;
   }
   .print-page .table td{
-    border:1px #eee solid;
     font-weight: bold;
     vertical-align: middle;
   }
@@ -995,20 +995,44 @@ table {
     float: left;
   }
   .table thead h3{
-    font-size:.8cm;
+    font-size:0.7cm;
     white-space: nowrap;
   }
   .table tbody td{
     white-space: nowrap;
     text-align: center;
+    border:0;
     padding:0 0.3cm 0 0.3cm;
-    font-size:0.7cm;
+    font-size:0.8cm;
   }
   .table tbody tr.middle td{
-    font-size:0.5cm;
+    font-size:0.6cm;
   }
   .table tbody tr.small td{
-    font-size:0.3cm;
+    font-size:0.4cm;
+  }
+  .printwrapper{
+    .print-page{
+      width :12cm;
+      height:9cm;
+      margin:0;
+      overflow: hidden;
+    }
+    .table thead h3{
+      font-size:1cm;
+    }
+    .table tbody td{
+      font-size:1cm;
+    }
+    .table tbody h4{
+      font-size:1cm;
+    }
+    .table tbody tr.middle td{
+      font-size:0.8cm;
+    }
+    .table tbody tr.small td{
+      font-size:0.5cm;
+    }
   }
 }
 

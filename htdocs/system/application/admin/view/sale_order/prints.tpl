@@ -94,7 +94,7 @@
                 <a  href="javascript:" class="btn btn-outline-primary btn-addlabel mt-3 ml-3" @click="addLabel(order.id)">增加标签</a>
             </div>
         </div>
-        <div class="d-none d-print-block">
+        <div class="d-none d-print-block printwrapper">
             <template v-for="order in orders">
             <div class="print-page" v-for="pkg in packages[order.package_id]">
                 <table class="table">

@@ -142,7 +142,7 @@
                 [{{customer.id}}]{{customer.title}}
             </li>
         </ul>
-        <div class="d-none d-print-block">
+        <div class="d-none d-print-block printwrapper">
             <template v-for="order in orders">
                 <div class="print-page" v-for="pkg in packages[order.package_id]">
                     <table class="table">

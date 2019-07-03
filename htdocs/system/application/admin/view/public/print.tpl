@@ -32,7 +32,7 @@
             font-size:9pt;
             height:100%;
             vertical-align: middle;
-            page-break-after: always;
+            
         }
         .print-page .bigger{
             font-weight: bold;
