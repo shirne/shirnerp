@@ -20,7 +20,9 @@ return array(
             'edit'=>'商品修改',
             'delete'=>'商品删除',
             'rank'=>'商品统计',
-            'statics'=>'单品统计'
+            'rankexport'=>'统计导出',
+            'statics'=>'单品统计',
+            'staticsexport'=>'单品统计导出'
         )
     ),
     'storage'=>array(
@@ -56,7 +58,11 @@ return array(
             'add'=>'供应商添加',
             'import'=>'导入供应商',
             'edit'=>'供应商修改',
-            'delete'=>'供应商删除'
+            'delete'=>'供应商删除',
+            'rank'=>'供应商排行',
+            'rankexport'=>'排行导出',
+            'statics'=>'供应商统计',
+            'staticsexport'=>'统计导出',
         )
     ),
     'purchaseorder'=>array(
@@ -70,6 +76,8 @@ return array(
             'detail'=>'订单查看/编辑',
             'delete'=>'订单删除',
             'status'=>'订单状态',
+            'log'=>'操作日志',
+            'statics'=>'订单统计',
         )
     ),
     'customer'=>array(
@@ -79,7 +87,11 @@ return array(
             'add'=>'客户添加',
             'import'=>'导入客户',
             'edit'=>'客户修改',
-            'delete'=>'客户删除'
+            'delete'=>'客户删除',
+            'rank'=>'客户排行',
+            'rankexport'=>'排行导出',
+            'statics'=>'客户统计',
+            'staticsexport'=>'统计导出',
         )
     ),
     'saleorder'=>array(
@@ -94,6 +106,8 @@ return array(
             'prints'=>'打印标签',
             'delete'=>'订单删除',
             'status'=>'订单状态',
+            'log'=>'操作日志',
+            'statics'=>'订单统计',
         )
     ),
     'finance'=>array(
@@ -117,8 +131,8 @@ return array(
             'unit_delete'=>'单位删除',
             'edit_currency'=>'编辑/添加货币',
             'currency_delete'=>'货币删除',
-            'setBaseCurrency'=>'设置基准货币',
-            'setCurrencyRate'=>'更新货币汇率'
+            'setbasecurrency'=>'设置基准货币',
+            'setcurrencyrate'=>'更新货币汇率'
         )
     ),
     'setting'=>array(
