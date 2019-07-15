@@ -165,8 +165,8 @@ DROP TABLE IF EXISTS `sa_supplier`;
 CREATE TABLE `sa_supplier` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(100) NOT NULL,
-  `short` VARCHAR(50) NOT NULL,
-  `spell` VARCHAR(100) NOT NULL,
+  `short` VARCHAR(50) NOT NULL DEFAULT '',
+  `spell` VARCHAR(100) NOT NULL DEFAULT '',
   `province` VARCHAR(50) DEFAULT '',
   `city` VARCHAR(30) DEFAULT '',
   `area` VARCHAR(50) DEFAULT '',
@@ -245,8 +245,8 @@ DROP TABLE IF EXISTS `sa_customer`;
 CREATE TABLE `sa_customer` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(100) NOT NULL,
-  `short` VARCHAR(50) NOT NULL,
-  `spell` VARCHAR(100) NOT NULL,
+  `short` VARCHAR(50) NOT NULL DEFAULT '',
+  `spell` VARCHAR(100) NOT NULL DEFAULT '',
   `province` VARCHAR(50) DEFAULT '',
   `city` VARCHAR(30) DEFAULT '',
   `area` VARCHAR(50) DEFAULT '',
