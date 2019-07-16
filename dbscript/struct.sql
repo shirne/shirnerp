@@ -24,6 +24,7 @@ CREATE TABLE `sa_lang` (
 DROP TABLE IF EXISTS `sa_manager`;
 CREATE TABLE `sa_manager` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pid` int(11) DEFAULT '0',
   `username` varchar(20) NOT NULL,
   `realname` varchar(20) NOT NULL DEFAULT '',
   `mobile` varchar(20) DEFAULT '',
