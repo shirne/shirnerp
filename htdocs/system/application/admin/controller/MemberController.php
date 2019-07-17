@@ -16,7 +16,7 @@ class MemberController extends BaseController
     {
         parent::initialize();
 
-        Db::name('Manager')->where('id',$this->manage['id'])->update(array('last_view_member'=>time()));
+        Db::name('Manager')->where('id',$this->manager['id'])->update(array('last_view_member'=>time()));
     }
 
     /**

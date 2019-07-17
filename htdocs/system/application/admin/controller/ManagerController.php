@@ -119,7 +119,7 @@ class ManagerController extends BaseController
                 $data['salt']=random_str(8);
                 $data['password']=encode_password($data['password'],$data['salt']);
                 $data['last_view_member']=time();
-                if($this->manage['type'] > $data['type']){
+                if($this->manager['type'] > $data['type']){
                     $this->error('您没有权限添加该类型账号');
                 }
                 $data['pid']=$this->mid;
@@ -148,7 +148,7 @@ class ManagerController extends BaseController
         $id=intval($id);
         if($id==0)$this->error('参数错误');
         $model=ManagerModel::get($id);
-        if($this->manage['type']>$model['type']){
+        if($this->manager['type']>$model['type']){
             $this->error('您没有权限查看该管理员');
         }
         
@@ -165,7 +165,7 @@ class ManagerController extends BaseController
                 if(!empty($data['password'])){
     
                     if(TEST_ACCOUNT == $model['username'] &&
-                        TEST_ACCOUNT == $this->manage['username']
+                        TEST_ACCOUNT == $this->manager['username']
                     ){
                         $this->error('演示账号，不可修改密码');
                     }
@@ -174,7 +174,7 @@ class ManagerController extends BaseController
                 }else{
                     unset($data['password']);
                 }
-                if($this->manage['type']>$data['type']){
+                if($this->manager['type']>$data['type']){
                     $this->error('您不能将该管理员设置为更高级的管理员');
                 }
                 
