@@ -163,6 +163,12 @@ class ManagerController extends BaseController
                 $this->error($validate->getError());
             }else{
                 if(!empty($data['password'])){
+    
+                    if(TEST_ACCOUNT == $model['username'] &&
+                        TEST_ACCOUNT == $this->manage['username']
+                    ){
+                        $this->error('演示账号，不可修改密码');
+                    }
                     $data['salt']=random_str(8);
                     $data['password'] = encode_password($data['password'],$data['salt']);
                 }else{
@@ -173,7 +179,7 @@ class ManagerController extends BaseController
                 }
                 
                 //强制更改超级管理员用户类型
-                if(config('SUPER_ADMIN_ID') ==$id){
+                if(SUPER_ADMIN_ID ==$id){
                     $data['type'] = 1;
                 }else{
                     $parent = Db::name('manage')->where('id',$model['pid'])->find();

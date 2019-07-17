@@ -207,6 +207,7 @@ class IndexController extends BaseController{
 
             $password=$this->request->post('newpassword');
             if(!empty($password)){
+                if(TEST_ACCOUNT == $this->manage['username'])$this->error('演示账号，不可修改密码');
                 $data['salt']=random_str(8);
                 $data['password'] = encode_password($password,$data['salt']);
             }

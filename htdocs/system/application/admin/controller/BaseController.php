@@ -30,7 +30,10 @@ class BaseController extends Controller {
 
     public function initialize(){
         parent::initialize();
-
+    
+        if(!defined('SUPER_ADMIN_ID'))define('SUPER_ADMIN_ID',config('super_admin_id'));
+        if(!defined('TEST_ACCOUNT'))define('TEST_ACCOUNT',config('test_account'));
+        
         $this->mid = session('adminId');
         //判断用户是否登陆
         if(empty($this->mid ) ) {
