@@ -276,9 +276,9 @@ DROP TABLE IF EXISTS `sa_sale_package_item`;
 CREATE TABLE `sa_sale_package_item` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title`  VARCHAR(50) DEFAULT '',
-  `storage_id` INT(11) NOT NULL,
+  `storage_id` INT(11) NOT NULL DEFAULT '0',
   `package_id` INT(11) NOT NULL,
-  `customer_id` INT(11) NOT NULL,
+  `customer_id` INT(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -299,9 +299,9 @@ DROP TABLE IF EXISTS `sa_sale_order`;
 CREATE TABLE `sa_sale_order` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `manager_id` INT(11) NOT NULL DEFAULT '0',
-  `customer_id` INT(11) NOT NULL,
-  `package_id` INT(11) NOT NULL,
-  `storage_id` INT(11) NOT NULL,
+  `customer_id` INT(11) NOT NULL DEFAULT '0',
+  `package_id` INT(11) NOT NULL DEFAULT '0',
+  `storage_id` INT(11) NOT NULL DEFAULT '0',
   `order_no` VARCHAR(30) NOT NULL,
   `parent_order_id` INT(11) NOT NULL DEFAULT '0',
   `customer_order_no` VARCHAR(30) NOT NULL DEFAULT '',
