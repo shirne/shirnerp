@@ -51,13 +51,30 @@
                     <table class="table">
                         <thead class="text-center"><tr><td colspan="2"><h3>{{order.customer_title}}</h3></td></tr></thead>
                         <tbody>
-                        <template v-if="pkg.goods.length>3">
+                        <template v-if="pkg.goods.length>10">
+                            <template v-for="idx in Math.ceil(pkg.goods.length / 3)">
+                                <tr class="small">
+                                    <td class="text-right">
+                                        {{pkg.goods[(idx-1)*3].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*3].count)}} {{pkg.goods[(idx-1)*3].goods_unit}}
+                                    </td>
+                                    <td class="text-right" v-if="pkg.goods[(idx-1)*3+1]">
+                                        {{pkg.goods[(idx-1)*3+1].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*3+1].count)}} {{pkg.goods[(idx-1)*3+1].goods_unit}}
+                                    </td>
+                                    <td v-else></td>
+                                    <td class="text-right" v-if="pkg.goods[(idx-1)*3+2]">
+                                        {{pkg.goods[(idx-1)*3+1].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*3+1].count)}} {{pkg.goods[(idx-1)*3+1].goods_unit}}
+                                    </td>
+                                    <td v-else></td>
+                                </tr>
+                            </template>
+                        </template>
+                        <template v-else-if="pkg.goods.length>3">
                             <template v-for="idx in Math.ceil(pkg.goods.length * .5)">
                                 <tr class="middle">
-                                    <td>
+                                    <td class="text-right">
                                         {{pkg.goods[(idx-1)*2].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2].count)}} {{pkg.goods[(idx-1)*2].goods_unit}}
                                     </td>
-                                    <td v-if="pkg.goods[(idx-1)*2+1]">
+                                    <td class="text-right" v-if="pkg.goods[(idx-1)*2+1]">
                                         {{pkg.goods[(idx-1)*2+1].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2+1].count)}} {{pkg.goods[(idx-1)*2+1].goods_unit}}
                                     </td>
                                     <td v-else></td>
@@ -100,13 +117,30 @@
                 <table class="table">
                     <thead class="text-center"><tr><td colspan="2"><h3>{{order.customer_title}}</h3></td></tr></thead>
                     <tbody>
-                    <template v-if="pkg.goods.length>3">
+                    <template v-if="pkg.goods.length>10">
+                        <template v-for="idx in Math.ceil(pkg.goods.length / 3)">
+                            <tr class="small">
+                                <td class="text-right">
+                                    {{pkg.goods[(idx-1)*3].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*3].count)}} {{pkg.goods[(idx-1)*3].goods_unit}}
+                                </td>
+                                <td class="text-right" v-if="pkg.goods[(idx-1)*3+1]">
+                                    {{pkg.goods[(idx-1)*3+1].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*3+1].count)}} {{pkg.goods[(idx-1)*3+1].goods_unit}}
+                                </td>
+                                <td v-else></td>
+                                <td class="text-right" v-if="pkg.goods[(idx-1)*3+2]">
+                                    {{pkg.goods[(idx-1)*3+1].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*3+1].count)}} {{pkg.goods[(idx-1)*3+1].goods_unit}}
+                                </td>
+                                <td v-else></td>
+                            </tr>
+                        </template>
+                    </template>
+                    <template v-else-if="pkg.goods.length>3">
                         <template v-for="idx in Math.ceil(pkg.goods.length * .5)">
                             <tr class="middle">
-                                <td>
+                                <td class="text-right">
                                     {{pkg.goods[(idx-1)*2].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2].count)}} {{pkg.goods[(idx-1)*2].goods_unit}}
                                 </td>
-                                <td v-if="pkg.goods[(idx-1)*2+1]">
+                                <td class="text-right" v-if="pkg.goods[(idx-1)*2+1]">
                                     {{pkg.goods[(idx-1)*2+1].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*2+1].count)}} {{pkg.goods[(idx-1)*2+1].goods_unit}}
                                 </td>
                                 <td v-else></td>
