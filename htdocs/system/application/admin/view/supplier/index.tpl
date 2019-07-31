@@ -95,7 +95,7 @@
 
             $('.btn-import').click(function (e) {
                 e.preventDefault();
-                importExcel('导入客户',$(this).attr('href'));
+                importExcel('导入供应商',$(this).attr('href'));
             });
 
             var supplierTpl = $('#supplierEdit').html();

@@ -122,7 +122,7 @@
                 </tr>
                 </thead>
                 <tbody class="text-right">
-                <php>$empty=list_empty(8);</php>
+                <php>$empty=list_empty(17);</php>
                 <volist name="finance['goods']" id="v" empty="$empty">
                     <tr>
                         <td class="text-center">{$v.id}</td>

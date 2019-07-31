@@ -110,13 +110,15 @@ class DataController extends BaseController
     public function setCurrencyRate($key, $rate){
         //$currency = CurrencyModel::getCurrency($key);
 
-        CurrencyModel::update(['exchange_rate'=>$rate],['key'=>$key]);
-
-        Db::name('currencyRate')->insert([
-            'currency'=>$key,
-            'exchange_rate'=>$rate,
-            'create_time'=>time()
-        ]);
-        $this->success('设置成功');
+        $updated=CurrencyModel::update(['exchange_rate'=>$rate],['key'=>$key]);
+        if($updated){
+            Db::name('currencyRate')->insert([
+                'currency'=>$key,
+                'exchange_rate'=>$rate,
+                'create_time'=>time()
+            ]);
+            $this->success('设置成功');
+        }
+        $this->success('设置失败');
     }
 }

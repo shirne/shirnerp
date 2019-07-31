@@ -336,8 +336,8 @@
                     var idx = this.findGoods(this.orders[index].goods, goods.id, true);
                     var order=this.orders[index];
                     if(idx>-1){
-                        order.goods[idx].count+=goods.count;
-                        order.goods[idx].release_count+=goods.count;
+                        order.goods[idx].count += parseFloat(goods.count);
+                        order.goods[idx].release_count += parseFloat(goods.count);
                         if(order.goods[idx].goods_unit != goods.unit) {
                             order.goods[idx].goods_unit = goods.unit;
                             var items = this.packages[order.package_id];
@@ -353,9 +353,9 @@
                         order.goods.push({
                             goods_id:goods.id,
                             goods_title: goods.title,
-                            count: goods.count,
+                            count: parseFloat(goods.count),
                             goods_unit: goods.unit,
-                            release_count:goods.count
+                            release_count:parseFloat(goods.count)
                         });
                     }
                     goods.id=0;
