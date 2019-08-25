@@ -429,8 +429,13 @@
                         return;
                     }
                     var count =good.release_count;
+                    if(!count){
+                        alert('该品种已打包完了');
+                        return;
+                    }
                     if(!isall){
                         var input=prompt('请填写打包数量',good.release_count);
+                        if(!input)return;
                         count=parseFloat(input);
                         if(!count){
                             alert('数量错误');

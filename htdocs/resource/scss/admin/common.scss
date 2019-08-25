@@ -39,6 +39,33 @@ h6 {
   display: none;
 }
 
+table.excel{
+  tbody {
+    td {
+      padding: 0.1rem;
+      vertical-align: middle;
+
+      .form-control {
+        height: calc(3rem + 2px);
+        padding: .75rem;
+      }
+
+      .form-control-sm,
+      .input-group-sm .form-control {
+        height: calc(2.25rem + 2px);
+        padding: .5rem;
+      }
+
+      .input-group .input-group-text {
+        height: auto !important;
+      }
+      &.operations{
+        padding-right:.5rem;
+      }
+    }
+  }
+}
+
 .page-tabs{
   height :100%;
   display:flex;

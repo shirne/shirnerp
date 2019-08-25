@@ -61,7 +61,7 @@
                             </div>
                         </div>
                     </div>
-                    <table class="table">
+                    <table class="table excel">
                         <thead>
                         <tr>
                             <th width="240">产品</th>
@@ -77,12 +77,12 @@
                         </thead>
                         <tbody>
                             <tr v-for="(good,idx) in goods" :key="idx">
-                                <td><input type="text" class="form-control form-control-sm" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
+                                <td><input type="text" class="form-control form-control-sm isgoods" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
                                 <td>{{good.storage}}</td>
                                 <td class="counttd">
                                     <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.count"/>
-                                        <select v-model="good.unit" style="flex:0;width: 50px;" class="form-control">
+                                        <select v-model="good.unit" style="flex:0;width: 50px;" @keydown="stopLeftRight" class="form-control">
                                             <volist name="units" id="unit">
                                                 <option value="{$unit.key}">{$unit.key}</option>
                                             </volist>
@@ -101,7 +101,7 @@
                                         <div class="input-group-middle">
                                             <span class="input-group-text" >/</span>
                                         </div>
-                                        <select v-model="good.price_type" @change="updateRow(idx)" class="form-control">
+                                        <select v-model="good.price_type" @keydown="stopLeftRight" @change="updateRow(idx)" class="form-control">
                                             <option :value="0">{{good.unit}}</option>
                                             <option :value="1">{:getSetting('weight_unit')}</option>
                                         </select>
@@ -120,7 +120,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <select class="form-control form-control-sm" @change="updateStorage" v-model="good.storage_id">
+                                    <select class="form-control form-control-sm" @keydown="stopLeftRight" @change="updateStorage" v-model="good.storage_id">
                                         <option :value="0">请选择仓库</option>
                                         <option v-for="storage in storages" :key="storage.id" :value="storage.id">[{{storage.storage_no}}]{{storage.title}}</option>
                                     </select>
@@ -304,6 +304,11 @@
                     }
                     this.updateStorage();
                     this.totalPrice();
+                },
+                stopLeftRight:function(e){
+                    if(e.keyCode == 37 || e.keyCode == 39) {
+                        e.preventDefault()
+                    }
                 },
                 addRow:function(){
                     this.goods.push({

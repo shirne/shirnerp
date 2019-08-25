@@ -14,7 +14,8 @@
         <div class="row">
             <h2 class="col-md-6">标签打印</h2>
             <div class="col-md-6 text-right ">
-                <a href="javascript:" class="btn btn-info print-btn" @click="savePkg">保存</a>
+                <a href="javascript:" class="btn btn-secondary " @click="clearEmptyPkg">清除空包</a>
+                <a href="javascript:" class="btn btn-info " @click="savePkg">保存</a>
                 <a href="javascript:" class="btn btn-primary print-btn" @click="doPrint">打印</a>
             </div>
         </div>
@@ -35,6 +36,7 @@
                         <span class="badge badge-light" v-if="good.storage_id != order.storage_id">{{good.storage_title}}</span>
                     </button>
                     <div class="dropdown-menu">
+                        <a class="dropdown-item" href="javascript:" @click="autoPack(order.id, good.goods_id)">自动分包</a>
                         <template  v-for="pkg in packages[order.package_id]">
                         <a class="dropdown-item" href="javascript:" @click="addtoLabel(order.id, good.goods_id, pkg.id)">打包到 {{pkg.title}}</a>
                             <a class="dropdown-item" href="javascript:" @click="addtoLabel(order.id, good.goods_id, pkg.id, 1)">全部打包到 {{pkg.title}}</a>
@@ -276,6 +278,40 @@
                         }
                     });
                 },
+                autoPack:function(order_id, goods_id){
+                    var order = this.findOrder(order_id);
+                    if(!order){
+                        alert('订单资料错误');
+                        return;
+                    }
+                    var good = this.findGoods(order.goods, goods_id);
+                    if(!good){
+                        alert('品种资料错误');
+                        return;
+                    }
+                    var count =good.release_count;
+                    if(!count){
+                        alert('该品种已打包完了');
+                        return;
+                    }
+                    var input=prompt('请填写分包数量',count);
+                    if(!input)return;
+                    count=parseFloat(input);
+                    if(!count){
+                        alert('数量错误');
+                        return;
+                    }
+                    if(count>good.release_count){
+                        alert('填写数量大于剩余数量，已自动更正');
+                        count = good.release_count;
+                    }
+                    var packcount = Math.floor(good.release_count/count)
+                    for(var i=0;i<packcount;i++){
+                        var pkgidx = this.add_label(order)
+                        this.add_goods_to_label(order.package_id, pkgidx, good, count)
+                    }
+
+                },
                 addtoLabel:function(order_id, goods_id, item_id, isall){
                     var order = this.findOrder(order_id);
                     if(!order){
@@ -288,13 +324,18 @@
                         return;
                     }
                     var pkgidx=this.findItem(order.package_id, item_id);
-                    if(pkgidx<-1){
+                    if(pkgidx<0){
                         alert('包ID错误');
                         return;
                     }
                     var count =good.release_count;
+                    if(!count){
+                        alert('该品种已打包完了');
+                        return;
+                    }
                     if(!isall){
                         var input=prompt('请填写打包数量',good.release_count);
+                        if(!input)return;
                         count=parseFloat(input);
                         if(!count){
                             alert('数量错误');
@@ -305,22 +346,24 @@
                             count = good.release_count;
                         }
                     }
+                    this.add_goods_to_label(order.package_id, pkgidx, good, count)
+                    this.ischanged=true;
+                },
+                add_goods_to_label:function(package_id,pkgidx,good, count){
 
-                    var pkgitem = this.packages[order.package_id][pkgidx];
-                    var pkgGoods = this.findGoods(pkgitem.goods, goods_id, 1);
+                    var pkgitem = this.packages[package_id][pkgidx];
+                    var pkgGoods = this.findGoods(pkgitem.goods, good.id, 1);
                     if(pkgGoods>-1){
                         pkgitem.goods[pkgGoods].count += count;
                     }else{
                         pkgitem.goods.push({
-                            goods_id:goods_id,
+                            goods_id: good.id,
                             goods_title:good.goods_title,
                             count:count,
                             goods_unit:good.goods_unit
                         });
                     }
                     good.release_count -= count;
-                    this.ischanged=true;
-
                 },
                 addLabel:function (order_id) {
                     var order = this.findOrder(order_id);
@@ -328,6 +371,12 @@
                         alert('订单资料错误');
                         return;
                     }
+                    this.add_label(order)
+                    this.ischanged=true;
+
+                },
+                add_label:function(order){
+
                     if(!this.packages[order.package_id]){
                         Vue.set(this.packages,order.package_id,[]);
                     }
@@ -344,7 +393,8 @@
                         this.packages[order.package_id][i].title = i+1;
                     }
                     global_id -= 1;
-                    this.ischanged=true;
+
+                    return this.packages[order.package_id].length-1
                 },
                 delLabel:function (item_id, order_id) {
                     var order = this.findOrder(order_id);
@@ -352,11 +402,19 @@
                         alert('订单资料错误');
                         return;
                     }
-                    if(!confirm('确定删除该标签？')){
-                        return;
-                    }
                     var idx = this.findItem(order.package_id, item_id);
-                    if(this.clearLabelAction(order, idx)){
+                    var item=this.packages[order.package_id][idx];
+                    if(item.goods && item.goods.length>0) {
+                        if (!confirm('确定删除该标签？')) {
+                            return;
+                        }
+                    }
+
+                    this.del_label(order, idx);
+                    this.ischanged=true;
+                },
+                del_label:function (order, idx){
+                    if(this.clear_label(order, idx)){
                         this.packages[order.package_id].splice(idx,1);
 
                         //删除后重新编号
@@ -364,7 +422,6 @@
                             this.packages[order.package_id][i].title = i+1;
                         }
                     }
-                    this.ischanged=true;
                 },
                 clearLabel:function(item_id, order_id){
                     var order = this.findOrder(order_id);
@@ -373,7 +430,7 @@
                         return;
                     }
                     var idx = this.findItem(order.package_id, item_id);
-                    if(this.clearLabelAction(order, idx)){
+                    if(this.clear_label(order, idx)){
                         this.$nextTick(function () {
                             alert('清除完成');
                         });
@@ -382,7 +439,7 @@
                     }
                     this.ischanged=true;
                 },
-                clearLabelAction:function(order, idx){
+                clear_label:function(order, idx){
                     if(idx > -1){
                         var item=this.packages[order.package_id][idx];
                         if(item.goods && item.goods.length>0){
@@ -400,6 +457,18 @@
                         return true;
                     }
                     return false;
+                },
+                clearEmptyPkg:function(){
+                    for(var pkd_id in this.packages){
+                        for(var i=0;i<this.packages[pkd_id].length;i++) {
+                            var pkg = this.packages[pkd_id][i]
+                            if(!pkg.goods || pkg.goods.length<1){
+                                this.packages[pkd_id].splice(i,1)
+                                i--
+                            }
+                        }
+                    }
+                    this.ischanged=true;
                 },
                 initCount:function(){
                     for(var i=0;i<this.orders.length;i++){

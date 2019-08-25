@@ -63,7 +63,127 @@
 
     <block name="script"></block>
     <script type="text/javascript">
+        jQuery(function ($) {
+            var table = $('table.excel')
+            if(table.length>0){
+                table.each(function () {
+                    var self=$(this)
+                    var lastEle=null
 
+                    $(window).bind('keyup',function (e) {
+                        var cell,cellIndex,control,controlIndex,row;
+                        var nextRow, nextCell, nextControl;
+                        switch (e.keyCode) {
+                            case 37: //left
+                                if(lastEle && lastEle.is('select'))e.preventDefault();
+                                if(!lastEle){
+                                    self.find('tbody tr').eq(0).find('.form-control').eq(-1).focus()
+                                }else{
+                                    cell = lastEle.parents('td').prev('td');
+                                    control = lastEle.prevAll('.form-control').eq(0);
+                                    if(control.length>0){
+                                        lastEle = control.focus()
+                                    }else {
+                                        while (cell && cell.length) {
+                                            control = cell.find('.form-control').eq(-1)
+                                            if (control.length > 0) {
+                                                lastEle = control.focus()
+                                                break;
+                                            }
+                                            cell = cell.prev('td');
+                                        }
+                                    }
+                                }
+                                break;
+                            case 38: //top
+                                if(lastEle && lastEle.is('select'))return;
+                                if(lastEle && lastEle.is('.isgoods'))return;
+                                if(!lastEle){
+                                    self.find('tbody tr').eq(-1).find('.form-control').eq(0).focus()
+                                }else{
+                                    cell = lastEle.parents('td');
+                                    row = cell.parents('tr').eq(0)
+                                    cellIndex=row.find('td').index(cell)
+                                    controlIndex = cell.find('.form-control').index(lastEle)
+
+                                    nextRow = row.prev()
+                                    if(nextRow.length>0){
+                                        nextCell = nextRow.find('td').eq(cellIndex)
+                                        nextControl = nextCell.find('.form-control').eq(controlIndex)
+                                        if(nextControl.length<0){
+                                            nextControl = nextCell.find('.form-control').eq(-1)
+                                        }
+                                        if(nextControl.length>0){
+                                            lastEle = nextControl.focus()
+                                        }
+                                    }
+                                }
+                                break;
+                            case 39: //right
+                                if(lastEle && lastEle.is('select'))e.preventDefault();
+                                if(!lastEle){
+                                    self.find('tbody tr').eq(0).find('.form-control').eq(0).focus()
+                                }else{
+                                    control = lastEle.nextAll('.form-control').eq(0);
+                                    if(control.length>0){
+                                        lastEle = control.focus()
+                                    }else {
+                                        cell = lastEle.parents('td').next('td');
+                                        while (cell && cell.length) {
+                                            control = cell.find('.form-control').eq(0)
+                                            if (control.length > 0) {
+                                                lastEle = control.focus()
+                                                break;
+                                            }
+                                            cell = cell.next('td');
+                                        }
+                                    }
+                                }
+                                break;
+                            case 40: //bottom
+                            case 13: //enter
+                                if(lastEle && lastEle.is('select'))return;
+                                if(lastEle && lastEle.is('.isgoods'))return;
+                                if(!lastEle){
+                                    self.find('tbody tr').eq(0).find('.form-control').eq(0).focus()
+                                }else{
+                                    cell = lastEle.parents('td');
+                                    row = cell.parents('tr').eq(0)
+                                    cellIndex=row.find('td').index(cell)
+                                    controlIndex = cell.find('.form-control').index(lastEle)
+
+                                    nextRow = row.next()
+                                    if(nextRow.length>0){
+                                        nextCell = nextRow.find('td').eq(cellIndex)
+                                        nextControl = nextCell.find('.form-control').eq(controlIndex)
+                                        if(nextControl.length<0){
+                                            nextControl = nextCell.find('.form-control').eq(-1)
+                                        }
+                                        if(nextControl.length>0){
+                                            lastEle = nextControl.focus()
+                                        }
+                                    }
+                                }
+                                break;
+
+                            case 27: //esc
+                                if(lastEle){
+                                    $(lastEle).blur()
+                                }
+                                break;
+                            default:
+                                return;
+                        }
+                        if(lastEle && lastEle.is('input')){
+                            lastEle.select()
+                        }
+                    });
+                    $(document.body).on('focus','.form-control',function (e) {
+                        lastEle = $(this)
+                    });
+                })
+            }
+        });
         (function(){
             if(!window.IS_TOP){
                 var curkey = $(window.frameElement).data('key');
