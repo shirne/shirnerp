@@ -979,6 +979,7 @@ table {
     padding:10px;
     border-bottom:1px #ddd solid;
     display:flex;
+    position: relative;
   }
   .goodsbox{
     flex:1;
@@ -989,10 +990,14 @@ table {
   .labelbox{
     width:17cm;
     flex:0 0 auto;
+    padding-bottom:50px;
+    max-height: calc(100vh - 100px);
+    overflow: scroll;
   }
   .btn-addlabel{
-    clear:left;
-    float: left;
+    position: absolute;
+    left:43%;
+    bottom:10px;
   }
   .table thead h3{
     font-size:0.7cm;

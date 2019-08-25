@@ -242,6 +242,36 @@
             var p=Math.pow(10,len);
             return (Math.round(number * p)/p).toFixed(len);
         }
+        
+        var autoscroll_ticker=0;
+        $(window).bind('scroll',function (e) {
+            clearTimeout(autoscroll_ticker)
+            autoscroll_ticker = setTimeout(fixpageScroll,500);
+        }).trigger('scroll');
+        function fixpageScroll() {
+            var scrollTop = $(window).scrollTop()
+            if(scrollTop < 10)return;
+            var windowheight=$(window).height();
+
+            var pages=$('.orderwrapper')
+            var needscroll=null
+            for(var i=0;i<pages.length;i++){
+                var curpage = pages.eq(i);
+                var offset=curpage.offset();
+                var pageheight=curpage.height();
+                if(offset.top>=scrollTop && offset.top+pageheight <= scrollTop+windowheight){
+                    //console.log('inpage')
+                    return;
+                }
+                var curscroll = offset.top-scrollTop
+                //console.log('curscroll:',curscroll)
+                if(needscroll===null || Math.abs(needscroll)>Math.abs(curscroll)){
+                    needscroll = curscroll
+                }
+            }
+            //console.log('needscroll:',needscroll)
+            $('html,body').animate({scrollTop: scrollTop+needscroll},500);
+        }
 
         var global_id=-1;
         var order_id=0;
@@ -452,10 +482,14 @@
                         alert('订单资料错误');
                         return;
                     }
-                    if(!confirm('确定删除该标签？')){
-                        return;
-                    }
                     var idx = this.findItem(order.package_id, item_id);
+
+                    var item=this.packages[order.package_id][idx];
+                    if(item.goods && item.goods.length>0) {
+                        if (!confirm('确定删除该标签？')) {
+                            return;
+                        }
+                    }
                     if(this.clearLabelAction(order, idx)){
                         this.packages[order.package_id].splice(idx,1);
 
