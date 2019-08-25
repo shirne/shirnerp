@@ -100,13 +100,14 @@ class BaseFinanceModel extends BaseModel
             }else {
                 $amount = $good['price_type'] == 1 ? ($good['weight'] * $good['price']) : ($good['count'] * $good['price']);
             }
+            $amount = round($amount,2);
             $good['amount']=$amount;
             $good['base_amount']=CurrencyModel::exchange($amount,$order['currency']);
 
             $total_price += $amount;
         }
 
-
+        $total_price = round($total_price,2);
         $total['price']=transsymbol(tonumber($total['price']),$isback?'-':'+');
         $order['freight'] = transsymbol(tonumber($order['freight']),$isback?'-':'+');
         if($order['diy_price']==1) {
@@ -114,7 +115,8 @@ class BaseFinanceModel extends BaseModel
         }else {
             $order['amount'] = $total_price;
             if($order['amount'] != $total['price']){
-                throw new Exception('订单总价计算错误：'.$total['price'].'<br />计算总价:'.$order['amount']);
+
+                //throw new Exception('订单总价计算错误：'.$total['price'].'<br />计算总价:'.$order['amount']);
             }
         }
 

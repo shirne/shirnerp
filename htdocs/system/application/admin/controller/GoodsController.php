@@ -97,7 +97,7 @@ class GoodsController extends BaseController
             }else{
                 $row=['row_index'=>$i+1];
                 foreach ($headermap as $rowidx=>$field){
-                    if($field!= 'remark' && empty($data[$rowidx])){
+                    if(in_array($field, ['title','count']) && empty($data[$rowidx])){
                         //忽略行
                         $row=[];
                         break;
