@@ -68,14 +68,15 @@ class BaseFinanceModel extends BaseModel
 
             if(!empty($good['goods_unit']) && isset($units[$good['goods_unit']])){
                 $unitData=$units[$good['goods_unit']];
-                if($unitData['weight_rate']){
-                    if(empty($good['count'])){
+                $weightRate = floatval($unitData['weight_rate']);
+                if(!empty($weightRate)){
+                    if(empty($good['count']) && !empty($good['weight'])){
                         if(!empty($good['weight'])){
-                            $good['count'] = $good['weight'] / $unitData['weight_rate'];
+                            $good['count'] = $good['weight'] / $weightRate;
                         }
-                    }elseif(empty($good['weight'])){
+                    }elseif(empty($good['weight']) && !empty($good['count'])){
                         if(empty($good['weight'])){
-                            $good['weight'] = $good['count'] * $unitData['weight_rate'];
+                            $good['weight'] = $good['count'] * $weightRate;
                         }
                     }
                 }
@@ -88,10 +89,11 @@ class BaseFinanceModel extends BaseModel
 
             if($good['goods_unit'] == $oGoods[$goods_id]['unit']){
                 $good['base_count']=$good['count'];
-            }else{
+            }elseif($good['weight']){
                 $unitData=$units[$oGoods[$goods_id]['unit']];
-                if($unitData['weight_rate']){
-                    $good['base_count'] = $good['weight'] / $unitData['weight_rate'];
+                $weightRate = floatval($unitData['weight_rate']);
+                if(!empty($weightRate)){
+                    $good['base_count'] = $good['weight'] / $weightRate;
                 }
             }
 

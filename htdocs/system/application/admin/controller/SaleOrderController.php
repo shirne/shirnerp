@@ -9,6 +9,7 @@ use shirne\excel\Excel;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use think\Db;
 use think\Exception;
+use think\facade\Log;
 
 class SaleOrderController extends BaseController
 {
@@ -61,6 +62,7 @@ class SaleOrderController extends BaseController
             try{
                 $result = SaleOrderModel::createOrder($order,$goods,$total);
             }catch (Exception $e){
+                Log::record($e->getTraceAsString());
                 $this->error($e->getMessage());
             }
             if($result){

@@ -191,7 +191,7 @@ class GoodsController extends BaseController
         $model = Db::view('goods','*')->view('goodsCategory',['name'=>'category_name','title'=>'category_title'],'goods.cate_id=goodsCategory.id','LEFT');
             //->view('manager',['username'],'goods.user_id=manager.id','LEFT');
         if(!empty($key)){
-            $model->whereLike('goods.title|manager.username|goodsCategory.title',"%$key%");
+            $model->whereLike('goods.title|goods.fullname|goods.alianames|goods.goods_no|goodsCategory.title',"%$key%");
         }
         if($cate_id>0){
             $model->whereIn('goods.cate_id',GoodsCategoryFacade::getSubCateIds($cate_id));
