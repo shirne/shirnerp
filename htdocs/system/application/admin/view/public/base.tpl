@@ -64,15 +64,17 @@
     <block name="script"></block>
     <script type="text/javascript">
         jQuery(function ($) {
-            var table = $('table.excel')
+            var table = $('table.excel');
             if(table.length>0){
                 table.each(function () {
-                    var self=$(this)
-                    var lastEle=null
+                    var self=$(this);
+                    var lastEle=null;
 
-                    $(window).bind('keyup',function (e) {
+                    $(window).bind('keydown',function (e) {
+
                         var cell,cellIndex,control,controlIndex,row;
                         var nextRow, nextCell, nextControl;
+                        var isOver=false,isBreak=false;
                         switch (e.keyCode) {
                             case 37: //left
                                 if(lastEle && lastEle.is('select'))e.preventDefault();
@@ -84,38 +86,46 @@
                                     if(control.length>0){
                                         lastEle = control.focus()
                                     }else {
+                                        isBreak=false;
                                         while (cell && cell.length) {
-                                            control = cell.find('.form-control').eq(-1)
+                                            control = cell.find('.form-control').eq(-1);
                                             if (control.length > 0) {
-                                                lastEle = control.focus()
+                                                lastEle = control.focus();
+                                                isBreak=true;
                                                 break;
                                             }
                                             cell = cell.prev('td');
+                                        }
+                                        if(!isBreak){
+                                            isOver=true;
                                         }
                                     }
                                 }
                                 break;
                             case 38: //top
                                 if(lastEle && lastEle.is('select'))return;
-                                if(lastEle && lastEle.is('.isgoods'))return;
+                                if(lastEle && lastEle.is('.isgoods'))break;
+
                                 if(!lastEle){
                                     self.find('tbody tr').eq(-1).find('.form-control').eq(0).focus()
                                 }else{
                                     cell = lastEle.parents('td');
-                                    row = cell.parents('tr').eq(0)
-                                    cellIndex=row.find('td').index(cell)
-                                    controlIndex = cell.find('.form-control').index(lastEle)
+                                    row = cell.parents('tr').eq(0);
+                                    cellIndex=row.find('td').index(cell);
+                                    controlIndex = cell.find('.form-control').index(lastEle);
 
-                                    nextRow = row.prev()
+                                    nextRow = row.prev();
                                     if(nextRow.length>0){
-                                        nextCell = nextRow.find('td').eq(cellIndex)
-                                        nextControl = nextCell.find('.form-control').eq(controlIndex)
+                                        nextCell = nextRow.find('td').eq(cellIndex);
+                                        nextControl = nextCell.find('.form-control').eq(controlIndex);
                                         if(nextControl.length<0){
                                             nextControl = nextCell.find('.form-control').eq(-1)
                                         }
                                         if(nextControl.length>0){
                                             lastEle = nextControl.focus()
                                         }
+                                    }else{
+                                        isOver=true;
                                     }
                                 }
                                 break;
@@ -129,13 +139,18 @@
                                         lastEle = control.focus()
                                     }else {
                                         cell = lastEle.parents('td').next('td');
+                                        isBreak=false;
                                         while (cell && cell.length) {
-                                            control = cell.find('.form-control').eq(0)
+                                            control = cell.find('.form-control').eq(0);
                                             if (control.length > 0) {
-                                                lastEle = control.focus()
+                                                lastEle = control.focus();
+                                                isBreak=true;
                                                 break;
                                             }
                                             cell = cell.next('td');
+                                        }
+                                        if(isBreak){
+                                            isOver=true;
                                         }
                                     }
                                 }
@@ -143,43 +158,60 @@
                             case 40: //bottom
                             case 13: //enter
                                 if(lastEle && lastEle.is('select'))return;
-                                if(lastEle && lastEle.is('.isgoods'))return;
+                                if(lastEle && lastEle.is('.isgoods'))break;
+
                                 if(!lastEle){
                                     self.find('tbody tr').eq(0).find('.form-control').eq(0).focus()
                                 }else{
                                     cell = lastEle.parents('td');
-                                    row = cell.parents('tr').eq(0)
-                                    cellIndex=row.find('td').index(cell)
-                                    controlIndex = cell.find('.form-control').index(lastEle)
+                                    row = cell.parents('tr').eq(0);
+                                    cellIndex=row.find('td').index(cell);
+                                    controlIndex = cell.find('.form-control').index(lastEle);
 
-                                    nextRow = row.next()
+                                    nextRow = row.next();
                                     if(nextRow.length>0){
-                                        nextCell = nextRow.find('td').eq(cellIndex)
-                                        nextControl = nextCell.find('.form-control').eq(controlIndex)
+                                        nextCell = nextRow.find('td').eq(cellIndex);
+                                        nextControl = nextCell.find('.form-control').eq(controlIndex);
                                         if(nextControl.length<0){
                                             nextControl = nextCell.find('.form-control').eq(-1)
                                         }
                                         if(nextControl.length>0){
                                             lastEle = nextControl.focus()
                                         }
+                                    }else if(e.keyCode === 13 && app && app.addRow){
+                                        app.addRow();
+                                        setTimeout(function () {
+                                            nextRow = self.find('tbody tr').eq(-1);
+                                            lastEle = nextRow.find('.form-control').eq(0).focus()
+                                        },100);
+                                    }else{
+                                        isOver=true;
                                     }
                                 }
                                 break;
 
                             case 27: //esc
                                 if(lastEle){
-                                    $(lastEle).blur()
+                                    $(lastEle).blur();
+                                    return;
                                 }
                                 break;
                             default:
                                 return;
+                        }
+                        if(isOver){
+                            lastEle.focus()
                         }
                         if(lastEle && lastEle.is('input')){
                             lastEle.select()
                         }
                     });
                     $(document.body).on('focus','.form-control',function (e) {
-                        lastEle = $(this)
+                        if($(this).parents('table.excel').length>0
+                           && $(this).parents('tbody').length>0
+                        ) {
+                            lastEle = $(this)
+                        }
                     });
                 })
             }
