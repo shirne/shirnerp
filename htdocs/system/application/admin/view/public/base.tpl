@@ -69,9 +69,10 @@
                 table.each(function () {
                     var self=$(this);
                     var lastEle=null;
+                    var isblur=true;
 
-                    $(window).bind('keydown',function (e) {
-
+                    $(window).bind('keydown',function (e){
+                        if(e.altKey || e.ctrlKey || e.shiftKey)return;
                         var cell,cellIndex,control,controlIndex,row;
                         var nextRow, nextCell, nextControl;
                         var isOver=false,isBreak=false;
@@ -103,9 +104,10 @@
                                 }
                                 break;
                             case 38: //top
-                                if(lastEle && lastEle.is('select'))return;
-                                if(lastEle && lastEle.is('.isgoods'))break;
-
+                                if(!isblur) {
+                                    if (lastEle && lastEle.is('select')) return;
+                                    if (lastEle && lastEle.is('.isgoods')) break;
+                                }
                                 if(!lastEle){
                                     self.find('tbody tr').eq(-1).find('.form-control').eq(0).focus()
                                 }else{
@@ -157,8 +159,10 @@
                                 break;
                             case 40: //bottom
                             case 13: //enter
-                                if(lastEle && lastEle.is('select'))return;
-                                if(lastEle && lastEle.is('.isgoods'))break;
+                                if(!isblur) {
+                                    if (lastEle && lastEle.is('select') ) return;
+                                    if (lastEle && lastEle.is('.isgoods')) break;
+                                }
 
                                 if(!lastEle){
                                     self.find('tbody tr').eq(0).find('.form-control').eq(0).focus()
@@ -192,6 +196,7 @@
 
                             case 27: //esc
                                 if(lastEle){
+                                    isblur=true;
                                     $(lastEle).blur();
                                     return;
                                 }
@@ -200,21 +205,28 @@
                                 return;
                         }
                         if(lastEle) {
-                            if (isOver) {
+                            if (isblur && isOver) {
                                 lastEle.focus()
                             }
-                            if ( lastEle.is('input')) {
+                            if (!lastEle.is('.isgoods') && lastEle.is('input')) {
                                 setTimeout(function () {
                                     lastEle.select()
                                 },100)
                             }
+                            isblur=false;
                         }
                     });
                     $(document.body).on('focus','.form-control',function (e) {
                         if($(this).parents('table.excel').length>0
                            && $(this).parents('tbody').length>0
                         ) {
+                            isblur=false;
                             lastEle = $(this)
+                        }
+                    });
+                    $(document.body).on('blur','.form-control',function (e) {
+                        if(lastEle && $(this).is(lastEle[0])) {
+                            isblur=true;
                         }
                     });
                 })
