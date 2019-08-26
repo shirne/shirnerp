@@ -199,11 +199,15 @@
                             default:
                                 return;
                         }
-                        if(isOver){
-                            lastEle.focus()
-                        }
-                        if(lastEle && lastEle.is('input')){
-                            lastEle.select()
+                        if(lastEle) {
+                            if (isOver) {
+                                lastEle.focus()
+                            }
+                            if ( lastEle.is('input')) {
+                                setTimeout(function () {
+                                    lastEle.select()
+                                },100)
+                            }
                         }
                     });
                     $(document.body).on('focus','.form-control',function (e) {
