@@ -12,6 +12,7 @@ use shirne\common\Notation;
 use shirne\excel\Excel;
 use think\Db;
 use think\Exception;
+use think\facade\Log;
 
 class GoodsController extends BaseController
 {
@@ -102,7 +103,7 @@ class GoodsController extends BaseController
                         $row=[];
                         break;
                     }
-                    $row[$field] = $data[$rowidx];
+                    $row[$field] = trim($data[$rowidx]);
                 }
 
                 if(!empty($row))$rows[]=$row;
@@ -148,12 +149,17 @@ class GoodsController extends BaseController
                 ];
 
 
-
-                $hasGoods[$row['title']]=GoodsModel::create($data);
-                $imported[]=$hasGoods[$row['title']]['id'];
+                try{
+                    $hasGoods[$row['title']]=GoodsModel::create($data);
+                    $imported[]=$hasGoods[$row['title']]['id'];
+                }catch(\Exception $e){
+                    Log::record($e->getTraceAsString());
+                    Log::record(var_export($data,true));
+                    $this->error($e->getMessage());
+                }
             }
 
-            if(strpos('=',$row['weight'])==0){
+            if(!empty($row['weight']) && strpos('=',$row['weight'])==0){
                 $row['weight'] = Notation::calculate(substr($row['weight'],1));
             }
 

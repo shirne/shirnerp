@@ -219,7 +219,7 @@ class BaseController extends Controller {
                 }
                 foreach ($syncs as $field=>$from){
                     if(empty($row[$field]) && !empty($row[$from])){
-                        $row[$field] = $row[$from];
+                        $row[$field] = trim($row[$from]);
                     }
                 }
                 foreach ($required as $field){
