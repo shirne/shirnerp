@@ -29,7 +29,7 @@ class TransOrderController extends BaseController
         $lists=$model->order(Db::raw('transOrder.status ASC,transOrder.create_time DESC'))->paginate(15);
         if(!$lists->isEmpty()) {
             $orderids = array_column($lists->items(), 'order_id');
-            $prodata = Db::name('transOrderGoods')->where('sale_order_id', 'in', $orderids)->select();
+            $prodata = Db::name('transOrderGoods')->where('trans_order_id', 'in', $orderids)->select();
             $products=array_index($prodata,'trans_order_id',true);
             $lists->each(function($item) use ($products){
                 if(isset($products[$item['id']])){
