@@ -57,6 +57,24 @@ gulp.task('backend', function () {
         });
 });
 
+let labelsrces=['js/model/common.js', 'js/model/template.js', 'js/dialog.js']
+gulp.task('label', function () {
+    return gulp.src(labelsrces)
+        .pipe(sourcemaps.init())
+        .pipe(babel({
+            presets: ['@babel/preset-env']
+        }))
+        .pipe(concat('label.js'))
+        .pipe(rename({ basename: 'label' }))
+        .pipe(gulp.dest('./dest/admin/js/'))
+        .pipe(uglify())
+        .pipe(rename({ extname: '.min.js' }))
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('./dest/admin/js/')).on('end',function () {
+            if(is_watching)copyDest();
+        });
+});
+
 
 let frontsrces=basejs.concat(['js/front.js']);
 gulp.task('front', function () {
@@ -136,6 +154,9 @@ function watchAll() {
     gulp.watch(backsrces,['backend'],(event)=> {
         console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
     });
+    gulp.watch(labelsrces,['label'],(event)=> {
+        console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
+    });
     gulp.watch(frontsrces,['front'],(event)=> {
         console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
     });
@@ -147,7 +168,7 @@ function watchAll() {
     });
 }
 
-gulp.task('default', ['sass','sassadmin','backend','front','mobile','location'],function () {
+gulp.task('default', ['sass','sassadmin','backend','label','front','mobile','location'],function () {
     watchAll();
     return copyDest();
 });
