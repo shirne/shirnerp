@@ -440,14 +440,13 @@
                     }
                 },
                 add_goods_to_label:function(package_id,pkgidx,good, count){
-
                     var pkgitem = this.packages[package_id][pkgidx];
                     var pkgGoods = this.findGoods(pkgitem.goods, good.id, 1);
                     if(pkgGoods>-1){
                         pkgitem.goods[pkgGoods].count += count;
                     }else{
                         pkgitem.goods.push({
-                            goods_id: good.id,
+                            goods_id: good.goods_id,
                             goods_title:good.goods_title,
                             count:count,
                             goods_unit:good.goods_unit
@@ -496,8 +495,8 @@
                     var item=this.packages[order.package_id][idx];
                     if(item.goods && item.goods.length>0) {
                         dialog.confirm('确定删除该标签？',function () {
-                            this.del_label(order, idx);
-                            this.ischanged=true;
+                            app.del_label(order, idx);
+                            app.ischanged=true;
                         })
                         return;
                     }
@@ -538,8 +537,8 @@
                             var goods=item.goods.splice(0,item.goods.length);
                             for(var i=0;i<goods.length;i++){
                                 for(var j=0;j<order.goods.length;j++){
-                                    if(order.goods[j].goods_id === goods[i].goods_id){
-                                        order.goods[j].release_count += goods[i].count;
+                                    if(order.goods[j].goods_id == goods[i].goods_id){
+                                        order.goods[j].release_count = order.goods[j].release_count+goods[i].count;
                                         break;
                                     }
                                 }
