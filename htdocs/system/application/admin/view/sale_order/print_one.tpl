@@ -97,6 +97,7 @@
     </div>
 </block>
 <block name="script">
+    <script type="text/javascript" src="__STATIC__/store.js/store.modern.min.js"></script>
     <script type="text/javascript">
         jQuery(function ($) {
             //window.print();
@@ -119,24 +120,40 @@
                     $('.storage-col').addClass('d-none');
                 }
             });
+            var defaultsize=store.get('print-font-size');
+            if(!defaultsize) {
+                defaultsize = $('.table-page').css('font-size').replace(/[^\d]+/,'');
+            }
+            if(!defaultsize) {
+                defaultsize = 14
+                $('.table-page').css('font-size',defaultsize+'px')
+            }
+
+
             var inputsize=$('[name=fontsize]')
             inputsize.change(function (e) {
-                $('.table-page').css('font-size',$(this).val()+'px');
+                var fontsize=$(this).val()
+                fontsize=parseInt(fontsize)
+                if(isNaN(fontsize))fontsize=defaultsize
+                store.set('print-font-size',fontsize);
+                $('.table-page').css('font-size',fontsize+'px');
             })
             $('.sizeplus').click(function (e) {
                 var val=inputsize.val()
                 val=parseInt(val)
-                if(isNaN(val))val=12
+                if(isNaN(val))val=defaultsize
                 val ++
                 inputsize.val(val).trigger('change')
             })
             $('.sizeminus').click(function (e) {
                 var val=inputsize.val()
                 val=parseInt(val)
-                if(isNaN(val))val=12
+                if(isNaN(val))val=defaultsize
                 val --
                 inputsize.val(val).trigger('change')
             })
+
+            inputsize.val(defaultsize).trigger('change')
             $('[name=company]').change(function (e) {
                 $('#company-title').text($(this).val())
             })
