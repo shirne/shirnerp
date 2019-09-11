@@ -1,15 +1,25 @@
 <extend name="public:print" />
 
 <block name="body">
-    <div id="page-wrapper">
 
-        <div class="row list-header">
-            <div class="col-md-6">仓库：{$storage.title}
-            </div>
-            <div class="col-md-6 text-right ">
-                <a href="javascript:" class="btn btn-primary print-btn d-print-none">打印</a>
+    <div class="page-wrapper container ml-auto mr-auto mb-3 d-print-none">
+        <div class="pl-3 pr-3">仓库：{$storage.title}</div>
+        <div class="col">
+            &nbsp;
+        </div>
+        <div class="col">
+            <div class="input-group input-group-sm ml-auto" style="width: 100px;">
+                <div class="input-group-prepend"><button class="btn btn-outline-secondary sizeminus" type="button" id="button-addon1"><i class="ion-md-remove"></i></button></div>
+                <input type="text" class="form-control text-center" name="fontsize" value="14"  />
+                <div class="input-group-append"><button class="btn btn-outline-secondary sizeplus" type="button" id="button-addon1"><i class="ion-md-add"></i></button></div>
             </div>
         </div>
+        <div class="col text-right">
+            <a href="javascript:" class="btn btn-primary print-btn d-print-none">打印</a>
+        </div>
+    </div>
+    <div id="page-wrapper" class="container table-page m-auto">
+
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -46,6 +56,24 @@
             window.print();
             $('.print-btn').click(function () {
                 window.print();
+            })
+            var inputsize=$('[name=fontsize]')
+            inputsize.change(function (e) {
+                $('.table-page').css('font-size',$(this).val()+'px');
+            })
+            $('.sizeplus').click(function (e) {
+                var val=inputsize.val()
+                val=parseInt(val)
+                if(isNaN(val))val=12
+                val ++
+                inputsize.val(val).trigger('change')
+            })
+            $('.sizeminus').click(function (e) {
+                var val=inputsize.val()
+                val=parseInt(val)
+                if(isNaN(val))val=12
+                val --
+                inputsize.val(val).trigger('change')
             })
         })
     </script>

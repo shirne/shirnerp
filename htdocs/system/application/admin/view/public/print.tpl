@@ -64,6 +64,27 @@
         .print-page h6{
             font-size:9pt;
         }
+        .table-page h1{
+            font-size:2.5em;
+        }
+        .table-page h2{
+            font-size:2em;
+        }
+        .table-page h3{
+            font-size:1.75em;
+        }
+        .table-page h4{
+            font-size:1.5em;
+        }
+        .table-page h5{
+            font-size:1.25em;
+        }
+        .table-page h6{
+             font-size:1em;
+         }
+        .table-page table{
+            font-size:1em;
+        }
         @media screen {
             #page-wrapper{
                 margin-bottom:3em !important;

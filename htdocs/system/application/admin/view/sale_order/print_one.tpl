@@ -3,16 +3,29 @@
 <block name="body">
     <div class="page-wrapper container ml-auto mr-auto mb-3 d-print-none">
         <div class="row">
-            <h2 class="col-md-6">订单打印</h2>
-            <div class="col-md-6 text-right ">
+            <h2 class="pl-3 pr-3">订单打印</h2>
+            <div class="col">
+                <div class="input-group input-group-sm ml-auto" style="width: 200px;">
+                    <div class="input-group-prepend"><span class="input-group-text">公司名</span></div>
+                    <input type="text" class="form-control" name="company" value="{:getSetting('site-name')}"  />
+                </div>
+            </div>
+            <div class="col">
+                <div class="input-group input-group-sm ml-auto" style="width: 100px;">
+                    <div class="input-group-prepend"><button class="btn btn-outline-secondary sizeminus" type="button" id="button-addon1"><i class="ion-md-remove"></i></button></div>
+                    <input type="text" class="form-control text-center" name="fontsize" value="14"  />
+                    <div class="input-group-append"><button class="btn btn-outline-secondary sizeplus" type="button" id="button-addon1"><i class="ion-md-add"></i></button></div>
+                </div>
+            </div>
+            <div class="col text-right">
                 <label><input type="checkbox" name="showlog"/> 打印操作日志</label>
                 <label><input type="checkbox" name="showstorage"/> 显示出库仓</label>
                 <a href="javascript:" class="btn btn-primary print-btn">打印</a>
             </div>
         </div>
     </div>
-    <div id="page-wrapper" class="container m-auto">
-        <h3 class="text-center mt-3 mb-3">{:getSetting('site-name')}</h3>
+    <div id="page-wrapper" class="container table-page m-auto">
+        <h3 class="text-center mt-3 mb-3" id="company-title">{:getSetting('site-name')}</h3>
         <h4 class="text-center mb-3">{$model['parent_order_id']?'销售退货':'销售出货'}清单({$customer['title']})</h4>
         <div class="row mb-2">
             <div class="col text-left">交货日期：{$model['customer_time']|showdate}</div>
@@ -106,6 +119,27 @@
                     $('.storage-col').addClass('d-none');
                 }
             });
+            var inputsize=$('[name=fontsize]')
+            inputsize.change(function (e) {
+                $('.table-page').css('font-size',$(this).val()+'px');
+            })
+            $('.sizeplus').click(function (e) {
+                var val=inputsize.val()
+                val=parseInt(val)
+                if(isNaN(val))val=12
+                val ++
+                inputsize.val(val).trigger('change')
+            })
+            $('.sizeminus').click(function (e) {
+                var val=inputsize.val()
+                val=parseInt(val)
+                if(isNaN(val))val=12
+                val --
+                inputsize.val(val).trigger('change')
+            })
+            $('[name=company]').change(function (e) {
+                $('#company-title').text($(this).val())
+            })
         })
     </script>
 </block>
