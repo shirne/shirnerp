@@ -1,15 +1,15 @@
 (function(window,$){
-    var dialogTpl='<div class="modal fade" id="{@id}" tabindex="-1" role="dialog" aria-labelledby="{@id}Label" aria-hidden="true">\n' +
-        '    <div class="modal-dialog">\n' +
-        '        <div class="modal-content">\n' +
+    var dialogTpl='<div class="modal fade" id="{@id}" {if tabindex}tabindex="{@tabindex}"{/if} role="dialog" aria-labelledby="{@id}Label" aria-hidden="true">\n' +
+        '    <div class="modal-dialog {@size}">\n' +
+        '        <div class="modal-content {@contentClass}">\n' +
         '            <div class="modal-header">\n' +
-        '                <h4 class="modal-title" id="{@id}Label"></h4>\n' +
+        '                <h4 class="modal-title" id="{@id}Label">{@title}</h4>\n' +
         '                <button type="button" class="close" data-dismiss="modal">\n' +
         '                    <span aria-hidden="true">&times;</span>\n' +
         '                    <span class="sr-only">Close</span>\n' +
         '                </button>\n' +
         '            </div>\n' +
-        '            <div class="modal-body">\n' +
+        '            <div class="modal-body {@bodyClass}">\n' +
         '            </div>\n' +
         '            <div class="modal-footer">\n' +
         '                <nav class="nav nav-fill"></nav>\n' +
@@ -18,57 +18,78 @@
         '    </div>\n' +
         '</div>';
     var dialogIdx=0;
+    function format_btn(btn,isdefault){
+        if(typeof(btn) === typeof 'a'){
+            btn = {'text':btn,'isdefault':isdefault?true:false};
+        }
+        if(btn.isdefault){
+            if(!btn.type){
+                btn.type='primary'
+            }
+        }
+        return btn;
+    }
     function Dialog(opts){
         if(!opts)opts={};
         //处理按钮
         if(opts.btns) {
             if (typeof(opts.btns) == 'string') {
-                opts.btns = [{'text':opts.btns}];
+                opts.btns = [format_btn(opts.btns,true)];
             }
             else if(opts.btns instanceof Array) {
                 for (var i = 0; i < opts.btns.length; i++) {
-                    if (typeof(opts.btns[i]) == 'string') {
-                        opts.btns[i] = {'text': opts.btns[i]};
-                    }
-                    if (opts.btns[i].isdefault) {
-                        opts.defaultBtn = i;
-                    }
+                    opts.btns[i] = format_btn(opts.btns[i])
                 }
             }else{
                 console.error('Dialog::construct argument btns error.');
                 opts.btns=[];
             }
-            if(opts.btns.length>0) {
-                if (opts.defaultBtn === undefined) {
-                    opts.defaultBtn = opts.btns.length - 1;
-                    opts.btns[opts.defaultBtn].isdefault = true;
-                }
-
-                if (opts.btns[opts.defaultBtn] && !opts.btns[opts.defaultBtn]['type']) {
-                    opts.btns[opts.defaultBtn]['type'] = 'primary';
-                }
-            }
         }
 
         this.options=$.extend({
-            'id':'modal_dialog_'+dialogIdx++,
-            'header':true,
-            'footer':true,
-            'backdrop':true,
-            'size':'',
-            'btns':[
+            id:'modal_dialog_'+dialogIdx++,
+            header:true,
+            footer:true,
+            backdrop:true,
+            tabindex:-1,
+            size:'',
+            btns:[
                 {'text':'取消','type':'secondary'},
                 {'text':'确定','isdefault':true,'type':'primary'}
             ],
-            'defaultBtn':1,
-            'contentClass':'',
-            'onsure':null,
-            'onshow':null,
-            'onshown':null,
-            'onhide':null,
-            'onhidden':null
+            contentClass:'',
+            onsure:null,
+            onshow:null,
+            onshown:null,
+            onhide:null,
+            onhidden:null
         },opts);
-        if(!this.options.btns || this.options.btns.length<1){
+        if(!this.options.btns)this.options.btns=[];
+        var btncount=this.options.btns.length;
+        if(opts.addbtn){
+            if(!this.options.btns)this.options.btns=[];
+            opts.addbtn = format_btn(opts.addbtn)
+            if(btncount<1) {
+                this.options.btns.unshift(opts.addbtn)
+            }else{
+                this.options.btns.splice(btncount-1,0,opts.addbtn)
+            }
+            btncount=1
+        }
+        if(opts.addbtns){
+            if(!this.options.btns)this.options.btns=[];
+            if(btncount<1){
+                this.options.btns=opts.addbtns
+            }else{
+                var args=[btncount-1,0]
+                for(var i=0;i<opts.addbtns.length;i++){
+                    args.push(format_btn(opts.addbtns[i]))
+                }
+                this.options.btns.splice.apply(this.options.btns,args)
+            }
+            btncount=1
+        }
+        if(btncount<1){
             this.options.footer=false;
         }
 
@@ -77,17 +98,33 @@
     }
     Dialog.prototype.generBtn=function(opt,idx){
         if(opt['type'])opt['class']='btn-outline-'+opt['type'];
-        return '<a href="javascript:" class="nav-item btn '+(opt['class']?opt['class']:'btn-outline-secondary')+'" data-index="'+idx+'">'+opt.text+'</a>';
+        return '<a href="javascript:" class="nav-item btn '+(opt['class']?opt['class']:'btn-outline-secondary')+'" '+(opt.isdefault?'default':'')+' data-index="'+idx+'">'+opt.text+'</a>';
     };
+    Dialog.prototype.getDefaultBtn=function(){
+        var btn=null
+        for(var i=0;i<this.options.btns.length;i++){
+            btn=this.options.btns[i]
+            if(btn.isdefault)break;
+        }
+        return btn
+    }
     Dialog.prototype.show=function(html,title){
         this.box=$('#'+this.options.id);
         if(!title)title='系统提示';
 
         if(this.box.length<1) {
-            $(document.body).append(dialogTpl.replace('modal-body','modal-body'+(this.options.bodyClass?(' '+this.options.bodyClass):'')).compile({'id': this.options.id}));
+            $(document.body).append(dialogTpl.compile({
+                id: this.options.id,
+                bodyClass:this.options.bodyClass,
+                contentClass:this.options.contentClass,
+                tabindex:this.options.tabindex,
+                size:this.options.size?('modal-'+this.options.size):'',
+                title:title
+            }));
             this.box=$('#'+this.options.id);
         }else{
             this.box.unbind();
+            this.box.find('.modal-title').text(title);
         }
         if(!this.options.header){
             this.box.find('.modal-header').remove();
@@ -107,7 +144,6 @@
             this.box.data('keyboard',false);
         }
 
-        //this.box.find('.modal-footer .btn-primary').unbind();
         var self=this;
         Dialog.instance=self;
 
@@ -117,18 +153,6 @@
             btns.push(this.generBtn(this.options.btns[i],i));
         }
         this.box.find('.modal-footer .nav').html(btns.join('\n'));
-
-        var dialog=this.box.find('.modal-dialog');
-        dialog.removeClass('modal-sm').removeClass('modal-lg');
-        if(this.options.size=='sm') {
-            dialog.addClass('modal-sm');
-        }else if(this.options.size=='lg') {
-            dialog.addClass('modal-lg');
-        }
-        if(this.options.contentClass){
-            dialog.find('.modal-content').addClass(this.options.contentClass);
-        }
-        this.box.find('.modal-title').text(title);
 
         var body=this.box.find('.modal-body');
         body.html(html);
@@ -161,10 +185,11 @@
                 var result = true, idx = $(this).data('index');
                 if (self.options.btns[idx].click) {
                     result = self.options.btns[idx].click.apply(this, [body, self.box]);
-                }
-                if (idx == self.options.defaultBtn) {
-                    if (self.options.onsure) {
-                        result = self.options.onsure.apply(this, [body, self.box]);
+                }else {
+                    if (self.options.btns[idx].isdefault) {
+                        if (self.options.onsure) {
+                            result = self.options.onsure.apply(this, [body, self.box]);
+                        }
                     }
                 }
                 if (result !== false) {
@@ -197,6 +222,9 @@
         info:function (message,time) {
             return this.message(message,'info',time);
         },
+        loading:function (message,time) {
+            return this.message(message?message:'加载中...','loading',time);
+        },
         message:function (message,type,time) {
             var cssClass='bg-info text-white';
             var icon='information-circle';
@@ -211,18 +239,27 @@
                         icon='warning';
                         cssClass='bg-warning text-white';
                         break;
+                    case 'loading':
+                        icon='<div class="spinner-border text-light" role="status">\n' +
+                            '  <span class="sr-only">Loading...</span>\n' +
+                            '</div>';
+                        cssClass='bg-info text-white';
+                        if(!time)time=10;
+                        break;
                     case 'success':
                         icon='checkmark-circle';
                         cssClass='bg-success text-white';
                         break;
                 }
             }
-            var html='<div class="dialog-message" ><i class="ion-md-'+icon+'"></i>&nbsp;&nbsp;'+message+'<a href="javascript:" class="ion-md-close closebtn"></a></div>';
+            if(type != 'loading')icon= '<i class="ion-md-'+icon+'"></i>';
+            var html='<div class="dialog-message" >'+icon+'&nbsp;&nbsp;'+message+(type=='loading'?'':'<a href="javascript:" class="ion-md-close closebtn"></a>')+'</div>';
 
             var dlg= new Dialog({
                 footer:false,
                 header:false,
                 backdrop:false,
+                tabindex:'',
                 size:'sm',
                 contentClass:cssClass,
                 onshow:function (body) {
@@ -257,10 +294,10 @@
                 message=message['content'];
             }
             var iconMap= {
-                'success':'checkmark-circle',
-                'info': 'information-circle',
-                'warning':'alert',
-                'error':'remove-circle'
+                success:'checkmark-circle',
+                info: 'information-circle',
+                warning:'alert',
+                error:'remove-circle'
             };
             var color='primary';
             if(icon===undefined)icon='information-circle';
@@ -312,27 +349,6 @@
                 countdown = icon;
                 icon = undefined;
             }
-            var title='';
-            var size='sm';
-            var btns=[
-                {'text':'取消','type':'secondary'},
-                {'text':'确定','isdefault':true,'type':'primary'}
-            ];
-            if($.isPlainObject(message)){
-                if(message['title']){
-                    title=message['title'];
-                }
-                if(message['size']!==undefined){
-                    size=message['size'];
-                }
-                if(message['btns']!==undefined){
-                    btns=message['btns'];
-                }
-                if(message['content']===undefined){
-                    throw 'message.content can not be empty.';
-                }
-                message=message['content'];
-            }
 
             var iconMap= {
                 'success':'checkmark-circle',
@@ -355,27 +371,26 @@
             var inteval=0;
 
             var dlg = new Dialog({
-                'header':title?true:false,
-                'btns':btns,
-                'size':size,
-                'backdrop':'static',
-                'onsure':function(){
+                header:false,
+                size:'sm',
+                backdrop:'static',
+                onsure:function(){
                     if(confirm && typeof confirm==='function'){
                         called=true;
                         return confirm();
                     }
                 },
-                'onhide':function () {
+                onhide:function () {
                     clearInterval(inteval);
                     if(called === false && typeof cancel === 'function'){
                         return cancel();
                     }
                 }
-            }).show(html, title);
+            }).show(html);
 
             if(countdown && typeof countdown === 'number') {
                 var btn = dlg.box.find('.modal-footer .btn-outline-primary');
-                var btnText = dlg.options.btns[dlg.options.defaultBtn].text;
+                var btnText = dlg.getDefaultBtn().text;
                 btn.addClass('disabled').text(btnText+'(' + countdown + ')');
                 inteval = setInterval(function () {
                     countdown--;
@@ -394,12 +409,25 @@
             var called=false;
             var contentHtml='<div class="form-group">{@input}</div>';
             var title='请输入信息';
+            var is_multi=false;
+            var multiset={};
             if(typeof message=='string'){
                 title=message;
             }else{
                 title=message.title;
                 if(message.content) {
                     contentHtml = message.content.indexOf('{@input}') > -1 ? message.content : message.content + contentHtml;
+                }
+                if(message.multi){
+                    is_multi=true;
+                    multiset=message.multi;
+                }
+            }
+            var inputHtml='<input type="text" name="confirm_input" class="form-control" />';
+            if(is_multi){
+                inputHtml='';
+                for(var i in multiset){
+                    inputHtml+= '<div class="input-group mt-1"><div class="input-group-prepend"><span class="input-group-text">'+multiset[i]+'</span></div><input type="text" data-key="'+i+'" name="confirm_input" class="form-control" /></div>';
                 }
             }
             return new Dialog({
@@ -416,7 +444,14 @@
                     }
                 },
                 'onsure':function(body){
-                    var val=body.find('[name=confirm_input]').val();
+                    var inputs=body.find('[name=confirm_input]'),val=inputs.val();
+                    if(is_multi){
+                        val={};
+                        inputs.each(function () {
+                            var key=$(this).data('key')
+                            val[key]=$(this).val()
+                        })
+                    }
                     if(typeof callback=='function'){
                         var result = callback(val);
                         if(result===true){
@@ -430,10 +465,10 @@
                         return cancel();
                     }
                 }
-            }).show(contentHtml.compile({input:'<input type="text" name="confirm_input" class="form-control" />'}),title);
+            }).show(contentHtml.compile({input:inputHtml}),title);
         },
         action:function (list,callback,title) {
-            var html='<div class="list-group"><a href="javascript:" class="list-group-item list-group-item-action">'+list.join('</a><a href="javascript:" class="list-group-item list-group-item-action">')+'</a></div>';
+            var html='<div class="list-group"  style="max-height: 70vh;overflow: auto;"><a href="javascript:" class="list-group-item list-group-item-action">'+list.join('</a><a href="javascript:" class="list-group-item list-group-item-action">')+'</a></div>';
             var actions=null;
             var dlg=new Dialog({
                 'bodyClass':'modal-action',
@@ -467,14 +502,25 @@
         },
         pickList:function (config,callback,filter) {
             if(typeof config==='string')config={url:config};
+            if(Object.prototype.toString.call(config) == '[object Array]'){
+                config = {
+                    isajax:false,
+                    list:config
+                };
+            }
+            var icon = config.icon?'<i class="ion-md-checkmark"></i> ':''
             config=$.extend({
-                'url':'',
-                'name':'对象',
-                'searchHolder':'根据名称搜索',
-                'idkey':'id',
-                'onRow':null,
-                'extend':null,
-                'rowTemplate':'<a href="javascript:" data-id="{@id}" class="list-group-item list-group-item-action">[{@id}]&nbsp;<i class="ion-md-person"></i> {@username}&nbsp;&nbsp;&nbsp;<small><i class="ion-md-phone-portrait"></i> {@mobile}</small></a>'
+                url:'',
+                title:'',
+                isajax:true,
+                list:[],
+                name:'项目',
+                searchHolder:'根据名称搜索',
+                idkey:'id',
+                titlekey:'title',
+                onRow:null,
+                extend:null,
+                rowTemplate:'<a href="javascript:" data-id="{@id}" class="list-group-item list-group-item-action" style="line-height:30px;">'+icon+'[{@id}]&nbsp;{@title}</a>'
             },config||{});
             var current=null;
             var exthtml='';
@@ -482,6 +528,15 @@
                 exthtml='<select name="'+config.extend.name+'" class="form-control"><option value="">'+config.extend.title+'</option></select>';
             }
             if(!filter)filter={};
+
+            var title='请选择'+config.name;
+            var contentTpl='<div class="list-group list-group-picker mt-2" style="max-height:500px;overflow: auto;"></div>';
+            if(config.isajax){
+                title='请搜索并选择'+config.name;
+                contentTpl = '<div class="input-group">'+exthtml+'<input type="text" class="form-control searchtext" name="keyword" placeholder="'+config.searchHolder+'"/><div class="input-group-append"><a class="btn btn-outline-secondary searchbtn"><i class="ion-md-search"></i></a></div></div>'+contentTpl;
+            }
+            if(!config.title)config.title=title;
+
             var dlg=new Dialog({
                 'backdrop':'static',
                 'onshown':function(body){
@@ -489,17 +544,36 @@
                     var input=body.find('.searchtext');
                     var listbox=body.find('.list-group');
                     var isloading=false;
+                    listbox.on('click','a.list-group-item',function () {
+                        var id = $(this).data('id');
+                        for (var i = 0; i < config.list.length; i++) {
+                            if(config.list[i][config.idkey]==id){
+                                current=config.list[i];
+                                listbox.find('a.list-group-item').removeClass('active');
+                                $(this).addClass('active');
+                                break;
+                            }
+                        }
+                    });
+                    if(!config.isajax){
+                        listbox.html(config.rowTemplate.compile(config.list, true));
+                        return;
+                    }
                     var extField=null;
                     if(config.extend){
                         extField=body.find('[name='+config.extend.name+']');
-                        $.ajax({
-                           url:config.extend.url,
-                            type:'GET',
-                            dataType:'JSON',
-                            success:function (json) {
-                                extField.append(config.extend.htmlRow.compile(json.data,true));
-                            }
-                        });
+                        if(config.extend.list){
+                            extField.append(config.extend.htmlRow.compile(config.extend.list, true));
+                        }else {
+                            $.ajax({
+                                url: config.extend.url,
+                                type: 'GET',
+                                dataType: 'JSON',
+                                success: function (json) {
+                                    extField.append(config.extend.htmlRow.compile(json.data, true));
+                                }
+                            });
+                        }
                     }
                     btn.click(function(){
                         if(isloading)return;
@@ -519,18 +593,9 @@
                                     isloading=false;
                                     if(json.code===1){
                                         if(json.data && json.data.length) {
+                                            config.list = json.data
                                             listbox.html(config.rowTemplate.compile(json.data, true));
-                                            listbox.find('a.list-group-item').click(function () {
-                                                var id = $(this).data('id');
-                                                for (var i = 0; i < json.data.length; i++) {
-                                                    if(json.data[i][config.idkey]==id){
-                                                        current=json.data[i];
-                                                        listbox.find('a.list-group-item').removeClass('active');
-                                                        $(this).addClass('active');
-                                                        break;
-                                                    }
-                                                }
-                                            })
+
                                         }else{
                                             listbox.html('<span class="list-loading"><i class="ion-md-warning"></i> 没有检索到'+config.name+'</span>');
                                         }
@@ -553,13 +618,15 @@
                         return result;
                     }
                 }
-            }).show('<div class="input-group">'+exthtml+'<input type="text" class="form-control searchtext" name="keyword" placeholder="'+config.searchHolder+'"/><div class="input-group-append"><a class="btn btn-outline-secondary searchbtn"><i class="ion-md-search"></i></a></div></div><div class="list-group list-group-picker mt-2"></div>','请搜索并选择'+config.name);
+            }).show(contentTpl,config.title);
+            return dlg;
         },
         pickUser:function(callback,filter){
             return this.pickList({
                 'url':window.get_search_url('member'),
                 'name':'会员',
-                'searchHolder':'根据会员id或名称，电话来搜索'
+                'searchHolder':'根据会员id或名称，电话来搜索',
+                'rowTemplate':'<a href="javascript:" data-id="{@id}" class="list-group-item list-group-item-action" style="line-height:30px;">{if @avatar}<img src="{@avatar}" style="width:30px;height:30px;border-radius: 100%;margin-right:10px;" />{else}<i class="ion-md-person"></i>{/if} [{@id}]&nbsp;{if @nickname}{@nickname}{else}{@username}{/if}&nbsp;&nbsp;&nbsp;{if @mobile}<small><i class="ion-md-phone-portrait"></i> {@mobile}</small>{/if}</a>'
             },callback,filter);
         },
         pickArticle:function(callback,filter){
@@ -578,9 +645,12 @@
             },callback,filter);
         },
         pickProduct:function(callback,filter){
+            var issku = filter && filter['searchtype'];
+            var titletpl='<div class="text-block">[{@id}]&nbsp;{@title}&nbsp;<br />{@min_price}{if @max_price>@min_price}~{@max_price}{/if}</div>';
+            if(issku)titletpl='<div class="text-block">[{@id}]&nbsp;{@title}&nbsp;<br />[{@sku_goods_no}]&nbsp;{@price}</div>';
             return this.pickList({
                 'url':window.get_search_url('product'),
-                rowTemplate:'<a href="javascript:" data-id="{@id}" class="list-group-item list-group-item-action">{if @image}<div style="background-image:url({@image})" class="imgview" ></div>{/if}<div class="text-block">[{@id}]&nbsp;{@title}&nbsp;<br />{@min_price}~{@max_price}</div></a>',
+                rowTemplate:'<a href="javascript:" data-id="{@id}" class="list-group-item list-group-item-action">{if @image}<div style="background-image:url({@image})" class="imgview" ></div>{/if}'+titletpl+'</a>',
                 name:'产品',
                 idkey:'id',
                 extend:{
@@ -594,6 +664,7 @@
         },
         pickLocate:function(type, callback, locate){
             var settedLocate=null;
+            var height=$(window).height()*.6
             var dlg=new Dialog({
                 'size':'lg',
                 'backdrop':'static',
@@ -602,19 +673,21 @@
                     var input=body.find('.searchtext');
                     var mapbox=body.find('.map');
                     var mapinfo=body.find('.mapinfo');
-                    mapbox.css('height',$(window).height()*.6);
                     var isloading=false;
-                    var map=InitMap('tencent',mapbox,function(address,locate){
-                        mapinfo.html(address+'&nbsp;'+locate.lng+','+locate.lat);
-                        settedLocate=locate;
-                    },locate);
-                    btn.click(function(){
-                        var search=input.val();
-                        map.setLocate(search);
-                    });
-                    body.find('.setToCenter').click(function (e) {
-                        map.showAtCenter();
-                    })
+                    setTimeout(function () {
+                        var map=InitMap('tencent',mapbox,function(address,locate){
+                            mapinfo.html(address+'&nbsp;'+locate.lng+','+locate.lat);
+                            settedLocate=locate;
+                        },locate);
+                        btn.click(function(){
+                            var search=input.val();
+                            map.setLocate(search);
+                        });
+                        body.find('.setToCenter').click(function (e) {
+                            map.showAtCenter();
+                        })
+                    },500)
+
                 },
                 'onsure':function(body){
                     if(!settedLocate){
@@ -627,9 +700,10 @@
                     }
                 }
             }).show('<div class="input-group"><input type="text" class="form-control searchtext" name="keyword" placeholder="填写地址检索位置"/><div class="input-group-append"><a class="btn btn-outline-secondary searchbtn"><i class="ion-md-search"></i></a></div></div>' +
-                '<div class="map mt-2"></div>' +
+                '<div class="map mt-2" style="height:'+height+'px"></div>' +
                 '<div class="float-right mt-2 mapactions"><a href="javascript:" class="setToCenter">定位到地图中心</a></div>' +
                 '<div class="mapinfo mt-2 text-muted">未选择位置</div>','请选择地图位置');
+            return dlg;
         }
     };
 
@@ -638,7 +712,7 @@
         if(!Dialog.instance)return;
         var dlg=Dialog.instance;
         if (e.keyCode == 13) {
-            dlg.box.find('.modal-footer .btn').eq(dlg.options.defaultBtn).trigger('click');
+            dlg.box.find('.modal-footer .btn[default]').trigger('click');
         }
         //默认已监听关闭
         /*if (e.keyCode == 27) {
