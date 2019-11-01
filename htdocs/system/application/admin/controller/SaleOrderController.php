@@ -406,9 +406,11 @@ class SaleOrderController extends BaseController
                 ->select();
             $packages = array_index($packages, 'package_id', true);
 
-            $packageGoods = Db::name('salePackageGoods')
-                ->whereIn('package_id', $package_ids)
-                ->order('id ASC')
+            $packageGoods = Db::view('salePackageGoods','*')
+                ->view('saleOrder',[],'saleOrder.package_id=salePackageGoods.package_id')
+                ->view('saleOrderGoods',['count'=>'total_count'],'saleOrderGoods.sale_order_id=saleOrder.id AND saleOrderGoods.goods_id=salePackageGoods.goods_id')
+                ->whereIn('salePackageGoods.package_id', $package_ids)
+                ->order('salePackageGoods.id ASC')
                 ->select();
             $packageGoods = array_index($packageGoods, 'item_id', true);
 

@@ -99,7 +99,7 @@
                                     </td>
                                     <td v-else></td>
                                     <td class="text-right" v-if="pkg.goods[(idx-1)*3+2]">
-                                        {{pkg.goods[(idx-1)*3+1].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*3+1].count)}} {{pkg.goods[(idx-1)*3+1].goods_unit}}
+                                        {{pkg.goods[(idx-1)*3+2].goods_title}}:{{ formatNumber(pkg.goods[(idx-1)*3+2].count)}} {{pkg.goods[(idx-1)*3+2].goods_unit}}
                                     </td>
                                     <td v-else></td>
                                 </tr>
@@ -138,6 +138,10 @@
                                     <div class="row">
                                         <h4 class="col-5 text-right">数量：</h4>
                                         <h4 class="col text-left">{{ formatNumber(good.count)}} {{good.goods_unit}}</h4>
+                                    </div>
+                                    <div class="row">
+                                        <h4 class="col-5 text-right">总数：</h4>
+                                        <h4 class="col text-left">{{ formatNumber(good.total_count)}} {{good.goods_unit}}</h4>
                                     </div>
                                 </td>
                             </tr>
@@ -215,6 +219,10 @@
                                     <div class="row">
                                         <h4 class="col-5 text-right">数量：</h4>
                                         <h4 class="col text-left">{{ formatNumber(good.count) }} {{good.goods_unit}}</h4>
+                                    </div>
+                                    <div class="row">
+                                        <h4 class="col-5 text-right">总数：</h4>
+                                        <h4 class="col text-left">{{ formatNumber(good.total_count) }} {{good.goods_unit}}</h4>
                                     </div>
                                 </td>
                             </tr>
@@ -456,6 +464,7 @@
                             goods_id:goods_id,
                             goods_title:good.goods_title,
                             count:count,
+                            total_count:good.count,
                             goods_unit:good.goods_unit
                         });
                     }
