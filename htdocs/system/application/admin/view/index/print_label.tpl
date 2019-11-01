@@ -244,6 +244,7 @@
             var num=number.toString().split('.');
             var len=0;
             if(num.length === 2){
+                num[1]=num[1].replace(/0+$/,'');
                 len = num[1].length;
                 if(len>4)len=4;
             }
