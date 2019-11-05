@@ -1,6 +1,6 @@
 'use strict';
 
-const gulp = require('gulp');
+const gulp = require('gulp4');
 const uglify = require('gulp-uglify');
 const babel = require('gulp-babel');
 const autoprefixer = require('gulp-autoprefixer');
@@ -14,7 +14,7 @@ const copy = require('copy');
 
 let is_watching=false;
 
-gulp.task('sass', function () {
+function sassTask() {
     return gulp.src('./scss/*.scss')
         .pipe(sourcemaps.init())
         .pipe(autoprefixer())
@@ -23,10 +23,10 @@ gulp.task('sass', function () {
         .pipe(gulp.dest('./dest/css')).on('end',function () {
             if(is_watching)copyDest();
         });
-});
+}
 
 
-gulp.task('sassadmin', function () {
+function sassadminTask() {
     return gulp.src('./scss/admin/*.scss')
         .pipe(sourcemaps.init())
         .pipe(autoprefixer())
@@ -35,12 +35,12 @@ gulp.task('sassadmin', function () {
         .pipe(gulp.dest('./dest/admin/css')).on('end',function () {
             if(is_watching)copyDest();
         });
-});
+}
 
 
 let basejs=['js/model/common.js', 'js/model/template.js', 'js/model/dialog.js', 'js/model/jquery.tag.js', 'js/model/datetime.init.js'];
 let backsrces=basejs.concat(['js/model/map.js','js/backend.js']);
-gulp.task('backend', function () {
+function backendTask() {
     return gulp.src(backsrces)
         .pipe(sourcemaps.init())
         .pipe(babel({
@@ -55,10 +55,10 @@ gulp.task('backend', function () {
         .pipe(gulp.dest('./dest/admin/js/')).on('end',function () {
             if(is_watching)copyDest();
         });
-});
+}
 
 let labelsrces=['js/model/common.js', 'js/model/template.js', 'js/dialog.js']
-gulp.task('label', function () {
+function labelTask() {
     return gulp.src(labelsrces)
         .pipe(sourcemaps.init())
         .pipe(babel({
@@ -73,11 +73,11 @@ gulp.task('label', function () {
         .pipe(gulp.dest('./dest/admin/js/')).on('end',function () {
             if(is_watching)copyDest();
         });
-});
+}
 
 
 let frontsrces=basejs.concat(['js/front.js']);
-gulp.task('front', function () {
+function frontTask() {
     return gulp.src(frontsrces)
         .pipe(sourcemaps.init())
         .pipe(babel({
@@ -92,10 +92,10 @@ gulp.task('front', function () {
         .pipe(gulp.dest('./dest/js/')).on('end',function () {
             if(is_watching)copyDest();
         });
-});
+}
 
 
-gulp.task('mobile', function () {
+function mobileTask() {
     return gulp.src(['js/mobile.js'])
         .pipe(sourcemaps.init())
         .pipe(babel({
@@ -108,10 +108,10 @@ gulp.task('mobile', function () {
         .pipe(gulp.dest('./dest/js/')).on('end',function () {
             if(is_watching)copyDest();
         });
-});
+}
 
 
-gulp.task('location', function () {
+function locationTask() {
     return gulp.src(['js/model/areas.js','js/model/location.js'])
         .pipe(sourcemaps.init())
         .pipe(concat('location.js'))
@@ -122,56 +122,54 @@ gulp.task('location', function () {
         .pipe(gulp.dest('./dest/js/')).on('end',function () {
             if(is_watching)copyDest();
         });
-});
+}
 
 
-gulp.task('clean', (cb)=> {
+function clean(done) {
     del('dest/**/*').then(function(paths) {
         if(paths && paths.length) {
             console.log('Deleted files and folders:\n', paths.join('\n'));
         }else{
             console.log('No files were deleted.');
         }
-        cb()
+        done()
     });
-});
+}
 
-function copyDest() {
+function copyDest(done) {
     console.log('Copy dest to public...');
     copy(['dest/**/*.css','dest/**/*.min.js','dest/**/*.min.js.map'],'../static/',function () {
-        
+        done()
     });
 }
 function watchAll() {
     is_watching=true;
     console.log('Starting watch all files...');
-    gulp.watch(['./scss/*.scss','./scss/model/*.scss'],['sass'], (event)=> {
+    /* gulp.watch(['./scss/*.scss','./scss/model/*.scss'],sassTask, (event)=> {
+        console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
+    }); */
+    gulp.watch(['./scss/admin/*.scss'],sassadminTask,(event)=> {
         console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
     });
-    gulp.watch(['./scss/admin/*.scss'],['sassadmin'],(event)=> {
+    gulp.watch(backsrces,backendTask,(event)=> {
         console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
     });
-    gulp.watch(backsrces,['backend'],(event)=> {
+    gulp.watch(labelsrces,labelTask,(event)=> {
         console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
     });
-    gulp.watch(labelsrces,['label'],(event)=> {
+    /* gulp.watch(frontsrces,frontTask,(event)=> {
         console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
     });
-    gulp.watch(frontsrces,['front'],(event)=> {
+    gulp.watch(['js/mobile.js'],mobileTask,(event)=> {
         console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
-    });
-    gulp.watch(['js/mobile.js'],['mobile'],(event)=> {
-        console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
-    });
-    gulp.watch(['js/model/areas.js','js/model/location.js'],['location'],(event)=> {
+    }); */
+    gulp.watch(['js/model/areas.js','js/model/location.js'],locationTask,(event)=> {
         console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
     });
 }
 
-gulp.task('default', ['sass','sassadmin','backend','label','front','mobile','location'],function () {
-    watchAll();
-    return copyDest();
-});
-
+const build = gulp.series(clean,gulp.parallel(sassadminTask,backendTask,labelTask,locationTask), copyDest);
+gulp.task('default', gulp.series(build, watchAll));
+gulp.task('clean', clean);
 gulp.task('watch', watchAll);
 

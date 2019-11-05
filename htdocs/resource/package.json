@@ -25,7 +25,7 @@
     "autoprefixer": "^9.4.4",
     "copy": "^0.3.2",
     "del": "^3.0.0",
-    "gulp": "^3.9.1",
+    "gulp4": "^4.0.0",
     "gulp-autoprefixer": "^6.0.0",
     "gulp-babel": "^8.0.0",
     "gulp-concat": "^2.6.1",
