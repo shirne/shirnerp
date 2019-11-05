@@ -205,7 +205,7 @@
                                     {{good.goods_title}}
                                 </td>
                                 <td class="text-left">
-                                    {{good.count}} {{good.goods_unit}}
+                                    {{ formatNumber(good.count) }} {{good.goods_unit}}
                                 </td>
                             </tr>
                         </template>
@@ -377,6 +377,8 @@
                     if(idx>-1){
                         order.goods[idx].count += parseFloat(goods.count);
                         order.goods[idx].release_count += parseFloat(goods.count);
+                        good.count = parseFloat(formatNumber(good.count))
+                        good.release_count = parseFloat(formatNumber(good.release_count))
                         if(order.goods[idx].goods_unit != goods.unit) {
                             order.goods[idx].goods_unit = goods.unit;
                             var items = this.packages[order.package_id];
@@ -470,7 +472,7 @@
                         });
                     }
                     good.release_count -= count;
-
+                    good.release_count = parseFloat(formatNumber(good.release_count))
                 },
                 addLabel:function (order_id) {
                     var order = this.findOrder(order_id);

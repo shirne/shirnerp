@@ -167,7 +167,7 @@
                                 {{good.goods_title}}
                             </td>
                             <td class="text-left">
-                                {{good.count}} {{good.goods_unit}}
+                                {{ formatNumber(good.count) }} {{good.goods_unit}}
                             </td>
                         </tr>
                     </template>
@@ -463,6 +463,7 @@
                         });
                     }
                     good.release_count -= count;
+                    good.release_count = parseFloat(formatNumber(good.release_count))
                 },
                 addLabel:function (order_id) {
                     var order = this.findOrder(order_id);
@@ -549,6 +550,7 @@
                                 for(var j=0;j<order.goods.length;j++){
                                     if(order.goods[j].goods_id == goods[i].goods_id){
                                         order.goods[j].release_count = order.goods[j].release_count+goods[i].count;
+                                        order.goods[j].release_count = parseFloat(formatNumber(order.goods[j].release_count))
                                         break;
                                     }
                                 }
@@ -599,6 +601,7 @@
 
                                 if(counts[order.goods[j].goods_id]){
                                     order.goods[j].release_count -= counts[order.goods[j].goods_id];
+                                    order.goods[j].release_count = parseFloat(formatNumber(order.goods[j].release_count))
                                 }
                             }
                         }
