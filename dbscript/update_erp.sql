@@ -289,7 +289,7 @@ CREATE TABLE `sa_sale_package_goods` (
   `item_id` INT(11) DEFAULT '0',
   `goods_id` INT(11) DEFAULT '0',
   `goods_title`  VARCHAR(50) DEFAULT '',
-  `count` INT(11) DEFAULT '0',
+  `count` decimal(18,4) DEFAULT '0',
   `goods_unit` VARCHAR(5) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `unique` (`item_id` ASC, `package_id` ASC, `goods_id` ASC)
