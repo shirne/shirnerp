@@ -305,7 +305,7 @@
                         var self=this;
                         $.ajax({
                             url:'{:url("storage/getStorage")}',
-                            type:'GET',
+                            type:'POST',
                             dataType:'JSON',
                             data:{
                                 storage_id:self.order.storage_id,
@@ -359,6 +359,7 @@
                     if(this.order.diy_price==0) {
                         this.total.price = total_price.format(2);
                     }
+                    this.total.weight = (Math.round(this.total.weight*10000)*0.0001).toFixed(4)
                 },
 
                 //============= goods autocomplete

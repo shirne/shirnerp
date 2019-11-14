@@ -296,7 +296,7 @@
                         var self=this;
                         $.ajax({
                             url:'{:url("storage/getStorage")}',
-                            type:'GET',
+                            type:'POST',
                             dataType:'JSON',
                             data:{
                                 storage_id:self.order.storage_id,
@@ -339,17 +339,19 @@
                     }
                 },
                 totalPrice:function () {
+                    
+                    this.total.count = 0;
+                    this.total.weight = 0;
+                    this.total.price = 0;
+                    for (var i = 0; i < this.goods.length; i++) {
+                        if (this.goods[i].count) this.total.count += parseFloat(this.goods[i].count);
+                        if (this.goods[i].weight) this.total.weight += parseFloat(this.goods[i].weight);
+                        if (this.goods[i].total_price) this.total.price += parseFloat(this.goods[i].total_price.toString().replace(',', ''));
+                    }
                     if(this.order.diy_price==0) {
-                        this.total.count = 0;
-                        this.total.weight = 0;
-                        this.total.price = 0;
-                        for (var i = 0; i < this.goods.length; i++) {
-                            if (this.goods[i].count) this.total.count += parseFloat(this.goods[i].count);
-                            if (this.goods[i].weight) this.total.weight += parseFloat(this.goods[i].weight);
-                            if (this.goods[i].total_price) this.total.price += parseFloat(this.goods[i].total_price.toString().replace(',', ''));
-                        }
                         this.total.price = this.total.price.format(2);
                     }
+                    this.total.weight = (Math.round(this.total.weight*10000)*0.0001).toFixed(4)
                 },
 
                 //============= goods autocomplete
