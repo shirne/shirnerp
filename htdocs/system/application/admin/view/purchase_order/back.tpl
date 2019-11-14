@@ -129,7 +129,7 @@
                         </tbody>
                         <tfoot>
                         <tr>
-                            <th>汇总</th>
+                            <th>汇总: {{total.number}}</th>
                             <td></td>
                             <td>{{total.count}}</td>
                             <td>{{total.weight}} {:getSetting('weight_unit')}</td>
@@ -218,6 +218,7 @@
                 key:'',
                 listGoods:[],
                 total:{
+                    number: 0,
                     count:0,
                     weight:0,
                     price:0
@@ -348,10 +349,12 @@
                     }
                 },
                 totalPrice:function () {
+                    this.total.number = 0;
                     this.total.count = 0;
                     this.total.weight = 0;
                     var total_price = 0;
                     for (var i = 0; i < this.goods.length; i++) {
+                        if(this.goods[i].goods_id>0)this.total.number+=1;
                         if (this.goods[i].count) this.total.count += parseFloat(this.goods[i].count);
                         if (this.goods[i].weight) this.total.weight += parseFloat(this.goods[i].weight);
                         if (this.goods[i].total_price) total_price += parseFloat(this.goods[i].total_price.toString().replace(',', ''));
