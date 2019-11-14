@@ -563,7 +563,7 @@
                                 price_type:good.price_type,
                                 weight:good.weight,
                                 price:good.price,
-                                remark:'',
+                                remark:good.remark,
                                 total_price:0
                             });
                             self.updateRow(self.goods.length-1);
