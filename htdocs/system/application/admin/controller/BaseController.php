@@ -171,7 +171,8 @@ class BaseController extends Controller {
 
         $excel->setSheet($sheet);
         $data = $excel->read();
-
+        $excel = null;
+        unlink('.'.$file);
         return $data;
     }
 

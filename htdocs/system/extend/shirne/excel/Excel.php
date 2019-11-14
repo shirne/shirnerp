@@ -43,6 +43,12 @@ class Excel {
         $this->columntype=[];
     }
 
+    function __destruct(){
+        $this->sheet = null;
+        $this->excel->disconnectWorksheets();
+        $this->excel = null;
+    }
+
     public function load($file)
     {
         $reader = IOFactory::createReader($this->format); // 读取 excel 文档
