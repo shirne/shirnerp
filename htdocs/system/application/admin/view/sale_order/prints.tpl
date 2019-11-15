@@ -37,18 +37,20 @@
                     下单日期：{{order.create_date}}&nbsp;&nbsp;交货日期：{{order.customer_date}}&nbsp;&nbsp;出库仓：{{order.storage_title}}
                 </div>
                 <hr class="my-3"/>
-                <div class="btn-group dropright mr-3 mb-3" v-for="good in order.goods" :data-orderid="order.id" :data-goodsid="good.goods_id" >
-                    <button type="button" class="btn btn-secondary dropdown-toggle" @mousedown="startDrag" :disabled="good.release_count <= 0" aria-haspopup="true" aria-expanded="false">
-                        {{good.goods_title}}
-                        <span class="badge badge-light">{{ formatNumber(good.release_count) }}/{{ formatNumber(good.count) }} {{good.goods_unit}}</span>
-                        <span class="badge badge-light" v-if="good.storage_id != order.storage_id">{{good.storage_title}}</span>
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="javascript:" @click="autoPack(order.id, good.goods_id)">自动分包</a>
-                        <template  v-for="pkg in packages[order.package_id]">
-                            <a class="dropdown-item" href="javascript:" @click="addtoLabel(order.id, good.goods_id, pkg.id)">打包到 {{pkg.title}}</a>
-                            <a class="dropdown-item" href="javascript:" @click="addtoLabel(order.id, good.goods_id, pkg.id, 1)">全部打包到 {{pkg.title}}</a>
-                        </template>
+                <div class="goods-item-box">
+                    <div class="btn-group dropright mr-3 mb-3" v-for="good in order.goods" :data-orderid="order.id" :data-goodsid="good.goods_id" >
+                        <button type="button" class="btn btn-secondary dropdown-toggle" @mousedown="startDrag" :disabled="good.release_count <= 0" aria-haspopup="true" aria-expanded="false">
+                            {{good.goods_title}}
+                            <span class="badge badge-light">{{ formatNumber(good.release_count) }}/{{ formatNumber(good.count) }} {{good.goods_unit}}</span>
+                            <span class="badge badge-light" v-if="good.storage_id != order.storage_id">{{good.storage_title}}</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="javascript:" @click="autoPack(order.id, good.goods_id)">自动分包</a>
+                            <template  v-for="pkg in packages[order.package_id]">
+                                <a class="dropdown-item" href="javascript:" @click="addtoLabel(order.id, good.goods_id, pkg.id)">打包到 {{pkg.title}}</a>
+                                <a class="dropdown-item" href="javascript:" @click="addtoLabel(order.id, good.goods_id, pkg.id, 1)">全部打包到 {{pkg.title}}</a>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </div>

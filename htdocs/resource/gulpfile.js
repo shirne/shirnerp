@@ -139,10 +139,10 @@ function clean(done) {
 function copyDest(done) {
     console.log('Copy dest to public...');
     copy(['dest/**/*.css','dest/**/*.min.js','dest/**/*.min.js.map'],'../static/',function () {
-        done()
+        if(done)done()
     });
 }
-function watchAll() {
+function watchAll(done) {
     is_watching=true;
     console.log('Starting watch all files...');
     /* gulp.watch(['./scss/*.scss','./scss/model/*.scss'],sassTask, (event)=> {
@@ -166,6 +166,7 @@ function watchAll() {
     gulp.watch(['js/model/areas.js','js/model/location.js'],locationTask,(event)=> {
         console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
     });
+    if(done)done();
 }
 
 const build = gulp.series(clean,gulp.parallel(sassadminTask,backendTask,labelTask,locationTask), copyDest);

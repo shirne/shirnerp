@@ -961,7 +961,6 @@ table {
     overflow:hidden;
     position: relative;
     border-radius:5px;
-    box-shadow: 1px 2px 5px rgba(0,0,0,.2);
   }
   .print-page .labelid{
     position: absolute;
@@ -995,7 +994,8 @@ table {
     bottom:10px;
   }
   .print-page .table{
-    height:90%;
+    height:95%;
+    margin:0;
     font-size: 0.6cm;
   }
   .print-page .table td{
@@ -1010,21 +1010,35 @@ table {
   }
   .goodsbox{
     flex:1;
-  }
-  .goodsbox .lead{
-    font-size:13px;
+    display:flex;
+    flex-direction: column;
+    max-height: calc(100vh - 100px);
+    .lead{
+      font-size:13px;
+    }
+    .goods-item-box{
+      flex:1;
+      height:50%;
+      overflow: auto;
+    }
   }
   .labelbox{
-    width:17cm;
+    width:58%;
     flex:0 0 auto;
     padding-bottom:50px;
     max-height: calc(100vh - 100px);
-    overflow: scroll;
+    overflow: auto;
+    .print-page{
+      box-shadow: 1px 2px 5px rgba(0,0,0,.2);
+    }
   }
   .btn-addlabel{
     position: absolute;
     left:43%;
     bottom:10px;
+  }
+  .table thead td{
+    border:0;
   }
   .table thead h3{
     font-size:0.7cm;
@@ -1046,7 +1060,7 @@ table {
   .printwrapper{
     .print-page{
       width :12cm;
-      height:9cm;
+      height:8.8cm;
       margin:0;
       overflow: hidden;
     }
@@ -1079,6 +1093,7 @@ table {
     }
     .print-page{
       margin:0;
+      page-break-inside: avoid;
     }
   }
 }
