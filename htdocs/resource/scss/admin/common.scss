@@ -1066,6 +1066,14 @@ table {
     }
     .table thead h3{
       font-size:1cm;
+      position: relative;
+    }
+    .table thead h3 .counter{
+      position: absolute;
+      left:3%;
+      font-size:0.6cm;
+      color:#666;
+      font-weight:normal;
     }
     .table tbody td{
       font-size:1cm;

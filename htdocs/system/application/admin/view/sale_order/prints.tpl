@@ -131,7 +131,7 @@
             <template v-for="order in orders">
             <div class="print-page" v-for="pkg in packages[order.package_id]">
                 <table class="table">
-                    <thead class="text-center"><tr><td colspan="2"><h3>{{order.customer_title}}</h3></td></tr></thead>
+                    <thead class="text-center"><tr><td colspan="2"><h3>{{order.customer_title}}<span class="counter">{{pkg.title}}</span></h3></td></tr></thead>
                     <tbody>
                     <template v-if="pkg.goods.length>10">
                         <template v-for="idx in Math.ceil(pkg.goods.length / 3)">
