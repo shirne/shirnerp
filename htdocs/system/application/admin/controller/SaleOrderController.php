@@ -33,14 +33,22 @@ class SaleOrderController extends BaseController
 
         $lists=$model->order(Db::raw('saleOrder.status ASC,saleOrder.create_time DESC'))->paginate(15);
         if(!$lists->isEmpty()) {
-            $orderids = array_column($lists->items(), 'order_id');
+            $orderids = array_column($lists->items(), 'id');
             $prodata = Db::name('saleOrderGoods')->where('sale_order_id', 'in', $orderids)->select();
             $products=array_index($prodata,'sale_order_id',true);
-            $lists->each(function($item) use ($products){
+            $package_ids = array_column($lists->items(), 'package_id');
+            $packages= Db::name('salePackageItem')->whereIn('package_id', $package_ids)->field('package_id,count(id) as counts')->group('package_id')->select();
+            $packageCounts = array_column($packages, 'counts', 'package_id');
+            $lists->each(function($item) use ($products, $packageCounts){
                 if(isset($products[$item['id']])){
                     $item['goods']=$products[$item['id']];
                 }else {
                     $item['goods'] = [];
+                }
+                if(!empty($item['package_id'])){
+                    $item['package_count'] = $packageCounts[$item['package_id']];
+                }else{
+                    $item['package_count'] = 0;
                 }
                 return $item;
             });

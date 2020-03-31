@@ -38,6 +38,7 @@
                 <th>单号</th>
                 <th>仓库</th>
                 <th>客户</th>
+                <th>品类</th>
                 <th>日期</th>
                 <th>金额</th>
                 <th>状态</th>
@@ -52,6 +53,7 @@
                     <td>{$v.order_no}<if condition="$v['parent_order_id']"><span class="badge badge-warning">退货</span></if></td>
                     <td>{$v.storage_title}</td>
                     <td>{$v.customer_title}</td>
+                    <td>{:count($v['goods'])}类<if condition="$v['package_count'] GT 0">, {$v['package_count']}件 </if></td>
                     <td>{$v.create_time|showdate}</td>
                     <td><span class="badge badge-info">{$v.currency}</span> {$v.amount}</td>
                     <td>

@@ -32,7 +32,7 @@ class PurchaseOrderController extends BaseController
 
         $lists=$model->order(Db::raw('purchaseOrder.status ASC,purchaseOrder.create_time DESC'))->paginate(15);
         if(!$lists->isEmpty()) {
-            $orderids = array_column($lists->items(), 'order_id');
+            $orderids = array_column($lists->items(), 'id');
             $prodata = Db::name('purchaseOrderGoods')->where('purchase_order_id', 'in', $orderids)->select();
             $products=array_index($prodata,'purchase_order_id',true);
             $lists->each(function($item) use ($products){
