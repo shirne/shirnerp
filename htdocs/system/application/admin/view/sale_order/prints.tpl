@@ -22,6 +22,7 @@
         <div class="row">
             <h2 class="col-md-6">标签打印</h2>
             <div class="col-md-6 text-right ">
+                <span>共 {{orderCount}} 个订单, {{packageCount}} 件</span>
                 <a href="javascript:" class="btn btn-secondary " @click="clearEmptyPkg">清除空包</a>
                 <a href="javascript:" class="btn btn-info " @click="savePkg">保存</a>
                 <a href="javascript:" class="btn btn-primary print-btn" @click="doPrint">打印</a>
@@ -249,6 +250,8 @@
             el: '#app',
             data: {
                 ischanged:false,
+                orderCount:0,
+                packageCount:0,
                 orders:[],
                 packages:[],
                 storage_ids:[]
@@ -293,6 +296,8 @@
                                 }
                                 self.orders = data.orders;
                                 self.packages = data.packages;
+                                self.orderCount = self.orders.length;
+                                self.updatePackageCount();
                                 self.initCount();
                             }
                         }
@@ -402,6 +407,8 @@
                             var pkgidx = app.add_label(order)
                             app.add_goods_to_label(order.package_id, pkgidx, good, count)
                         }
+                        
+                        app.updatePackageCount();
                     })
 
                 },
@@ -474,6 +481,8 @@
                         return;
                     }
                     this.add_label(order)
+                    
+                    this.updatePackageCount();
                     this.ischanged=true;
 
                 },
@@ -525,6 +534,7 @@
                         for(var i=0;i<this.packages[order.package_id].length;i++){
                             this.packages[order.package_id][i].title = i+1;
                         }
+                        this.updatePackageCount();
                     }
                 },
                 clearLabel:function(item_id, order_id){
@@ -573,6 +583,7 @@
                             }
                         }
                     }
+                    this.updatePackageCount();
                     this.ischanged=true;
                 },
                 initCount:function(){
@@ -608,6 +619,13 @@
                             }
                         }
                     }
+                },
+                updatePackageCount:function () {
+                    var count=0;
+                    for(var i in this.packages){
+                        count += this.packages[i].length;
+                    }
+                    this.packageCount = count;
                 },
                 findOrder:function (order_id) {
                     for(var i=0;i<this.orders.length;i++){
