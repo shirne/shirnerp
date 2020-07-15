@@ -594,9 +594,9 @@
                         type:"POST",
                         dataType:'JSON',
                         data:{
-                            order:this.order,
-                            goods:this.goods,
-                            total:this.total
+                            order:JSON.stringify(this.order),
+                            goods:JSON.stringify(this.goods),
+                            total:JSON.stringify(this.total)
                         },
                         success:function (json) {
                             self.ajaxing=false;

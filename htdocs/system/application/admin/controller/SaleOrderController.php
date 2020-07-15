@@ -67,6 +67,15 @@ class SaleOrderController extends BaseController
             $order = $this->request->put('order');
             $goods = $this->request->put('goods');
             $total = $this->request->put('total');
+            if(is_string($order)){
+                $order = json_decode($order,true);
+            }
+            if(is_string($goods)){
+                $goods = json_decode($goods,true);
+            }
+            if(is_string($total)){
+                $total = json_decode($total,true);
+            }
             try{
                 $result = SaleOrderModel::createOrder($order,$goods,$total);
             }catch (Exception $e){
@@ -146,6 +155,15 @@ class SaleOrderController extends BaseController
             $order = $this->request->put('order');
             $goods = $this->request->put('goods');
             $total = $this->request->put('total');
+            if(is_string($order)){
+                $order = json_decode($order,true);
+            }
+            if(is_string($goods)){
+                $goods = json_decode($goods,true);
+            }
+            if(is_string($total)){
+                $total = json_decode($total,true);
+            }
             try {
                 $result = SaleOrderModel::createOrder($order, $goods, $total);
             }catch (Exception $e){
@@ -192,6 +210,15 @@ class SaleOrderController extends BaseController
             $goods = $this->request->put('goods');
             $order = $this->request->put('order');
             $total = $this->request->put('total');
+            if(is_string($order)){
+                $order = json_decode($order,true);
+            }
+            if(is_string($goods)){
+                $goods = json_decode($goods,true);
+            }
+            if(is_string($total)){
+                $total = json_decode($total,true);
+            }
 
             $url = url('detail',['id'=>$id,'mode'=>$mode]);
             try {
