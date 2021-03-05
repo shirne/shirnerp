@@ -14,6 +14,10 @@ ShirneERP
 * 币种
 * 财务
 
+## 计划中
+* 生产单 生产流程，生产开单，结单，损耗
+* 支出项
+
 ## 注意事项
 * ThinkPHP 升级
 > 由于目录与默认ThinkPHP项目的差异，升级ThinkPHP时需要修改Loader.php
