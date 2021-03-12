@@ -12,7 +12,12 @@ use think\Db;
 
 class StorageController extends BaseController
 {
-    public function search($key=''){
+    public function search($key='')
+    {
+        if($this->request->isPost()){
+            return redirect(url('',['key'=>base64url_encode($key)]));
+        }
+        $key=empty($key)?"":base64url_decode($key);
         $model=Db::name('storage');
         if(!empty($key)){
             $model->where('id|title|fullname|storage_no','like',"%$key%");

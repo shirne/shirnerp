@@ -32,13 +32,13 @@ function file_download($data,$filename='',$isContent=true,$mime=''){
     //return \think\Response::create($data, '\\extcore\\FileDownload', 200, [], ['file_name'=>$filename]);
     $response = \think\Response::create($data?:$filename, 'download', 200);
     if($mime){
-        $response->mimeType($mime);
+        $response->header('mimeType',$mime);
     }
     if($isContent){
-        $response->isContent(true);
+        $response->header('isContent',true);
     }
     if($filename){
-        $response->name($filename);
+        $response->header('filename',$filename);
     }
     return $response;
 }
@@ -1069,6 +1069,52 @@ function current_url($withqry=true){
 
 function current_domain(){
     return rtrim(url('/','',false,true),'/');
+}
+
+/**
+ * 判断当前是否在某控制器内,并且不是某些action
+ * @param string $controller 
+ * @param array|string $except_methods 
+ * @return bool 
+ */
+function is_controller($controller, $except_actions=[]){
+    if(is_string($except_actions)){
+        $except_actions=explode(',',$except_actions);
+    }
+    return strcasecmp(request()->controller(), $controller) == 0 && !in_array(request()->action(),$except_actions);
+}
+
+/**
+ * 判断当前是否在某个控制器内的某些action
+ * @param string $controller 
+ * @param array|string $actions 
+ * @return bool 
+ */
+function is_action($controller,$actions){
+    if(is_string($actions)){
+        $actions = explode(',', $actions);
+    }
+    return strcasecmp(request()->controller(), $controller) == 0 &&
+        in_array(request()->action(),$actions);
+}
+
+/**
+ * 用于url的base64编码和解码功能
+ * @param mixed $text 
+ * @return string 
+ */
+function base64url_encode($text) {
+    if(empty($text))return '';
+    $base64 = base64_encode($text);
+    $base64url = strtr($base64, '+/=', '-_,');
+    return $base64url;
+}
+
+function base64url_decode($text) {
+    if(empty($text))return '';
+    $base64url = strtr($text, '-_,', '+/=');
+    $base64 = base64_decode($base64url);
+    return $base64;
 }
 
 /**

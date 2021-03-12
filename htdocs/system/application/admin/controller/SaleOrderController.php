@@ -16,9 +16,9 @@ class SaleOrderController extends BaseController
     public function index($key='',$status='')
     {
         if($this->request->isPost()){
-            return redirect(url('',['status'=>$status,'key'=>base64_encode($key)]));
+            return redirect(url('',['status'=>$status,'key'=>base64url_encode($key)]));
         }
-        $key=empty($key)?"":base64_decode($key);
+        $key=empty($key)?"":base64url_decode($key);
         $model=Db::view('saleOrder','*')
             ->view('customer',['title'=>'customer_title','short','phone','province','city','area'],'customer.id=saleOrder.customer_id','LEFT')
             ->view('storage',['title'=>'storage_title'],'storage.id=saleOrder.storage_id','LEFT')
