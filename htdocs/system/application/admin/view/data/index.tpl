@@ -59,7 +59,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <php>$empty=list_empty(6);</php>
+                        <php>$empty=list_empty(7);</php>
                         <volist name="currencies" id="v" empty="$empty">
                             <tr>
                                 <td>{$v.id}</td>
