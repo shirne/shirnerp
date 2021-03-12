@@ -5,11 +5,17 @@ namespace app\admin\controller;
 
 use app\admin\validate\SupplierValidate;
 use app\common\model\SupplierModel;
+use shirne\excel\Excel;
 use think\Db;
 
 class SupplierController extends BaseController
 {
-    public function search($key=''){
+    public function search($key='')
+    {
+        if($this->request->isPost()){
+            return redirect(url('',['key'=>base64url_encode($key)]));
+        }
+        $key=empty($key)?"":base64url_decode($key);
         $model=Db::name('supplier');
         if(!empty($key)){
             $model->where('id|title|phone','like',"%$key%");
