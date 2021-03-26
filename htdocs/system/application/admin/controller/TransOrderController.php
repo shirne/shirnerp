@@ -11,9 +11,9 @@ class TransOrderController extends BaseController
     public function index($key='',$status='')
     {
         if($this->request->isPost()){
-            return redirect(url('',['status'=>$status,'key'=>base64_encode($key)]));
+            return redirect(url('',['status'=>$status,'key'=>base64url_encode($key)]));
         }
-        $key=empty($key)?"":base64_decode($key);
+        $key=empty($key)?"":base64url_decode($key);
         $model=Db::view('transOrder','*')
             ->view('storage fromStorage',['title'=>'from_storage_title'],'fromStorage.id=transOrder.from_storage_id','LEFT')
             ->view('storage',['title'=>'storage_title'],'storage.id=transOrder.storage_id','LEFT')

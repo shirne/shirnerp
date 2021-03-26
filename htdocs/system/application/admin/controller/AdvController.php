@@ -22,6 +22,10 @@ class AdvController extends BaseController
      * @return mixed
      */
     public function index($key=''){
+        if($this->request->isPost()){
+            return redirect(url('',['key'=>base64url_encode($key)]));
+        }
+        $key=empty($key)?"":base64url_decode($key);
         $model = Db::name('AdvGroup');
         if(!empty($key)){
             $model->whereLike('title|flag',"%$key%");

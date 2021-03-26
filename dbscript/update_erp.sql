@@ -371,3 +371,42 @@ CREATE TABLE `sa_finance_log` (
   KEY `customer_id` (`customer_id`),
   KEY `supplier_id` (`supplier_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `sa_produce`;
+CREATE TABLE `sa_produce` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(100) DEFAULT '',
+  `remark` VARCHAR(100) DEFAULT '',
+  `create_time` INT(11) DEFAULT '0',
+  `update_time` INT(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `sa_produce_goods`;
+CREATE TABLE `sa_produce_goods` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` TINYINT(4) DEFAULT '0',
+  `produce_id` INT(11) DEFAULT '',
+  `goods_id` INT(11) DEFAULT '',
+  `count` INT(11) DEFAULT '',
+  `remark` VARCHAR(100) DEFAULT '',
+  `create_time` INT(11) DEFAULT '0',
+  `update_time` INT(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `sa_produce_order`;
+CREATE TABLE `sa_produce_order` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_no` VARCHAR(100) DEFAULT '',
+  `manager_id` INT(11) DEFAULT '',
+  `produce_id` INT(11) DEFAULT '',
+  `count` INT(11) DEFAULT '',
+  `produce_count` INT(11) DEFAULT '',
+  `remark` VARCHAR(100) DEFAULT '',
+  `start_time` INT(11) DEFAULT '0',
+  `end_time` INT(11) DEFAULT '0',
+  `create_time` INT(11) DEFAULT '0',
+  `update_time` INT(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -17,6 +17,10 @@ use think\facade\Log;
 class GoodsController extends BaseController
 {
     public function search($key='',$cate=0,$storage_id=0){
+        if($this->request->isPost()){
+            return redirect(url('',['storage_id'=>$storage_id,'cate'=>$cate, 'key'=>base64url_encode($key)]));
+        }
+        $key=empty($key)?"":base64url_decode($key);
         $model=Db::name('goods');
         if(!empty($key)){
             $model->where('id|title|fullname|goods_no','like',"%$key%");
@@ -222,8 +226,8 @@ class GoodsController extends BaseController
     public function add($cid=0){
         if ($this->request->isPost()) {
             $data = $this->request->post();
-            if(empty($goods['fullname']))$goods['fullname']=$goods['title'];
-            if(empty($goods['goods_no']))$goods['goods_no']=$goods['title'];
+            if(empty($data['fullname']))$data['fullname']=$data['title'];
+            if(empty($data['goods_no']))$data['goods_no']=$data['title'];
             $validate = new GoodsValidate();
             $validate->setId(0);
             if (!$validate->check($data)) {
@@ -428,8 +432,8 @@ class GoodsController extends BaseController
 
         if ($this->request->isPost()) {
             $data=$this->request->post();
-            if(empty($goods['fullname']))$goods['fullname']=$goods['title'];
-            if(empty($goods['goods_no']))$goods['goods_no']=$goods['title'];
+            if(empty($data['fullname']))$data['fullname']=$data['title'];
+            if(empty($data['goods_no']))$data['goods_no']=$data['title'];
             $validate=new GoodsValidate();
             $validate->setId($id);
             if (!$validate->check($data)) {

@@ -15,9 +15,9 @@ class PurchaseOrderController extends BaseController
     public function index($key='',$status='')
     {
         if($this->request->isPost()){
-            return redirect(url('',['status'=>$status,'key'=>base64_encode($key)]));
+            return redirect(url('',['status'=>$status,'key'=>base64url_encode($key)]));
         }
-        $key=empty($key)?"":base64_decode($key);
+        $key=empty($key)?"":base64url_decode($key);
         $model=Db::view('purchaseOrder','*')
             ->view('supplier',['title'=>'supplier_title','phone','province','city','area'],'supplier.id=purchaseOrder.supplier_id','LEFT')
             ->view('storage',['title'=>'storage_title'],'storage.id=purchaseOrder.storage_id','LEFT')
