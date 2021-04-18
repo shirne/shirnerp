@@ -1,6 +1,6 @@
 'use strict';
 
-const gulp = require('gulp4');
+const gulp = require('gulp');
 const uglify = require('gulp-uglify');
 const babel = require('gulp-babel');
 const autoprefixer = require('gulp-autoprefixer');
@@ -57,7 +57,7 @@ function backendTask() {
         });
 }
 
-let labelsrces=['js/model/common.js', 'js/model/template.js', 'js/dialog.js']
+let labelsrces=['js/model/common.js', 'js/model/template.js', 'js/model/dialog.js']
 function labelTask() {
     return gulp.src(labelsrces)
         .pipe(sourcemaps.init())
