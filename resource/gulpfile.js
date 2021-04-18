@@ -138,7 +138,7 @@ function clean(done) {
 
 function copyDest(done) {
     console.log('Copy dest to public...');
-    copy(['dest/**/*.css','dest/**/*.min.js','dest/**/*.min.js.map'],'../static/',function () {
+    copy(['dest/**/*.css','dest/**/*.min.js','dest/**/*.min.js.map'],'../src/htdocs/static/',function () {
         if(done)done()
     });
 }

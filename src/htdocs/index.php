@@ -13,10 +13,10 @@
 namespace think;
 
 define('DOC_ROOT',__DIR__);
-define('APP_PATH',__DIR__. '/system/application/');
+define('APP_PATH',dirname(__DIR__). '/application/');
 
 // 加载基础文件
-require __DIR__ . '/system/thinkphp/base.php';
+require APP_PATH . '/thinkphp/base.php';
 
 
 // 执行应用并响应
