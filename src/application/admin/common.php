@@ -3,11 +3,16 @@
 use think\Db;
 use think\facade\Request;
 
+define('SESSKEY_ADMIN_ID','adminId');
+define('SESSKEY_ADMIN_NAME','adminname');
+define('SESSKEY_ADMIN_LAST_TIME','adminLTime');
+define('SESSKEY_ADMIN_AUTO_LOGIN','adminlogin');
+
 function setLogin($user){
     $time=time();
-    session('adminId',$user['id']);
-    session('adminLTime',$time);
-    session('adminname',empty($user['realname'])?$user['username']:$user['realname']);
+    session(SESSKEY_ADMIN_ID,$user['id']);
+    session(SESSKEY_ADMIN_LAST_TIME,$time);
+    session(SESSKEY_ADMIN_NAME,empty($user['realname'])?$user['username']:$user['realname']);
     Db::name('Manager')->where('id',$user['id'])->update(array(
         'login_ip'=>Request::ip(),
         'logintime'=>$time
@@ -24,14 +29,14 @@ function filterurl($url){
 }
 
 function clearLogin($log=true){
-    $id=session('adminId');
+    $id=session(SESSKEY_ADMIN_ID);
     if($log && !empty($id)) {
         user_log($id, 'logout', 1, '退出登录');
     }
 
-    session('adminId',null);
-    session('adminname',null);
-    session('adminLTime',null);
+    session(SESSKEY_ADMIN_ID,null);
+    session(SESSKEY_ADMIN_NAME,null);
+    session(SESSKEY_ADMIN_LAST_TIME,null);
 }
 
 function getMenus(){

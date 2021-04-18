@@ -2,6 +2,7 @@
 
 namespace app\admin\controller;
 
+use app\common\service\EncryptService;
 use extcore\traits\Upload;
 use shirne\excel\Excel;
 use think\Controller;
@@ -35,6 +36,17 @@ class BaseController extends Controller {
         if(!defined('TEST_ACCOUNT'))define('TEST_ACCOUNT',config('test_account'));
         
         $this->mid = session('adminId');
+
+        $controller=strtolower($this->request->controller());
+        if($controller === 'login'){
+            return;
+        }
+
+        //自动登录
+        if(empty($this->mid)){
+            $this->autoLogin();
+        }
+
         //判断用户是否登陆
         if(empty($this->mid ) ) {
             $this->error(lang('Please login first!'),url('admin/login/index'));
@@ -72,6 +84,34 @@ class BaseController extends Controller {
             //空数据默认样式
             $this->assign('empty', list_empty());
         }
+    }
+
+    protected function autoLogin(){
+        $loginsession = $this->request->cookie(SESSKEY_ADMIN_AUTO_LOGIN);
+        if(!empty($loginsession)){
+            cookie(SESSKEY_ADMIN_AUTO_LOGIN, null);
+            $data = EncryptService::getInstance()->decrypt($loginsession);
+            if(!empty($data)){
+                $json = json_decode($data, true);
+                if(!empty($json['id'])){
+                    $timestamp = $json['time'];
+                    if($timestamp >= time()){
+                        $this->mid = $json['id'];
+                        $this->manager = Db::name('Manager')->where('id',$this->mid)->find();
+                        setLogin($this->manager, 0);
+                        $this->manager['logintime'] = session(SESSKEY_ADMIN_LAST_TIME);
+                        $this->setAutoLogin($this->manager);
+                    }
+                }
+            }
+        }
+    }
+
+    protected function setAutoLogin($manager, $days = 7){
+        $expire = $days * 24 * 60 * 60;
+        $timestamp = time() + $expire;
+        $data = EncryptService::getInstance()->encrypt(json_encode(['id'=>$manager['id'],'time'=>$timestamp]));
+        cookie(SESSKEY_ADMIN_AUTO_LOGIN, $data, $expire);
     }
 
     /**

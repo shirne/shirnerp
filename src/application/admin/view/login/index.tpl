@@ -31,7 +31,7 @@
 <div class="container" id="loginContainer">
     <div class="row justify-content-center">
         <div class="col-10 col-md-7 col-lg-5" id="loginBox">
-            <h1>凯旋蔬菜管理系统</h1>
+            <h1>小型企业ERP管理系统</h1>
 
             <form action="{:url('login/login')}" method="post">
                 <div class="form-group">
@@ -72,6 +72,11 @@
                     </figure>
                 </div>
                 </if>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="remember" value="1"> 保持登录状态(请不要在公共电脑上勾选此选项)
+                      </label>
+                </div>
                 <button type="submit" class="btn btn-block btn-primary">登陆</button>
                 <div class="alert fade show" role="alert">
                     <span class="alert-content"></span>
@@ -83,7 +88,7 @@
                 <h3 class="text-success mb-3">推荐使用</h3>
                 <div class="row">
                     <a class="col" href="https://www.google.cn/chrome/" target="_blank">
-                        <div class="browser-icon" style="background-image:url(/static/admin/images/chrome-logo.svg)"></div>
+                        <div class="browser-icon" style="background-image:url(/static/admin/images/chrome-logo.png)"></div>
                         <div class="browser-text">谷哥</div>
                     </a>
                     <a class="col" href="https://www.mozilla.org/zh-CN/firefox/new/" target="_blank">
@@ -94,9 +99,9 @@
                         <div class="browser-icon" style="background-image:url(/static/admin/images/360-logo.png)"></div>
                         <div class="browser-text">360极速</div>
                     </a>
-                    <a class="col" href="https://www.opera.com/zh-cn" target="_blank">
-                        <div class="browser-icon" style="background-image:url(/static/admin/images/opera-logo.png)"></div>
-                        <div class="browser-text">Opera</div>
+                    <a class="col" href="https://www.microsoft.com/zh-cn/edge" target="_blank">
+                        <div class="browser-icon" style="background-image:url(/static/admin/images/edge-logo.png)"></div>
+                        <div class="browser-text">Edge</div>
                     </a>
                 </div>
                 <div class="mt-3"><a href="javascript:" class="text-muted force-login">我知道了，继续登录</a> </div>
@@ -105,7 +110,7 @@
     </div>
     <div class="row justify-content-md-center">
         <div class="col-md-4 copy">
-            <p>&copy;原设软件 2015-2017</p>
+            <p>&copy;原设软件 2015-{:date('Y')}</p>
         </div>
     </div>
 </div>

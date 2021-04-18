@@ -2,7 +2,6 @@
 namespace app\admin\controller;
 
 use extcore\traits\Verify;
-use think\Controller;
 use think\Db;
 
 /**
@@ -10,7 +9,7 @@ use think\Db;
  * Class LoginController
  * @package app\admin\controller
  */
-class LoginController extends Controller {
+class LoginController extends BaseController {
 
     public function initialize()
     {
@@ -22,6 +21,10 @@ class LoginController extends Controller {
      * @return mixed
      */
     public function index(){
+        $this->autoLogin();
+        if($this->mid){
+            $this->success('已自动登录',url('admin/index/index'));
+        }
         $this->assign('config',getSettings());
         return $this->fetch();
     }
@@ -92,6 +95,11 @@ class LoginController extends Controller {
         check_password($password);
 
         setLogin($user);
+
+        $remember = $this->request->post('remember');
+        if($remember){
+            $this->setAutoLogin($user);
+        }
 
         $this->success(lang('Login success!'),url('Index/index'));
     }
