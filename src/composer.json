@@ -1,5 +1,5 @@
 {
-    "name": "shirnecn/ShirneCMS",
+    "name": "shirnecn/shirne_erp",
     "description": "基于ThinkPHP5.1和Bootstrap4.x的内容管理系统框架",
     "type": "project",
     "keywords": [
@@ -33,9 +33,5 @@
     },
     "extra": {
         "think-path": "thinkphp"
-    },
-    "config": {
-        "preferred-install": "dist",
-        "component-dir": "public/static"
     }
 }
