@@ -2,16 +2,16 @@
 
 namespace app\admin\controller;
 
-
-use app\admin\validate\PermissionValidate;
+use Exception;
 use think\Db;
+use think\exception\HttpResponseException;
 
 /**
  * 菜单管理
- * Class PermissionController
+ * Class ProduceController
  * @package app\admin\controller
  */
-class PermissionController extends BaseController
+class ProduceController extends BaseController
 {
     /**
      * 生产流程
@@ -35,6 +35,7 @@ class PermissionController extends BaseController
         $this->assign('page',$lists->render());
         return $this->fetch();
     }
+
 
 }
 
