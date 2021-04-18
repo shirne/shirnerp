@@ -2,7 +2,7 @@
 
 <block name="body">
 
-    <include file="public/bread" menu="purchase_order_index" title="销售单列表" />
+    <include file="public/bread" menu="purchase_order_index" title="采购单列表" />
 
     <div id="page-wrapper">
 
