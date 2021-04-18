@@ -284,7 +284,6 @@ jQuery(function ($) {
     //异步显示资料链接
     $('a[rel=ajax]').click(function (e) {
         e.preventDefault();
-        console.log(e)
         var self = $(this);
         var title = $(this).data('title');
         if (!title) title = $(this).text();
