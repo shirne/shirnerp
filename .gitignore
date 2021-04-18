@@ -13,11 +13,3 @@
 !/src/htdocs/uploads/index.html
 /src/htdocs/aspnet_client
 
-/htdocs/system/vendor
-/htdocs/system/runtime/*
-/htdocs/system/thinkphp
-/htdocs/uploads/*
-!/htdocs/uploads/index.html
-/htdocs/resource/node_modules
-/htdocs/resource/dest
-/htdocs/aspnet_client
