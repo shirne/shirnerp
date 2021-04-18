@@ -121,7 +121,7 @@ class PurchaseOrderController extends BaseController
                 $row['currency'],$row['amount'],$row['payed_amount'],purchase_order_status($row['status'],false)
             ));
         }
-
+        user_log($this->mid, [PurchaseOrderModel::ACTION_EXPORT, 0], 1, '导出订单:'.implode(',',array_column($rows, 'id')), 'manager');
         $excel->output(date('Y-m-d-H-i').'-入库单导出['.count($rows).'条]');
     }
 
@@ -302,7 +302,7 @@ class PurchaseOrderController extends BaseController
         }
 
         $excel->setRangeBorder('A1:H'.($rownum+1),'FF000000');
-
+        user_log($this->mid, [PurchaseOrderModel::ACTION_EXPORT, $model['id']], 1, '导出订单', 'manager');
         $excel->output('入库单['.$model['order_no'].']');
     }
 

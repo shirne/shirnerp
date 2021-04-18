@@ -8,7 +8,7 @@
 
         <div class="row list-header">
             <div class="col-6">
-                <a href="{:url('purchaseOrder/create')}" data-tab="timestamp" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 添加入库单</a>
+                <a href="{:url('purchaseOrder/create')}" data-tab="timestamp" class="btn btn-outline-primary btn-sm"><i class="ion-md-add"></i> 添加采购单</a>
             </div>
             <div class="col-6">
                 <form action="{:url('purchaseOrder/index')}" method="post">

@@ -12,12 +12,23 @@ class SaleOrderModel extends BaseFinanceModel
 
     const ACTION_ADD = 'addsaleorder';
     const ACTION_EDIT = 'editsaleorder';
+    const ACTION_PACKAGE = 'packagesaleorder';
     const ACTION_AUDIT = 'auditsaleorder';
+    const ACTION_EXPORT = 'exportsaleorder';
+    const ACTION_PRINT = 'printsaleorder';
     const ACTION_DELETE = 'deletesaleorder';
 
     public static function getActions()
     {
-        return [self::ACTION_ADD,self::ACTION_EDIT,self::ACTION_AUDIT,self::ACTION_DELETE];
+        return [
+            self::ACTION_ADD,
+            self::ACTION_EDIT,
+            self::ACTION_PACKAGE,
+            self::ACTION_AUDIT,
+            self::ACTION_EXPORT,
+            self::ACTION_PRINT,
+            self::ACTION_DELETE
+        ];
     }
 
     public static function getGoodsChanges($start_time, $storage_ids='')

@@ -139,7 +139,7 @@ class SaleOrderController extends BaseController
                 $row['currency'],$row['amount'],$row['payed_amount'],purchase_order_status($row['status'],false)
             ));
         }
-
+        user_log($this->mid, [SaleOrderModel::ACTION_EXPORT, 0], 1, '导出订单:'.implode(',',array_column($rows, 'id')), 'manager');
         $excel->output(date('Y-m-d-H-i').'-销售单导出['.count($rows).'条]');
     }
 
@@ -335,6 +335,7 @@ class SaleOrderController extends BaseController
 
         $excel->setRangeBorder('A1:H'.($rownum+1),'FF000000');
 
+        user_log($this->mid, [SaleOrderModel::ACTION_EXPORT, $model['id']], 1, '导出订单', 'manager');
         $excel->output('销售单['.$model['order_no'].']');
     }
 
@@ -397,6 +398,10 @@ class SaleOrderController extends BaseController
                                 }
                             }
                         }
+                        $order = SaleOrderModel::where('package_id',$pkg_id)->find();
+                        if(!empty($order)){
+                            user_log($this->mid,[SaleOrderModel::ACTION_PACKAGE,$order['id']],1,'编辑打包数据','manager');
+                        }
                     }
                 }
                 $this->success('保存成功');
@@ -434,6 +439,7 @@ class SaleOrderController extends BaseController
                         'customer_id' => $order['customer_id'],
                         'storage_id' => $order['storage_id']
                     ]);
+                    user_log($this->mid,[SaleOrderModel::ACTION_PACKAGE,$order['id']],1,'初始化打包','manager');
                 }
             }
 

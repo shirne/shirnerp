@@ -14,6 +14,29 @@ use think\Model;
  */
 class BaseModel extends Model
 {
+    public static function getActions()
+    {
+        return [];
+    }
+
+    public static function getLogs($id)
+    {
+        $actions = [];
+        if(empty($actions)){
+            return [];
+        }
+        $logs = Db::view('managerLog',['*','date_format(from_unixtime(managerLog.`create_time`),\'%Y-%m-%d %H:%i:%S\')'=>'datetime'])
+            ->view('manager',['username','realname'],'manager.id=managerLog.manager_id','LEFT')
+            ->whereIn('action',static::getActions())
+            ->where('other_id',$id)
+            ->order('managerLog.create_time ASC')
+            ->select();
+        foreach ($logs as &$log) {
+            $log['remark']=print_remark($log['remark']);
+        }
+        return $logs;
+    }
+
     protected function getRelationAttribute($name, &$item)
     {
         try{

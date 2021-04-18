@@ -13,11 +13,20 @@ class PurchaseOrderModel extends BaseFinanceModel
     const ACTION_ADD = 'addpurchaseorder';
     const ACTION_EDIT = 'editpurchaseorder';
     const ACTION_AUDIT = 'auditpurchaseorder';
+    const ACTION_EXPORT = 'exportpurchaseorder';
+    const ACTION_PRINT = 'printpurchaseorder';
     const ACTION_DELETE = 'deletepurchaseorder';
 
     public static function getActions()
     {
-        return [self::ACTION_ADD,self::ACTION_EDIT,self::ACTION_AUDIT,self::ACTION_DELETE];
+        return [
+            self::ACTION_ADD,
+            self::ACTION_EDIT,
+            self::ACTION_AUDIT,
+            self::ACTION_EXPORT,
+            self::ACTION_PRINT,
+            self::ACTION_DELETE
+        ];
     }
 
     public static function getGoodsChanges($start_time, $storage_ids='')

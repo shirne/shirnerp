@@ -103,50 +103,10 @@
             w.actionPrints=function(ids){
                 var url="{:url('saleOrder/prints',['order_ids'=>'__ORDER_IDS__','storage_ids'=>'__STORAGE_IDS__'])}".replace('__ORDER_IDS__',ids).replace('__STORAGE_IDS__','');
                 window.open(url);
-                /*
-                var dlg=new Dialog({
-                    onshow:function (body) {
-                        $.ajax({
-                            url:"{:url('storage/search',['limit'=>100])}",
-                            dataType:'JSON',
-                            success:function (json) {
-                                if(json.code==1){
-                                    body.find('.row').html('<div class="col-3"><label><input type="checkbox" name="storage_ids[]" value="{@id}" />&nbsp;{@title}</label></div>'.compile(
-                                        json.data,true
-                                    ));
-                                }
-                            }
-                        })
-                    },
-                    onsure:function (body) {
-                        var checkboxes = body.find('input:checked');
-                        var storage_ids = [];
-                        for(var i=0;i<checkboxes.length;i++){
-                            storage_ids.push(checkboxes.eq(i).val())
-                        }
-                        window.open("{:url('saleOrder/prints',['order_ids'=>'__ORDER_IDS__','storage_ids'=>'__STORAGE_IDS__'])}".replace('__ORDER_IDS__',ids).replace('__STORAGE_IDS__',storage_ids.join(',')));
-                        dlg.close();
-                        return false;
-                    }
-                }).show('<div class="row"></div><div class="text-muted">不选择将按全部仓库打印</div>','选择需要打印的仓库');
-                */
             };
             w.actionExport=function(ids){
-                dialog.confirm('确定禁用选中会员？',function() {
-                    $.ajax({
-                        url:"{:url('member/delete',['id'=>'__id__','type'=>0])}".replace('__id__',ids.join(',')),
-                        type:'GET',
-                        dataType:'JSON',
-                        success:function(json){
-                            if(json.code==1){
-                                dialog.alert(json.msg,function() {
-                                    location.reload();
-                                });
-                            }else{
-                                dialog.warning(json.msg);
-                            }
-                        }
-                    });
+                dialog.confirm('导出选中订单？',function() {
+                    dialog.alert('暂未支持，请单个导出');
                 });
             };
         })(window,jQuery);
