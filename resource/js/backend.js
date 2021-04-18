@@ -284,25 +284,34 @@ jQuery(function ($) {
     //异步显示资料链接
     $('a[rel=ajax]').click(function (e) {
         e.preventDefault();
+        console.log(e)
         var self = $(this);
         var title = $(this).data('title');
         if (!title) title = $(this).text();
         if (!title) title = $(this).attr('title');
+        if (!title) title = $(this).data('original-title');
         var dlg = new Dialog({
             btns: ['确定'],
-            onshow: function (body) {
+            onshow: function (body, dlgbox) {
                 $.ajax({
-                    url: self.attr('href'),
+                    url: self.attr('href')+'?dialog=1',
                     beforeSend: function(request) {
                         request.setRequestHeader("X-Requested-With","htmlhttp");
                     },
                     success: function (text) {
-                        body.html(text);
+                        var content=$(text)
+                        if(content.length>0){
+                            var header = content.find('.page-header')
+                            var pagecontent = content.find('.page-content')
+                            body.html('').append(pagecontent)
+                            dlgbox.find('.modal-header .modal-title').text(header.text())
+                        }else{
+                            body.html(text);
+                        }
                     }
                 });
             }
         }).show('<p class="loading">'+lang('loading...')+'</p>', title);
-
     });
 
     //确认操作

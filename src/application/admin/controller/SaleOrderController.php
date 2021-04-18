@@ -197,7 +197,7 @@ class SaleOrderController extends BaseController
      * @param $mode
      * @return \think\Response
      */
-    public function detail($id, $mode=0){
+    public function detail($id, $mode = 0, $dialog = 0){
         $model=SaleOrderModel::get($id);
         if(empty($model))$this->error('订单不存在');
         if($mode==0 && $model['status']==0)$mode=2;
@@ -250,6 +250,9 @@ class SaleOrderController extends BaseController
         $this->assign('logs',SaleOrderModel::getLogs($id));
         if($mode==0) {
             $this->assign('paylog', Db::name('financeLog')->where('type', 'sale')->where('order_id', $id)->select());
+        }
+        if($dialog){
+            return $this->fetch();
         }
         return $mode?$this->fetch($mode==2?($model['parent_order_id']>0?'back_edit':'edit'):'print_one'):$this->fetch();
     }
