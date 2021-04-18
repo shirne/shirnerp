@@ -4,6 +4,10 @@
 *.log
 .env
 
+/src/config/cert
+!/src/config/cert/cacert.pem
+!/src/config/cert/openssl.cnf
+
 /resource/node_modules
 /resource/dest
 /src/vendor

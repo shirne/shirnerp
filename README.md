@@ -20,20 +20,6 @@ ShirneERP
 * 支出项
 * 销售单与人员关联统计
 
-## 注意事项
-* ThinkPHP 升级
-> 由于目录与默认ThinkPHP项目的差异，升级ThinkPHP时需要修改Loader.php
-```php
-  // 获取应用根目录
-  public static function getRootPath()
-  {
-      if(defined('APP_PATH')){
-          return dirname(APP_PATH). DIRECTORY_SEPARATOR;
-      }else {
-          //...  原方法代码
-      }
-  }
-```
 
 ## 前端库引用
 
@@ -41,8 +27,7 @@ ShirneERP
 [components/jquery 3.3.1](http://api.jquery.com/)<br />
 [eonasdan/bootstrap-datetimepicker](https://github.com/Eonasdan/bootstrap-datetimepicker/blob/master/docs/Options.md) 针对bootstrap4.x修改<br />
 [driftyco/ionicons](http://ionicons.com/)<br />
-[chartjs/Chart.js 2.7.2](https://chartjs.bootcss.com/docs/)<br />
-[swiper](http://www.swiper.com.cn/)
+[chartjs/Chart.js 2.7.2](https://chartjs.bootcss.com/docs/)
 
 ## 后端库引用
 [EasyWechat](https://www.easywechat.com/docs/3.x/zh-CN/index)<br />
@@ -69,7 +54,7 @@ cnpm install<br />
 
 >scripts/struct.sql 数据表结构<br />
 scripts/init.sql 初始数据<br />
-scripts/update_shop.sql 商城模块<br />
+scripts/update_erp.sql erp模块<br />
 scripts/update_wechat.sql 微信模块
 
 项目目录
