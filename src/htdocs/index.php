@@ -16,7 +16,7 @@ define('DOC_ROOT',__DIR__);
 define('APP_PATH',dirname(__DIR__). '/application/');
 
 // 加载基础文件
-require APP_PATH . '/thinkphp/base.php';
+require __DIR__ . '/../thinkphp/base.php';
 
 
 // 执行应用并响应
