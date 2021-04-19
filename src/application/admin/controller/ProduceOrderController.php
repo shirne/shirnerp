@@ -25,6 +25,10 @@ class ProduceOrderController extends BaseController
         return $this->fetch();
     }
 
+    public function create(){
+        return $this->fetch();
+    }
+
     /**
      * 生产统计
      * @return mixed 

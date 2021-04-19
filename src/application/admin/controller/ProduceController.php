@@ -36,6 +36,9 @@ class ProduceController extends BaseController
         return $this->fetch();
     }
 
-
+    public function create(){
+        
+        return $this->fetch();
+    }
 }
 
