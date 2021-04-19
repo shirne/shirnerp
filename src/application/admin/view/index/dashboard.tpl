@@ -1,17 +1,17 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-<include file="public/bread" menu="Board" section="主面板" title=""/>
+{include file="public/bread" menu="Board" section="主面板" title=""/}
 <div id="page-wrapper">
-    <foreach name="notices" item="notice">
+    {foreach $notices as $notice}
         <div class="alert alert-{$notice.type|default='warning'} alert-dismissible fade show" role="alert">
             {$notice.message|raw}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-    </foreach>
+    {/foreach}
     <div class="row">
         <div class="col-lg-3 col-md-6 mb-3">
             <div class="card border-info">
@@ -99,7 +99,7 @@
         </div>
     </div>
 
-    <php>$empty=list_empty(3);</php>
+    {php}$empty=list_empty(3);{/php}
     <div class="row">
         <div class="col-md-6 mb-3">
             <div class="card border-default">
@@ -113,13 +113,13 @@
                         <th>销售单数</th>
                         <th>销售金额</th>
                     </tr>
-                    <volist name="saleOrders" id="order" empty="$empty">
+                    {volist name="saleOrders" id="order" empty="$empty"}
                         <tr>
                             <td>{$order.awdate}</td>
                             <td>{$order.order_count}</td>
                             <td>{$order.order_amount}</td>
                         </tr>
-                    </volist>
+                    {/volist}
                 </table>
             </div>
         </div>
@@ -135,13 +135,13 @@
                         <th>采购单数</th>
                         <th>采购金额</th>
                     </tr>
-                    <volist name="purchaseOrders" id="order" empty="$empty">
+                    {volist name="purchaseOrders" id="order" empty="$empty"}
                         <tr>
                             <td>{$order.awdate}</td>
                             <td>{$order.order_count}</td>
                             <td>{$order.order_amount}</td>
                         </tr>
-                    </volist>
+                    {/volist}
                 </table>
             </div>
         </div>
@@ -156,13 +156,13 @@
                         <th>品种数</th>
                         <th>品种量</th>
                     </tr>
-                    <volist name="storages" id="storage" empty="$empty">
+                    {volist name="storages" id="storage" empty="$empty"}
                         <tr>
                             <td>{$storage.title}</td>
                             <td>{$storage.goods_count}</td>
                             <td>{$storage.goods_total}</td>
                         </tr>
-                    </volist>
+                    {/volist}
                 </table>
             </div>
         </div>
@@ -186,7 +186,7 @@
                         <td> {$finance.sales.in90days|show_finance|raw} </td>
                         <td> {$finance.sales.out90days|show_finance|raw} </td>
                     </tr>
-                    <if condition="!empty($finance['sales_back']['total'])">
+                    {if !empty($finance['sales_back']['total'])}
                         <tr>
                             <td>销售退货</td>
                             <td> {$finance.sales_back.total|show_finance|raw} </td>
@@ -194,7 +194,7 @@
                             <td> {$finance.sales_back.in90days|show_finance|raw} </td>
                             <td> {$finance.sales_back.out90days|show_finance|raw} </td>
                         </tr>
-                    </if>
+                    {/if}
                     <tr>
                         <td>应付账款</td>
                         <td> {$finance.purchases.total|show_finance|raw} </td>
@@ -202,7 +202,7 @@
                         <td> {$finance.purchases.in90days|show_finance|raw} </td>
                         <td> {$finance.purchases.out90days|show_finance|raw} </td>
                     </tr>
-                    <if condition="!empty($finance['purchases_back']['total'])">
+                    {if !empty($finance['purchases_back']['total'])}
                         <tr>
                             <td>采购退货</td>
                             <td> {$finance.purchases_back.total|show_finance|raw} </td>
@@ -210,7 +210,7 @@
                             <td> {$finance.purchases_back.in90days|show_finance|raw} </td>
                             <td> {$finance.purchases_back.out90days|show_finance|raw} </td>
                         </tr>
-                    </if>
+                    {/if}
                 </table>
             </div>
         </div>
@@ -219,4 +219,4 @@
 
 </div>
 
-</block>
+{/block}

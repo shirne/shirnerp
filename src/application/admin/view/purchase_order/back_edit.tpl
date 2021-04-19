@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="purchase_order_index" title="采购退货" />
+    {include file="public/bread" menu="purchase_order_index" title="采购退货" /}
 
     <div id="page-wrapper">
         <div class="page-header">采购退货</div>
@@ -45,9 +45,9 @@
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">货币</span></div>
                                     <select class="form-control" v-model="order.currency">
-                                        <volist name="currencies" id="cur">
+                                        {volist name="currencies" id="cur"}
                                             <option value="{$cur.key}">[{$cur.key}]{$cur.title}</option>
-                                        </volist>
+                                        {/volist}
                                     </select>
                                 </div>
                             </div>
@@ -83,9 +83,9 @@
                                 <div class="input-group input-group-sm">
                                     <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.count"/>
                                     <select v-model="good.unit" @keydown="stopLeftRight" style="flex:0;width: 50px;" class="form-control">
-                                        <volist name="units" id="unit">
+                                        {volist name="units" id="unit"}
                                             <option value="{$unit.key}">{$unit.key}</option>
-                                        </volist>
+                                        {/volist}
                                     </select>
                                 </div>
                             </td>
@@ -180,8 +180,8 @@
             </li>
         </ul>
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript" src="__STATIC__/js/vue-2.6.min.js"></script>
     <script type="text/javascript">
         var hideTimeout=0;
@@ -572,4 +572,4 @@
             }
         })
     </script>
-</block>
+{/block}

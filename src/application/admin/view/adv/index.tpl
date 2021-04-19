@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-<include file="public/bread" menu="adv_index" title="广告位" />
+{include file="public/bread" menu="adv_index" title="广告位" /}
 
 <div id="page-wrapper">
     
@@ -31,7 +31,7 @@
             </tr>
         </thead>
         <tbody>
-        <volist name="lists" id="v" empty="$empty">
+        {volist name="lists" id="v" empty="$empty"}
             <tr>
                 <td>{$v.id}</td>
                 <td>{$v.title}</td>
@@ -45,9 +45,9 @@
 删除后将不能恢复!" title="删除" href="{:url('adv/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i></a>
                 </td>
             </tr>
-        </volist>
+        {/volist}
         </tbody>
     </table>
     {$page|raw}
 </div>
-</block>
+{/block}

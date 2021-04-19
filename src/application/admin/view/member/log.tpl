@@ -1,7 +1,7 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
-<include file="public/bread" menu="member_log" title="" />
+{block name="body"}
+{include file="public/bread" menu="member_log" title="" /}
 
 <div id="page-wrapper">
     <div class="row list-header">
@@ -33,12 +33,12 @@
             </tr>
         </thead>
         <tbody>
-        <foreach name="lists" item="v">
+        {foreach $lists as $v}
             <tr>
                 <td>{$v.id}</td>
                 <td>{$v.username}</td>
                 <td>{$v.action}</td>
-                <td><if condition="$v.result EQ 1"><span class="badge badge-success">成功</span><else/><span class="badge badge-danger">失败</span> </if></td>
+                <td>{if $v['result'] == 1}<span class="badge badge-success">成功</span>{else/}<span class="badge badge-danger">失败</span> {/if}</td>
                 <td>{$v.create_time|showdate}</td>
                 <td>{$v.ip}</td>
                 <td>{$v.remark|print_remark}</td>
@@ -46,10 +46,10 @@
                     <a class="btn btn-outline-primary" title="查看" data-title="查看详情" rel="ajax" href="{:url('member/logview',array('id'=>$v['id']))}"><i class="ion-md-document"></i> </a>
                 </td>
             </tr>
-        </foreach>
+        {/foreach}
         </tbody>
     </table>
     {$page|raw}
 </div>
 
-</block>
+{/block}

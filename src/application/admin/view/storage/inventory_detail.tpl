@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="storage_index" title="仓库盘点" />
+    {include file="public/bread" menu="storage_index" title="仓库盘点" /}
 
     <div id="page-wrapper">
 
@@ -30,37 +30,37 @@
             </tr>
             </thead>
             <tbody>
-            <php>$empty=list_empty(6);</php>
-            <volist name="goods" id="v" empty="$empty">
+            {php}$empty=list_empty(6);{/php}
+            {volist name="goods" id="v" empty="$empty"}
                 <tr>
                     <td>{$v.id}</td>
                     <td>{$v.title}</td>
                     <td>{$v.count}</td>
                     <td>{$v.new_count}</td>
                     <td>
-                        <if condition="$v['new_count'] GT $v['count']">
+                        {if $v['new_count'] > $v['count']}
                             <span class="badge badge-success">+ {$v['new_count']-$v['count']}</span>
-                            <elseif condition="$v['new_count'] LT $v['count']" />
+                            {elseif condition="$v['new_count'] LT $v['count']" /}
                             <span class="badge badge-error">- {$v['count']-$v['new_count']}</span>
-                            <else/>
+                            {else/}
                             <span class="badge badge-secondary"> - </span>
-                        </if>
+                        {/if}
                     </td>
                     <td class="operations">
 
                     </td>
                 </tr>
-            </volist>
+            {/volist}
             </tbody>
         </table>
         {$page|raw}
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript">
         jQuery(function ($) {
 
 
         })
     </script>
-</block>
+{/block}

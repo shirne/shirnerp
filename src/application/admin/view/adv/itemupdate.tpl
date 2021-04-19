@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-<include file="public/bread" menu="adv_index" title="广告资料" />
+{include file="public/bread" menu="adv_index" title="广告资料" /}
 
 <div id="page-wrapper">
     <div class="page-header">{$id>0?'编辑':'添加'}广告</div>
@@ -20,13 +20,13 @@
                     <label class="custom-file-label" for="upload_image">选择文件</label>
                 </div>
             </div>
-            <if condition="$model['image']">
+            {if !empty($model['image'])}
                 <figure class="figure">
                     <img src="{$model.image}" class="figure-img img-fluid rounded" alt="image">
                     <figcaption class="figure-caption text-center">{$model.image}</figcaption>
                 </figure>
                 <input type="hidden" name="delete_image" value="{$model.image}"/>
-            </if>
+            {/if}
         </div>
         <div class="form-group">
             <label for="text">文本</label>
@@ -67,10 +67,10 @@
         <div class="form-group">
             <label for="cc">状态</label>
             <label class="radio-inline">
-                <input type="radio" name="status" value="1" <if condition="$model['status'] eq 1">checked="checked"</if> >显示
+                <input type="radio" name="status" value="1" {if $model['status'] == 1}checked="checked"{/if} >显示
             </label>
             <label class="radio-inline">
-                <input type="radio" name="status" value="0" <if condition="$model['status'] eq 0">checked="checked"</if>>隐藏
+                <input type="radio" name="status" value="0" {if $model['status'] == 0}checked="checked"{/if}>隐藏
             </label>
         </div>
         <div class="form-group submit-btn">
@@ -80,4 +80,4 @@
     </form>
     </div>
 </div>
-</block>
+{/block}

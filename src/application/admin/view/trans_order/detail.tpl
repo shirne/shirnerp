@@ -24,7 +24,7 @@
                 <td colspan="4">
                     <table class="table">
                         <tbody>
-                        <volist name="goods" id="p">
+                        {volist name="goods" id="p"}
                             <tr>
                                 <td><span class="badge badge-success">{$p.goods_no}</span> {$p.goods_title}</td>
                                 <td>{$p.count}</td>
@@ -32,12 +32,12 @@
                                 <td>{$p.price}</td>
                                 <td>{$p.total_price}</td>
                             </tr>
-                        </volist>
+                        {/volist}
                         </tbody>
                     </table>
                 </td>
             </tr>
-            <if condition="$model['remark']">
+            {if $model['remark']}
                 <tr>
                     <th colspan="4">备注</th>
                 </tr>
@@ -46,7 +46,7 @@
                         {$model.remark}
                     </td>
                 </tr>
-            </if>
+            {/if}
             </tbody>
         </table>
     </div>

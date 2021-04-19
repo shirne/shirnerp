@@ -91,16 +91,16 @@
             }
         }
     </style>
-    <block name="header"></block>
+    {block name="header"}{/block}
 
 </head>
 
 <body>
 
 
-    <block name="body" ></block>
+    {block name="body" }{/block}
 
 
-    <block name="script"></block>
+    {block name="script"}{/block}
 </body>
 </html>

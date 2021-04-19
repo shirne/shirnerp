@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="finance_receive" title="应收款" />
+    {include file="public/bread" menu="finance_receive" title="应收款" /}
 
     <div id="page-wrapper">
 
@@ -39,11 +39,11 @@
             </tr>
             </thead>
             <tbody>
-            <php>$empty=list_empty(9);</php>
-            <volist name="lists" id="v" empty="$empty">
+            {php}$empty=list_empty(9);{/php}
+            {volist name="lists" id="v" empty="$empty"}
                 <tr>
                     <td>{$v.id}</td>
-                    <td>{$v.order_no}<if condition="$v['parent_order_id']"><span class="badge badge-warning">退货</span> </if></td>
+                    <td>{$v.order_no}{if !empty($v['parent_order_id'])}<span class="badge badge-warning">退货</span> {/if}</td>
                     <td>{$v.customer_title}</td>
                     <td>{$v.currency}</td>
                     <td>{$v.amount}</td>
@@ -55,22 +55,22 @@
                         <a class="btn btn-outline-primary" rel="ajax" title="明细" href="{:url('SaleOrder/detail',array('id'=>$v['id']))}"><i class="ion-md-document"></i> </a>
                     </td>
                 </tr>
-            </volist>
+            {/volist}
             </tbody>
         </table>
     </div>
 
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/html" id="financeLog">
         <div class="row" style="margin:0 10%;">
             <div class="col-12 form-group">
                 <div class="input-group">
                     <div class="input-group-prepend"><span class="input-group-text">方式</span> </div>
                     <select name="pay_type" class="form-control">
-                        <foreach name="paytypes" key="key" id="ptype">
+                        {foreach $paytypes as $key=>$ptype}
                             <option value="{$key}">{$ptype}</option>
-                        </foreach>
+                        {/foreach}
                     </select>
                 </div>
             </div>
@@ -153,4 +153,4 @@
             });
         })
     </script>
-</block>
+{/block}

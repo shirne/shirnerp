@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="produce_index" title="生产流程" />
+    {include file="public/bread" menu="produce_index" title="生产流程" /}
 
     <div id="page-wrapper">
         <div class="row list-header">
@@ -42,13 +42,13 @@
             </tr>
             </thead>
             <tbody>
-            <php>$empty=list_empty(7);</php>
-            <volist name="lists" id="v" empty="$empty">
+            {php}$empty=list_empty(7);{/php}
+            {volist name="lists" id="v" empty="$empty"}
                 <tr>
                     <td><input type="checkbox" name="id" value="{$v.id}" /></td>
                     <td>{$v.title}</td>
                     <td>{$v.goods_title}</td>
-                    <td>{:count($v['goods'])}类<if condition="$v['package_count'] GT 0">, {$v['package_count']}件 </if></td>
+                    <td>{:count($v['goods'])}类{if $v['package_count'] > 0}, {$v['package_count']}件 {/if}</td>
                     <td>{$v.create_time|showdate}</td>
                     <td>{$v.remark}</td>
                     <td class="operations">
@@ -57,13 +57,13 @@
                         <a class="btn btn-outline-primary link-log" title="操作记录" href="{:url('produce/log',array('id'=>$v['id']))}" ><i class="ion-md-list"></i> </a>
                     </td>
                 </tr>
-            </volist>
+            {/volist}
             </tbody>
         </table>
         {$page|raw}
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript">
         (function(w,$){
             w.actionPrints=function(ids){
@@ -110,4 +110,4 @@
             });
         });
     </script>
-</block>
+{/block}

@@ -1,6 +1,6 @@
-<extend name="public:print" />
+{extend name="public:print" /}
 
-<block name="body">
+{block name="body"}
     <div class="page-wrapper container ml-auto mr-auto mb-3 d-print-none">
         <div class="row">
             <h2 class="pl-3 pr-3">订单打印</h2>
@@ -45,7 +45,7 @@
             </tr>
             </thead>
             <tbody>
-            <volist name="goods" id="good">
+            {volist name="goods" id="good"}
                 <tr>
                     <td>{$good.goods_title}</td>
                     <td>{$good.count}</td>
@@ -56,15 +56,15 @@
                     <td class="storage-col d-none">{$good.storage_title}</td>
                     <td>{$good.remark}</td>
                 </tr>
-            </volist>
+            {/volist}
             </tbody>
             <tfoot>
-                <if condition="!empty($model['remark'])">
+                {if !empty($model['remark'])}
                     <tr>
                         <th>备注</th>
                         <td colspan="7">{$model.remark}</td>
                     </tr>
-                </if>
+                {/if}
                 <tr>
                     <th>运费</th>
                     <td colspan="3">{$model.freight}</td>
@@ -83,19 +83,19 @@
             </tr>
             </thead>
             <tbody>
-            <volist name="logs" id="log">
+            {volist name="logs" id="log"}
             <tr>
                 <th>{$log.id}</th>
                 <td>{$log.username}</td>
                 <td>{$log.remark}</td>
                 <td>{$log.datetime}</td>
             </tr>
-            </volist>
+            {/volist}
             </tbody>
         </table>
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript" src="__STATIC__/store.js/store.modern.min.js"></script>
     <script type="text/javascript">
         jQuery(function ($) {
@@ -157,4 +157,4 @@
             })
         })
     </script>
-</block>
+{/block}

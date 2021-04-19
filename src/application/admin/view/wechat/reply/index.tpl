@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="wechat_index" title="消息回复" />
+    {include file="public/bread" menu="wechat_index" title="消息回复" /}
 
     <div id="page-wrapper">
 
@@ -35,7 +35,7 @@
             </tr>
             </thead>
             <tbody>
-            <volist name="lists" id="v" empty="$empty">
+            {volist name="lists" id="v" empty="$empty"}
                 <tr>
                     <td>{$v.id}</td>
                     <td>{$v.title}</td>
@@ -48,9 +48,9 @@
                         <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('wechat.reply/delete',array('id'=>$v['id'],'wid'=>$wid))}" ><i class="ion-md-trash"></i> </a>
                     </td>
                 </tr>
-            </volist>
+            {/volist}
             </tbody>
         </table>
         {$page|raw}
     </div>
-</block>
+{/block}

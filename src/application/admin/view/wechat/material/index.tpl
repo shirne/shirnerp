@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="wechat_index" title="素材管理" />
+    {include file="public/bread" menu="wechat_index" title="素材管理" /}
 
     <div id="page-wrapper">
 
@@ -35,7 +35,7 @@
             </tr>
             </thead>
             <tbody>
-            <volist name="lists" id="v" empty="$empty">
+            {volist name="lists" id="v" empty="$empty"}
                 <tr>
                     <td>{$v.id}</td>
                     <td>{$v.media_id}</td>
@@ -46,13 +46,13 @@
                         <a class="btn btn-outline-primary link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('wechat.material/delete',array('media_id'=>$v['media_id'],'wid'=>$wid))}" ><i class="ion-md-trash"></i> </a>
                     </td>
                 </tr>
-            </volist>
+            {/volist}
             </tbody>
         </table>
         {$page|raw}
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript">
         jQuery(function ($) {
             $('.btn-sync').click(function (e) {
@@ -76,4 +76,4 @@
             })
         })
     </script>
-</block>
+{/block}

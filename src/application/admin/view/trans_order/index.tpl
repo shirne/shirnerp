@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="trans_order_index" title="商品调度" />
+    {include file="public/bread" menu="trans_order_index" title="商品调度" /}
 
     <div id="page-wrapper">
 
@@ -34,8 +34,8 @@
             </tr>
             </thead>
             <tbody>
-            <php>$empty=list_empty(7);</php>
-            <volist name="lists" id="v" empty="$empty">
+            {php}$empty=list_empty(7);{/php}
+            {volist name="lists" id="v" empty="$empty"}
                 <tr>
                     <td>{$v.id}</td>
                     <td>{$v.order_no}</td>
@@ -43,29 +43,29 @@
                     <td>{$v.storage_title}</td>
                     <td>{$v.create_time|showdate}</td>
                     <td>
-                        <if condition="$v['status'] EQ 1">
+                        {if $v['status'] == 1}
                             <span class="badge badge-success">已转库</span>
-                            <else/>
+                            {else/}
                             <span class="badge badge-warning">未转库</span>
-                        </if>
+                        {/if}
                     </td>
                     <td class="operations">
-                        <if condition="$v['status'] EQ 0">
+                        {if $v['status'] == 0}
                             <a class="btn btn-outline-primary link-confirm" title="转库" data-confirm="请确认商品已转库，操作不可撤销!" href="{:url('transOrder/status',array('id'=>$v['id'],'status'=>1))}" ><i class="ion-md-swap"></i> </a>
                             <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('transOrder/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
-                            <else/>
+                            {else/}
                             <a class="btn btn-outline-primary link-detail" title="详情" href="{:url('transOrder/detail',array('id'=>$v['id']))}" ><i class="ion-md-document"></i> </a>
-                        </if>
+                        {/if}
                     </td>
                 </tr>
-            </volist>
+            {/volist}
             </tbody>
         </table>
         <div class="clearfix"></div>
         {$page|raw}
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript">
         jQuery(function ($) {
             $('.link-detail').click(function (e) {
@@ -88,4 +88,4 @@
             })
         })
     </script>
-</block>
+{/block}

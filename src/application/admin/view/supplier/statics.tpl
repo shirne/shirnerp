@@ -1,12 +1,12 @@
-<extend name="public:base" />
-<block name="header">
+{extend name="public:base" /}
+{block name="header"}
     <style type="text/css">
         html{overflow-y:scroll;}
     </style>
-</block>
-<block name="body">
+{/block}
+{block name="body"}
 
-    <include file="public/bread" menu="supplier_index" title="供应商统计" />
+    {include file="public/bread" menu="supplier_index" title="供应商统计" /}
 
     <div id="page-wrapper">
         <div class="list-header">
@@ -53,7 +53,7 @@
                 </thead>
                 <tbody>
                 <empty name="statics">{:list_empty(4)}</empty>
-                <volist name="statics" id="v" >
+                {volist name="statics" id="v" }
                     <tr>
                         <td>{$v.awdate}</td>
                         <td>{$v.order_count}</td>
@@ -61,21 +61,21 @@
                             {$v.order_amount}
                         </td>
                         <td>
-                            <if condition="$v['order_count'] GT 0">
+                            {if $v['order_count'] > 0}
                                 {:round($v['order_amount']/$v['order_count'],2)}
-                                <else/>
+                                {else/}
                                 -
-                            </if>
+                            {/if}
                         </td>
                     </tr>
-                </volist>
+                {/volist}
                 </tbody>
             </table>
         </div>
     </div>
 
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript" src="__STATIC__/chart/Chart.bundle.min.js"></script>
     <script type="text/javascript">
         window.page_title="[{$supplier['title']}]统计";
@@ -141,4 +141,4 @@
             })
         })
     </script>
-</block>
+{/block}

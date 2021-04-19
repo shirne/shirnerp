@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-<include file="public/bread" menu="links_index" title="链接信息" />
+{include file="public/bread" menu="links_index" title="链接信息" /}
 
 <div id="page-wrapper">
     <div class="page-header">{$id>0?'编辑':'添加'}链接</div>
@@ -24,13 +24,13 @@
                     <label class="custom-file-label" for="upload_logo">选择文件</label>
                 </div>
             </div>
-            <if condition="$model['logo']">
+            {if !empty($model['logo'])}
                 <figure class="figure">
                     <img src="{$model.logo}" class="figure-img img-fluid rounded" alt="image">
                     <figcaption class="figure-caption text-center">{$model.logo}</figcaption>
                 </figure>
                 <input type="hidden" name="delete_logo" value="{$model.logo}"/>
-            </if>
+            {/if}
         </div>
         <div class="form-group">
             <label for="sort">优先级</label>
@@ -43,4 +43,4 @@
     </form>
     </div>
 </div>
-</block>
+{/block}

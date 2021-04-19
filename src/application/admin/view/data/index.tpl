@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="data_index" title="基础数据" />
+    {include file="public/bread" menu="data_index" title="基础数据" /}
 
     <div id="page-wrapper">
         <div class="row">
@@ -23,19 +23,19 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <php>$empty=list_empty(6);</php>
-                        <volist name="units" id="v" empty="$empty">
+                        {php}$empty=list_empty(6);{/php}
+                        {volist name="units" id="v" empty="$empty"}
                             <tr>
                                 <td>{$v.id}</td>
                                 <td>{$v.key}</td>
                                 <td>{$v.sort}</td>
-                                <td><if condition="$v['weight_rate'] NEQ 0">{$v.weight_rate}{:getSetting('weight_unit')}<else/>-</if></td>
+                                <td>{if $v['weight_rate'] != 0}{$v.weight_rate}{:getSetting('weight_unit')}{else/}-{/if}</td>
                                 <td class="operations">
                                     <a class="btn btn-outline-primary unitEditBtn" data-id="{$v.id}" title="编辑" href="javascript:"><i class="ion-md-create"></i> </a>
                                     <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('data/unit_delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
                                 </td>
                             </tr>
-                        </volist>
+                        {/volist}
                         </tbody>
                     </table>
                 </div>
@@ -59,21 +59,21 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <php>$empty=list_empty(7);</php>
-                        <volist name="currencies" id="v" empty="$empty">
+                        {php}$empty=list_empty(7);{/php}
+                        {volist name="currencies" id="v" empty="$empty"}
                             <tr>
                                 <td>{$v.id}</td>
                                 <td>{$v.key}</td>
                                 <td>{$v.title}</td>
                                 <td>{$v.symbol}</td>
                                 <td class="operations text-center">
-                                    <if condition="$v['is_base'] EQ 1">
+                                    {if $v['is_base'] EQ 1}
                                         <span class="badge badge-warning">基准货币</span>
-                                        <else/>
+                                        {else/}
                                         <span class="badge badge-info">{$v.exchange_rate}</span>
                                         <a href="javascript:" class="btn btn-sm btn-outline-primary baseCurrencyBtn" data-key="{$v.key}" title="设为基准货币"><i class="ion-md-cash"></i> </a>
                                         <a href="javascript:" class="btn btn-sm btn-outline-primary exchangeCurrencyBtn" data-key="{$v.key}" title="更新汇率"><i class="ion-md-swap"></i> </a>
-                                    </if>
+                                    {/if}
                                 </td>
                                 <td>{$v.sort}</td>
                                 <td class="operations">
@@ -81,7 +81,7 @@
                                     <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('data/currency_delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
                                 </td>
                             </tr>
-                        </volist>
+                        {/volist}
                         </tbody>
                     </table>
                 </div>
@@ -90,8 +90,8 @@
 
     </div>
 
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/html" id="unitEdit">
         <div class="row" style="margin:0 10%;">
             <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">商品单位</span> </div><input type="text" name="key" class="form-control" placeholder="请填写商品单位"/> </div></div>
@@ -241,4 +241,4 @@
         })
         
     </script>
-</block>
+{/block}

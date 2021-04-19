@@ -1,5 +1,5 @@
-<extend name="public:print" />
-<block name="header">
+{extend name="public:print" /}
+{block name="header"}
     <style >
         @page {
             size: 8cm 6cm;
@@ -7,8 +7,8 @@
             padding:0;
         }
     </style>
-</block>
-<block name="body">
+{/block}
+{block name="body"}
     <div id="app" class="labelpage">
     <div class="page-wrapper container ml-auto mr-auto mb-3 d-print-none">
         <div class="row">
@@ -45,9 +45,9 @@
                         <input type="text" class="form-control" v-model="order.goodspick.count" placeholder="" aria-label="" aria-describedby="basic-addon1">
                         <select name="unit" v-model="order.goodspick.unit" class="form-control">
                             <option value="">单位</option>
-                            <volist name="units" id="u">
+                            {volist name="units" id="u"}
                                 <option value="{$u.key}">{$u.key}</option>
-                            </volist>
+                            {/volist}
                         </select>
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" @click="addGoods(index)" type="button">添加品种</button>
@@ -234,8 +234,8 @@
         </div>
     </div>
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript" src="__STATIC__/js/vue-2.6.min.js"></script>
     <script type="text/javascript">
 
@@ -826,4 +826,4 @@
             }
         });
     </script>
-</block>
+{/block}

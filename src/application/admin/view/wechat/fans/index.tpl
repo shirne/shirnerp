@@ -1,7 +1,7 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
-    <include file="public/bread" menu="wechat_index" title=""/>
+{block name="body"}
+    {include file="public/bread" menu="wechat_index" title=""/}
 
     <div id="page-wrapper">
         <div class="row list-header">
@@ -38,16 +38,16 @@
             </tr>
             </thead>
             <tbody>
-            <volist name="lists" id="v" empty="$empty">
+            {volist name="lists" id="v" empty="$empty"}
                 <tr>
                     <td><input type="checkbox" name="id" value="{$v.id}" /></td>
                     <td>
-                        <if condition="!empty($v['avatar'])">
+                        {if !empty($v['avatar'])}
                             <div class="avatar float-left rounded-circle" style="width: 50px;height: 50px;background-image:url({$v.avatar});background-size:100%;"></div>
-                        </if>
+                        {/if}
                         <div class="float-left pl-2" style="white-space: nowrap">
                             {$v.nickname}
-                            <if condition="$v['gender'] EQ 2"><i class="ion-md-female text-danger" ></i><else/><i class="ion-md-male text-success" ></i></if><br />
+                            {if $v['gender'] == 2}<i class="ion-md-female text-danger" ></i>{else/}<i class="ion-md-male text-success" ></i>{/if}<br />
                             {$v.openid}
                         </div>
                     </td>
@@ -60,15 +60,15 @@
                         <a class="btn btn-outline-primary" title="同步" href="{:url('member.fans/update',array('id'=>$v['id']))}"><i class="ion-md-sync"></i> </a>
                     </td>
                 </tr>
-            </volist>
+            {/volist}
             </tbody>
         </table>
         {$page|raw}
     </div>
 
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript">
 
     </script>
-</block>
+{/block}

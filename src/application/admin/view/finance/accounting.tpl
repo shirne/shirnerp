@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="finance_index" title="成本核算" />
+    {include file="public/bread" menu="finance_index" title="成本核算" /}
 
     <div id="page-wrapper">
         <div class="row list-header">
@@ -17,15 +17,15 @@
                             <button class="btn btn-outline-dark" type="submit"><i class="ion-md-search"></i></button>
                         </div>
                     </div>
-                    <if condition="!empty($start_date)">
+                    {if !empty($start_date)}
                         <a href="{:url('accounting',['export'=>1,'start_date'=>$start_date,'end_date'=>$end_date])}" class="btn btn-outline-primary ml-2"><i class="ion-md-download"></i> 导出</a>
-                    </if>
+                    {/if}
                 </form>
             </div>
         </div>
-        <if condition="empty($start_date)">
+        {if empty($start_date)}
             <div class="p-4 text-center text-muted">请选择日期查看</div>
-            <else/>
+            {else/}
             <div class="row">
                 <div class="col">
                     <div class="card">
@@ -122,8 +122,8 @@
                 </tr>
                 </thead>
                 <tbody class="text-right">
-                <php>$empty=list_empty(17);</php>
-                <volist name="finance['goods']" id="v" empty="$empty">
+                {php}$empty=list_empty(17);{/php}
+                {volist name="finance['goods']" id="v" empty="$empty"}
                     <tr>
                         <td class="text-center">{$v.id}</td>
                         <td class="text-center">{$v.title}</td>
@@ -146,11 +146,11 @@
                         <td></td>
                         <td></td>
                     </tr>
-                </volist>
+                {/volist}
                 </tbody>
             </table>
 
-        </if>
+        {/if}
     </div>
 
-</block>
+{/block}

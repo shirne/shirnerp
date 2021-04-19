@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="sale_order_index" title="销售单列表" />
+    {include file="public/bread" menu="sale_order_index" title="销售单列表" /}
 
     <div id="page-wrapper">
 
@@ -46,58 +46,58 @@
             </tr>
             </thead>
             <tbody>
-            <php>$empty=list_empty(9);</php>
-            <volist name="lists" id="v" empty="$empty">
+            {php}$empty=list_empty(9);{/php}
+            {volist name="lists" id="v" empty="$empty"}
                 <tr>
                     <td><input type="checkbox" name="id" value="{$v.id}" /></td>
-                    <td>{$v.order_no}<if condition="$v['parent_order_id']"><span class="badge badge-warning">退货</span></if></td>
+                    <td>{$v.order_no}{if $v['parent_order_id']}<span class="badge badge-warning">退货</span>{/if}</td>
                     <td>{$v.storage_title}</td>
                     <td>{$v.customer_title}</td>
-                    <td>{:count($v['goods'])}类<if condition="$v['package_count'] GT 0">, {$v['package_count']}件 </if></td>
+                    <td>{:count($v['goods'])}类{if $v['package_count'] > 0}, {$v['package_count']}件 {/if}</td>
                     <td>{$v.create_time|showdate}</td>
                     <td><span class="badge badge-info">{$v.currency}</span> {$v.amount}</td>
                     <td>
-                        <if condition="$v['parent_order_id']">
-                            <if condition="$v['status'] EQ 1">
+                        {if $v['parent_order_id']}
+                            {if $v['status'] > 1}
                                 <span class="badge badge-success">已入库</span>
-                                <else/>
+                                {else/}
                                 <span class="badge badge-warning">未入库</span>
-                            </if>
-                            <else/>
-                        <if condition="$v['status'] EQ 1">
+                            {/if}
+                            {else/}
+                        {if $v['status'] == 1}
                             <span class="badge badge-success">已出库</span>
-                            <else/>
+                            {else/}
                             <span class="badge badge-warning">未出库</span>
-                        </if>
-                        </if>
+                        {/if}
+                        {/if}
                     </td>
                     <td class="operations">
                         <a class="btn btn-outline-primary" target="_blank" title="导出" href="{:url('saleOrder/exportOne',array('id'=>$v['id']))}" ><i class="ion-md-download"></i> </a>
                         <a class="btn btn-outline-primary" target="_blank" title="打印" href="{:url('saleOrder/detail',array('id'=>$v['id'],'mode'=>1))}" ><i class="ion-md-print"></i> </a>
                         <a class="btn btn-outline-primary link-log" title="操作记录" href="{:url('saleOrder/log',array('id'=>$v['id']))}" ><i class="ion-md-list"></i> </a>
-                        <if condition="$v['status'] EQ 0">
-                            <if condition="$v['parent_order_id']">
+                        {if $v['status'] == 0}
+                            {if $v['parent_order_id']}
                                 <a class="btn btn-outline-success link-confirm" title="入库" data-confirm="请确认商品已入库，操作不可撤销!" href="{:url('saleOrder/status',array('id'=>$v['id'],'status'=>1))}" ><i class="ion-md-filing"></i> </a>
-                                <else/>
+                                {else/}
                             <a class="btn btn-outline-success link-confirm" title="出库" data-confirm="请确认商品已出库，操作不可撤销!" href="{:url('saleOrder/status',array('id'=>$v['id'],'status'=>1))}" ><i class="ion-md-filing"></i> </a>
-                            </if>
+                            {/if}
                             <a class="btn btn-outline-primary" data-tab="edit-{$v.id}" title="编辑" href="{:url('saleOrder/detail',array('id'=>$v['id'],'mode'=>2))}" ><i class="ion-md-create"></i> </a>
                             <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('saleOrder/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
-                            <else/>
-                            <if condition="$v['parent_order_id'] EQ 0">
+                            {else/}
+                            {if $v['parent_order_id'] == 0}
                             <a class="btn btn-outline-warning" data-tab="timestamp" title="退货" href="{:url('saleOrder/back',array('id'=>$v['id']))}" ><i class="ion-md-undo"></i> </a>
-                            </if>
+                            {/if}
                             <a class="btn btn-outline-primary" data-tab="detail-{$v.id}" title="详情" href="{:url('saleOrder/detail',array('id'=>$v['id']))}" ><i class="ion-md-document"></i> </a>
-                        </if>
+                        {/if}
                     </td>
                 </tr>
-            </volist>
+            {/volist}
             </tbody>
         </table>
         {$page|raw}
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript">
         (function(w,$){
             w.actionPrints=function(ids){
@@ -149,4 +149,4 @@
             });
         });
     </script>
-</block>
+{/block}

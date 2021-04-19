@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="purchase_order_index" title="采购入库" />
+    {include file="public/bread" menu="purchase_order_index" title="采购入库" /}
 
     <div id="page-wrapper">
         <div class="page-header">采购入库</div>
@@ -45,9 +45,9 @@
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">货币</span></div>
                                     <select class="form-control" v-model="order.currency">
-                                        <volist name="currencies" id="cur">
+                                        {volist name="currencies" id="cur"}
                                             <option value="{$cur.key}">[{$cur.key}]{$cur.title}</option>
-                                        </volist>
+                                        {/volist}
                                     </select>
                                 </div>
                             </div>
@@ -83,9 +83,9 @@
                                 <div class="input-group input-group-sm">
                                     <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.count"/>
                                     <select v-model="good.unit" style="flex:0;width: 50px;" @keydown="stopLeftRight" class="form-control">
-                                        <volist name="units" id="unit">
+                                        {volist name="units" id="unit"}
                                             <option value="{$unit.key}">{$unit.key}</option>
-                                        </volist>
+                                        {/volist}
                                     </select>
                                 </div>
                             </td>
@@ -179,9 +179,14 @@
                 [{{good.goods_no}}]{{good.title}}
             </li>
         </ul>
+        <ul class="list-group auto-complete supplier-complete" :style="supplierStyle">
+            <li class="list-group-item" v-for="(supplier,idx) in suppliers" :data-idx="idx" :key="supplier.id" @click="selectThisSupplier" @mouseenter="activeThisSupplier">
+                [{{supplier.id}}]{{supplier.title}}
+            </li>
+        </ul>
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript" src="__STATIC__/js/vue-2.6.min.js"></script>
     <script type="text/javascript">
         var hideTimeout=0;
@@ -201,6 +206,13 @@
                     top:0,
                     width:0
                 },
+                supplierStyle:{
+                    display:'none',
+                    position:'absolute',
+                    left:0,
+                    top:0,
+                    width:0
+                },
                 order:{
                     supplier_id:0,
                     storage_id:0,
@@ -213,6 +225,7 @@
                     supplier_order_no:''
                 },
                 cKey:'',
+                suppliers:[],
                 storages:[],
                 emptyGoods:[],
                 key:'',
@@ -472,7 +485,7 @@
                     e.preventDefault();
 
                     var self=this;
-                    importExcel('导入生产流程',$(e.target).attr('href'),function (data) {
+                    importExcel('导入采购订单',$(e.target).attr('href'),function (data) {
                         if(data.errors && data.errors.length){
                             dialog.alert(data.errors.join("<br />"));
                         }
@@ -509,6 +522,110 @@
                     });
                 },
 
+                //====================== supplier autocomplete
+                showSupplier:function (e) {
+                    clearTimeout(hideSupplierTimeout);
+                    var target=e.target;
+                    var offset=$(target).offset();
+                    var width=$(target).outerWidth();
+                    var height=$(target).outerHeight();
+                    this.supplierStyle.top=(offset.top+height)+'px';
+                    this.supplierStyle.left=offset.left+'px';
+                    this.supplierStyle.width=width+'px';
+                    this.supplierStyle.display='block';
+                    //this.cKey = $(e.target).val();
+                    $(document.body).on('keyup',this.listenSupplierKeyup);
+                    this.getSupplierList(e);
+                },
+                hideSupplier:function (e) {
+                    if(e){
+                        if(this.cKey != this.order.supplier_title) {
+                            this.cKey = this.order.supplier_title;
+                        }
+                    }
+                    var self=this;
+                    clearTimeout(hideSupplierTimeout);
+                    hideSupplierTimeout=setTimeout(function () {
+                        $(document.body).off('keyup',self.listenSupplierKeyup);
+                        self.supplierStyle.display='none';
+                    },500);
+                },
+                loadSupplier:function (e) {
+                    this.getSupplierList(e);
+                },
+                activeThisSupplier:function (e) {
+                    var self=$(e.target);
+                    var parent=self.parents('.list-group').eq(0);
+                    parent.find('.list-group-item').removeClass('hover');
+                    self.addClass('hover');
+                },
+                listenSupplierKeyup:function (e) {
+                    var lists=$('.supplier-complete .list-group-item');
+                    var idx=lists.index($('.supplier-complete .hover'));
+
+                    switch (e.keyCode){
+                        case 40://down
+                            if(idx < lists.length-1){
+                                idx++;
+                                lists.removeClass('hover').eq(idx).addClass('hover');
+                            }
+                            break;
+                        case 38://up
+                            if(idx > 0){
+                                idx--;
+                            }
+                            lists.removeClass('hover').eq(idx).addClass('hover');
+
+                            break;
+                        case 13://enter
+                            if(this.selectSupplier()) {
+                                this.hideSupplier();
+                            }
+                            break;
+                    }
+                },
+                selectThisSupplier:function (e) {
+                    if(this.selectSupplier()) {
+                        this.hideSupplier();
+                    }
+                },
+                selectSupplier:function () {
+                    var hover=$('.supplier-complete .hover');
+                    if(hover.length>0){
+                        var idx=hover.data('idx');
+                        var supplier = this.suppliers[idx];
+                        if(supplier){
+                            this.order.supplier_id=supplier.id;
+                            this.order.supplier_title=supplier.title;
+                            this.cKey = supplier.title;
+                            updateThisTitle('采购单['+supplier.title+']');
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                getSupplierList:function (e) {
+                    var self=this;
+                    var ckey = this.cKey.toString();
+                    if(ckey === lastCustomerKey)return;
+                    lastCustomerKey=ckey;
+
+                    $.ajax({
+                        url: '{:url("supplier/search")}',
+                        type: 'GET',
+                        dataType: 'JSON',
+                        data: {
+                            key: ckey
+                        },
+                        success: function (json) {
+                            if (json.code == 1) {
+                                if(ckey===lastCustomerKey)self.suppliers = json.data;
+                            }
+                        }
+                    });
+                },
+
+                //======================
                 onSubmit:function(e){
                     e.preventDefault();
                     if(this.ajaxing)return false;
@@ -576,4 +693,4 @@
             }
         })
     </script>
-</block>
+{/block}

@@ -1,12 +1,12 @@
-<extend name="public:base" />
-<block name="header">
+{extend name="public:base" /}
+{block name="header"}
     <style type="text/css">
         html{overflow-y:scroll;}
     </style>
-</block>
-<block name="body">
+{/block}
+{block name="body"}
 
-    <include file="public/bread" menu="goods_index" title="商品排行" />
+    {include file="public/bread" menu="goods_index" title="商品排行" /}
 
     <div id="page-wrapper">
         <div class="list-header">
@@ -57,7 +57,7 @@
                 </thead>
                 <tbody>
                 <empty name="goods">{:list_empty(8)}</empty>
-                <volist name="goods" id="v" >
+                {volist name="goods" id="v" }
                     <tr>
                         <td><input type="checkbox" name="id" value="{$v.id}" /></td>
                         <td>{$v.title} <span class="badge badge-info">{$v.unit}</span> </td>
@@ -66,28 +66,28 @@
                         </td>
                         <td>{$v.purchase.total_amount}</td>
                         <td>
-                            <if condition="$v['purchase']['total_count'] GT 0">
+                            {if $v['purchase']['total_count'] GT 0}
                                 {:round($v['purchase']['total_amount']/$v['purchase']['total_count'],2)}<br />
                                 <span class="badge badge-secondary">{$v.purchase.min_price} ~ {$v.purchase.max_price}</span>
-                                <else/>
+                                {else/}
                                 -
-                            </if>
+                            {/if}
                         </td>
                         <td>
                             {$v.sale.total_count}
                         </td>
                         <td>{$v.sale.total_amount}</td>
                         <td>
-                            <if condition="$v['sale']['total_count'] GT 0">
+                            {if $v['sale']['total_count'] GT 0}
                                 {:round($v['sale']['total_amount']/$v['sale']['total_count'],2)}<br />
                                 <span class="badge badge-secondary">{$v.sale.min_price} ~ {$v.sale.max_price}</span>
-                                <else/>
+                                {else/}
                                 -
-                            </if>
+                            {/if}
                         </td>
                     </tr>
-                    <if condition="!empty($v['other'])">
-                        <volist name="$v['other']" id="ov" >
+                    {if !empty($v['other'])}
+                        {volist name="$v['other']" id="ov" }
                             <tr>
                                 <td> - </td>
                                 <td>{$v.title} <span class="badge badge-info">{$key}</span> </td>
@@ -96,36 +96,36 @@
                                 </td>
                                 <td>{$ov.purchase.total_amount}</td>
                                 <td>
-                                    <if condition="$ov['purchase']['total_count'] GT 0">
+                                    {if $ov['purchase']['total_count'] > 0}
                                         {:round($ov['purchase']['total_amount']/$ov['purchase']['total_count'],2)}<br />
                                         <span class="badge badge-secondary">{$ov.purchase.min_price} ~ {$ov.purchase.max_price}</span>
-                                        <else/>
+                                        {else/}
                                         -
-                                    </if>
+                                    {/if}
                                 </td>
                                 <td>
                                     {$ov.sale.total_count}
                                 </td>
                                 <td>{$ov.sale.total_amount}</td>
                                 <td>
-                                    <if condition="$ov['sale']['total_count'] GT 0">
+                                    {if $ov['sale']['total_count'] > 0}
                                         {:round($ov['sale']['total_amount']/$ov['sale']['total_count'],2)}<br />
                                         <span class="badge badge-secondary">{$ov.sale.min_price} ~ {$ov.sale.max_price}</span>
-                                        <else/>
+                                        {else/}
                                         -
-                                    </if>
+                                    {/if}
                                 </td>
                             </tr>
-                        </volist>
-                    </if>
-                </volist>
+                        {/volist}
+                    {/if}
+                {/volist}
                 </tbody>
             </table>
         </div>
     </div>
 
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript" src="__STATIC__/chart/Chart.bundle.min.js"></script>
     <script type="text/javascript">
         var pchart = document.getElementById("purchaseChart");
@@ -186,4 +186,4 @@
         })
 
     </script>
-</block>
+{/block}

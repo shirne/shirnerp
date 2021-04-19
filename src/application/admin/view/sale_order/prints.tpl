@@ -1,5 +1,5 @@
-<extend name="public:print" />
-<block name="header">
+{extend name="public:print" /}
+{block name="header"}
     <style >
         @page {
             size: 8cm 6cm;
@@ -15,8 +15,8 @@
             background:transparent;
         }
     </style>
-</block>
-<block name="body">
+{/block}
+{block name="body"}
     <div id="app" class="labelpage">
     <div class="page-wrapper container ml-auto mr-auto mb-3 d-print-none">
         <div class="row">
@@ -199,8 +199,8 @@
         </div>
     </div>
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript" src="__STATIC__/admin/js/label.min.js"></script>
     <script type="text/javascript" src="__STATIC__/js/vue-2.6.min.js"></script>
     <script type="text/javascript">
@@ -683,4 +683,4 @@
             }
         });
     </script>
-</block>
+{/block}

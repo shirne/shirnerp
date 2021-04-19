@@ -1,8 +1,8 @@
-<extend name="public:base"/>
+{extend name="public:base"/}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="manager_index" title="管理员信息"/>
+    {include file="public/bread" menu="manager_index" title="管理员信息"/}
 
     <div id="page-wrapper">
         <div class="page-header">{$model['id']>0?'编辑':'添加'}管理员</div>
@@ -25,12 +25,12 @@
                     <label>邮箱</label>
                     <input class="form-control" type="text" name="email" value="{$model.email}">
                 </div>
-                <if condition="$model.id GT 0">
+                {if $model.id > 0}
                     <div class="form-group">
                         <label>新密码</label>
                         <input class="form-control" type="password" name="password" placeholder="不填写则不更改">
                     </div>
-                    <else/>
+                    {else/}
                     <div class="form-group">
                         <label>密码</label>
                         <input class="form-control" type="password" name="password" placeholder="登录密码">
@@ -39,7 +39,7 @@
                         <label>确认密码</label>
                         <input class="form-control" type="password" name="repassword" placeholder="再次输入确认">
                     </div>
-                </if>
+                {/if}
                 <div class="form-row">
                     <label class="col-2 col-md-1">用户类型</label>
                     <div class="form-group col-md-2">
@@ -76,4 +76,4 @@
         </div>
     </div>
 
-</block>
+{/block}

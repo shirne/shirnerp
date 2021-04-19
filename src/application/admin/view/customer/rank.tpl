@@ -1,12 +1,12 @@
-<extend name="public:base" />
-<block name="header">
+{extend name="public:base" /}
+{block name="header"}
     <style type="text/css">
         html{overflow-y:scroll;}
     </style>
-</block>
-<block name="body">
+{/block}
+{block name="body"}
 
-    <include file="public/bread" menu="customer_index" title="客户排行" />
+    {include file="public/bread" menu="customer_index" title="客户排行" /}
 
     <div id="page-wrapper">
         <div class="list-header">
@@ -54,7 +54,7 @@
                 </thead>
                 <tbody>
                 <empty name="statics">{:list_empty(5)}</empty>
-                <volist name="statics" id="v" >
+                {volist name="statics" id="v" }
                     <tr>
                         <td>{$v.customer_id}</td>
                         <td>{$v.customer} </td>
@@ -63,21 +63,21 @@
                         </td>
                         <td>{$v.order_amount}</td>
                         <td>
-                            <if condition="$v['order_count'] GT 0">
+                            {if $v['order_count'] GT 0}
                                 {:round($v['order_amount']/$v['order_count'],2)}
-                                <else/>
+                                {else/}
                                 -
-                            </if>
+                            {/if}
                         </td>
                     </tr>
-                </volist>
+                {/volist}
                 </tbody>
             </table>
         </div>
     </div>
 
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript" src="__STATIC__/chart/Chart.bundle.min.js"></script>
     <script type="text/javascript">
         var cchart = document.getElementById("countChart");
@@ -139,4 +139,4 @@
         })
 
     </script>
-</block>
+{/block}

@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-<include file="public/bread" menu="storage_index" title="仓库列表" />
+{include file="public/bread" menu="storage_index" title="仓库列表" /}
 
 <div id="page-wrapper">
     
@@ -25,8 +25,8 @@
             </tr>
         </thead>
         <tbody>
-        <php>$empty=list_empty(6);</php>
-        <volist name="lists" id="v" empty="$empty">
+        {php}$empty=list_empty(6);{/php}
+        {volist name="lists" id="v" empty="$empty"}
             <tr>
                 <td>{$v.id}</td>
                 <td><span class="badge badge-info">{$v.storage_no}</span> {$v.title}</td>
@@ -39,13 +39,13 @@
                     <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('storage/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
                 </td>
             </tr>
-        </volist>
+        {/volist}
         </tbody>
     </table>
     {$page|raw}
 </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript" src="__STATIC__/js/location.min.js"></script>
 <script type="text/html" id="storageEdit">
     <div class="row" style="margin:0 10%;">
@@ -131,4 +131,4 @@
 
         })
     </script>
-</block>
+{/block}

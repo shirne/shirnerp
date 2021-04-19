@@ -1,7 +1,7 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
-<include file="public/bread" menu="goods_index" title="商品列表" />
+{block name="body"}
+{include file="public/bread" menu="goods_index" title="商品列表" /}
 <div id="page-wrapper">
 
 	<div class="row list-header">
@@ -29,9 +29,9 @@
 						</div>
 						<select name="cate_id" class="form-control">
 							<option value="0">不限分类</option>
-							<foreach name="categories" item="v">
+							{foreach $categories as $v}
 								<option value="{$v.id}" {$cate_id == $v['id']?'selected="selected"':""}>{$v.html} {$v.title}</option>
-							</foreach>
+							{/foreach}
 						</select>
 					</div>
 					<div class="col input-group input-group-sm">
@@ -58,7 +58,7 @@
 		</thead>
 		<tbody>
 			<empty name="lists">{:list_empty(8)}</empty>
-			<volist name="lists" id="v" >
+			{volist name="lists" id="v" }
 				<tr>
 					<td><input type="checkbox" name="id" value="{$v.id}" /></td>
 					<td><span class="badge badge-info">{$v.goods_no}</span> {$v.title}</td>
@@ -74,15 +74,15 @@
 					<a class="btn btn-outline-danger link-confirm" title="{:lang('Delete')}" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('goods/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
 					</td>
 				</tr>
-			</volist>
+			{/volist}
 		</tbody>
 	</table>
 	<div class="clearfix"></div>
 	{$page|raw}
 
 </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
 	<script type="text/html" id="addTpl">
 		<div class="form-group">
 			<div class="input-group">
@@ -114,9 +114,9 @@
 					<label class="input-group-text">商品分类</label>
 				</div>
 				<select name="cate_id" id="goods-cate" class="form-control">
-					<foreach name="categories" item="v">
+					{foreach $categories as $v}
 						<option value="{$v.id}" >{$v.html} {$v.title}</option>
-					</foreach>
+					{/foreach}
 				</select>
 			</div>
 		</div>
@@ -126,9 +126,9 @@
 					<label class="input-group-text">商品单位</label>
 				</div>
 				<select name="unit" class="form-control">
-					<foreach name="units" item="v">
+					{foreach $units as $v}
 						<option value="{$v.key}" >{$v.key}</option>
-					</foreach>
+					{/foreach}
 				</select>
 			</div>
 		</div>
@@ -169,9 +169,9 @@
 					<label class="input-group-text">统一分类</label>
 				</div>
 				<select name="cate_id" id="goods-cate" class="form-control">
-					<foreach name="categories" item="v">
+					{foreach $categories as $v}
 						<option value="{$v.id}" {$goods['cate_id'] == $v['id']?'selected="selected"':""}>{$v.html} {$v.title}</option>
-					</foreach>
+					{/foreach}
 				</select>
 			</div>
 		</div>
@@ -181,9 +181,9 @@
 					<label class="input-group-text">统一单位</label>
 				</div>
 				<select name="unit" class="form-control">
-					<foreach name="units" item="v">
+					{foreach $units as $v}
 						<option value="{$v.key}" {$goods['unit'] == $v['key']?'selected="selected"':""}>{$v.key}</option>
-					</foreach>
+					{/foreach}
 				</select>
 			</div>
 		</div>
@@ -335,4 +335,4 @@
             };
         })(window);
 	</script>
-</block>
+{/block}

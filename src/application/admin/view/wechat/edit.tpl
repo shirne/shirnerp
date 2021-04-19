@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="wechat_index" title="公众号信息" />
+    {include file="public/bread" menu="wechat_index" title="公众号信息" /}
 
     <div id="page-wrapper">
         <div class="page-header">{$id>0?'编辑':'添加'}公众号</div>
@@ -78,13 +78,13 @@
                                 <label class="custom-file-label" for="upload_logo">选择文件</label>
                             </div>
                         </div>
-                        <if condition="$model['logo']">
+                        {if $model['logo']}
                             <figure class="figure">
                                 <img src="{$model.logo}" class="figure-img img-fluid rounded" alt="image">
                                 <figcaption class="figure-caption text-center">{$model.logo}</figcaption>
                             </figure>
                             <input type="hidden" name="delete_logo" value="{$model.logo}"/>
-                        </if>
+                        {/if}
                     </div>
                     <div class="col form-group">
                         <label for="original">二维码</label>
@@ -94,13 +94,13 @@
                                 <label class="custom-file-label" for="upload_qrcode">选择文件</label>
                             </div>
                         </div>
-                        <if condition="$model['qrcode']">
+                        {if $model['qrcode']}
                             <figure class="figure">
                                 <img src="{$model.qrcode}" class="figure-img img-fluid rounded" alt="image">
                                 <figcaption class="figure-caption text-center">{$model.qrcode}</figcaption>
                             </figure>
                             <input type="hidden" name="delete_qrcode" value="{$model.qrcode}"/>
-                        </if>
+                        {/if}
                     </div>
                 </div>
                 <div class="form-row">
@@ -158,12 +158,12 @@
                                 <label class="custom-file-label" for="upload_cert_path">选择文件</label>
                             </div>
                         </div>
-                        <if condition="$model['cert_path']">
+                        {if $model['cert_path']}
                             <figure class="figure">
                                 <figcaption class="figure-caption text-center">{$model.cert_path}</figcaption>
                             </figure>
                             <input type="hidden" name="delete_cert_path" value="{$model.cert_path}"/>
-                        </if>
+                        {/if}
                     </div>
                     <div class="col form-group">
                         <label for="original">密钥文件(key.pem)</label>
@@ -173,12 +173,12 @@
                                 <label class="custom-file-label" for="upload_key_path">选择文件</label>
                             </div>
                         </div>
-                        <if condition="$model['key_path']">
+                        {if $model['key_path']}
                             <figure class="figure">
                                 <figcaption class="figure-caption text-center">{$model.key_path}</figcaption>
                             </figure>
                             <input type="hidden" name="delete_key_path" value="{$model.key_path}"/>
-                        </if>
+                        {/if}
                     </div>
                 </div>
                 <div class="form-group">
@@ -188,8 +188,8 @@
             </form>
         </div>
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript">
         jQuery(function ($) {
             $('.gener-token').click(function() {
@@ -243,4 +243,4 @@
             });
         })
     </script>
-</block>
+{/block}

@@ -25,11 +25,11 @@
                 </div>
                 <select name="pid" class="form-control">
                     <option value="">顶级分类</option>
-                    <foreach name="categories" item="v">
+                    {foreach $categories as $v}
                         <option value="{$v.id}"
                         <?php if($model['pid'] == $v['id']) {echo 'selected="selected"' ;}?>
                         >{$v.html} {$v.title}</option>
-                    </foreach>
+                    {/foreach}
                 </select>
             </div>
         </div>

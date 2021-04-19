@@ -1,12 +1,12 @@
-<extend name="public:base" />
-<block name="header">
+{extend name="public:base" /}
+{block name="header"}
     <style type="text/css">
         html{overflow-y:scroll;}
     </style>
-</block>
-<block name="body">
+{/block}
+{block name="body"}
 
-    <include file="public/bread" menu="sale_order_statics" title="生产统计" />
+    {include file="public/bread" menu="sale_order_statics" title="生产统计" /}
 
     <div id="page-wrapper">
         <div class="list-header">
@@ -59,7 +59,7 @@
                 </thead>
                 <tbody>
                 <empty name="statics">{:list_empty(3)}</empty>
-                <volist name="statics" id="v" >
+                {volist name="statics" id="v" }
                     <tr>
                         <td>{$v.awdate}</td>
                         <td>{$v.order_count}</td>
@@ -67,15 +67,15 @@
                             {$v.order_amount}
                         </td>
                     </tr>
-                </volist>
+                {/volist}
                 </tbody>
             </table>
         </div>
 
     </div>
 
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript" src="__STATIC__/chart/Chart.bundle.min.js"></script>
     <script type="text/javascript">
         var ctx = document.getElementById("myChart");
@@ -132,4 +132,4 @@
             })
         })
     </script>
-</block>
+{/block}

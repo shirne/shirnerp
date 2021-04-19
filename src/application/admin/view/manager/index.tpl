@@ -1,7 +1,7 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
-<include file="public/bread" menu="manager_index" title="管理员列表" />
+{block name="body"}
+{include file="public/bread" menu="manager_index" title="管理员列表" /}
 
 <div id="page-wrapper">
     <div class="row list-header">
@@ -33,7 +33,7 @@
             </tr>
         </thead>
         <tbody>
-        <foreach name="lists" item="v">
+        {foreach $lists as $v}
             <tr>
                 <td>{$v.id}</td>
                 <td>{$v.username}</td>
@@ -41,26 +41,26 @@
                 <td>{$v.create_time|showdate}<br />{$v.update_time|showdate}</td>
                 <td>{$v.login_ip}<br />{$v.logintime|showdate}</td>
                 <td>
-                    <if condition="$v.type eq 1"> <span class="label label-success">超级管理员</span>
-                    <elseif condition="$v.type eq 2"/><span class="label label-danger">管理员</span>
-                    </if>
+                    {if $v['type'] == 1} <span class="label label-success">超级管理员</span>
+                    {elseif condition="$v['type'] == 2"/}<span class="label label-danger">管理员</span>
+                    {/if}
                 </td> 
-                <td><if condition="$v.status eq 1">正常<else/><span style="color:red">禁用</span></if></td>
+                <td>{if $v['status'] == 1}正常{else/}<span style="color:red">禁用</span>{/if}</td>
                 <td class="operations">
                     <a class="btn btn-outline-primary" data-tab="edit-{$v.id}" title="编辑" href="{:url('manager/update',array('id'=>$v['id']))}"><i class="ion-md-create"></i> </a>
-                <if condition="$v.type neq 1">
+                {if $v['type'] != 1}
                     <a class="btn btn-outline-primary" data-tab="permision-{$v.id}" title="权限" href="{:url('manager/permision',array('id'=>$v['id']))}"><i class="ion-md-key"></i> </a>
-                </if>
-                <if condition="$v.status eq 1">	
+                {/if}
+                {if $v['status'] == 1}	
                     <a class="btn btn-outline-danger link-confirm" title="禁用" data-confirm="禁用后用户将不能登陆后台!\n请确认!!!" href="{:url('manager/delete',array('id'=>$v['id']))}" ><i class="ion-md-close"></i> </a>
-            	<else/>
+            	{else/}
                     <a class="btn btn-outline-success" title="启用" href="{:url('manager/delete',array('id'=>$v['id']))}" ><i class="ion-md-checkmark-circle"></i> </a>
-            	</if>
+            	{/if}
                 </td>
             </tr>
-        </foreach>
+        {/foreach}
         </tbody>
     </table>
 </div>
 
-</block>
+{/block}

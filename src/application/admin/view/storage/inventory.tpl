@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-    <include file="public/bread" menu="storage_index" title="仓库盘点" />
+    {include file="public/bread" menu="storage_index" title="仓库盘点" /}
 
     <div id="page-wrapper">
 
@@ -25,40 +25,40 @@
             </tr>
             </thead>
             <tbody>
-            <php>$empty=list_empty(6);</php>
-            <volist name="lists" id="v" empty="$empty">
+            {php}$empty=list_empty(6);{/php}
+            {volist name="lists" id="v" empty="$empty"}
                 <tr>
                     <td>{$v.id}</td>
                     <td>{$v.order_no}</td>
                     <td>{$v.storage_title}</td>
                     <td>{$v.create_time|showdate}</td>
                     <td>
-                        <if condition="$v['status'] EQ 1">
+                        {if $v['status'] == 1}
                             <span class="badge badge-secondary">已盘点</span>
-                            <else/>
+                            {else/}
                             <span class="badge badge-warning">待盘点</span>
-                        </if>
+                        {/if}
                     </td>
                     <td class="operations">
-                        <if condition="$v['status'] EQ 1">
+                        {if $v['status'] == 1}
                             <a class="btn btn-outline-primary btn-edit-storage" data-tab="detail-{$v.id}" data-id="{$v.id}" title="详情" href="{:url('storage/inventoryDetail',array('id'=>$v['id']))}"><i class="ion-md-document"></i> </a>
-                            <else/>
+                            {else/}
                             <a class="btn btn-outline-primary" data-tab="edit-{$v.id}" title="盘点" href="{:url('storage/inventoryDetail',array('id'=>$v['id'],'is_edit'=>1))}"><i class="ion-md-today"></i> </a>
                             <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('storage/deleteInventory',array('id'=>$v['id'],'storage_id'=>$storage_id))}" ><i class="ion-md-trash"></i> </a>
-                        </if>
+                        {/if}
                     </td>
                 </tr>
-            </volist>
+            {/volist}
             </tbody>
         </table>
         {$page|raw}
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
 
     <script type="text/javascript">
         jQuery(function ($) {
 
         })
     </script>
-</block>
+{/block}

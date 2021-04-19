@@ -2,17 +2,17 @@
     <label for="v-m_invite" class="col-3 col-md-2 text-right align-middle">邀请注册</label>
     <div class="col-9 col-md-8 col-lg-6">
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <foreach name="setting.m_invite.data" item="value" key="k">
-                <if condition="$k==$setting['m_invite']['value']">
+            {foreach $setting['m_invite']['data'] as $k => $value}
+                {if $k==$setting['m_invite']['value']}
                     <label class="btn btn-outline-secondary active">
                         <input type="radio" name="v-m_invite" value="{$k}" autocomplete="off" checked> {$value}
                     </label>
-                    <else />
+                    {else /}
                     <label class="btn btn-outline-secondary">
                         <input type="radio" name="v-m_invite" value="{$k}" autocomplete="off"> {$value}
                     </label>
-                </if>
-            </foreach>
+                {/if}
+            {/foreach}
         </div>
     </div>
 </div>
@@ -20,17 +20,17 @@
     <label for="v-m_register" class="col-3 col-md-2 text-right align-middle">强制注册</label>
     <div class="col-9 col-md-8 col-lg-6">
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <foreach name="setting.m_register.data" item="value" key="k">
-            <if condition="$k==$setting['m_register']['value']">
+        {foreach $setting['m_register']['data'] as $k => $value}
+            {if $k==$setting['m_register']['value']}
                 <label class="btn btn-outline-secondary active">
                     <input type="radio" name="v-m_register" value="{$k}" autocomplete="off" checked> {$value}
                 </label>
-                <else />
+                {else /}
                 <label class="btn btn-outline-secondary">
                     <input type="radio" name="v-m_register" value="{$k}" autocomplete="off"> {$value}
                 </label>
-            </if>
-        </foreach>
+            {/if}
+        {/foreach}
         </div>
     </div>
 </div>
@@ -38,17 +38,17 @@
     <label for="v-m_checkcode" class="col-3 col-md-2 text-right align-middle">验证码</label>
     <div class="col-9 col-md-8 col-lg-6">
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <foreach name="setting.m_checkcode.data" item="value" key="k">
-            <if condition="$k==$setting['m_checkcode']['value']">
+        {foreach $setting['m_checkcode']['data'] as $k => $value}
+            {if $k==$setting['m_checkcode']['value']}
                 <label class="btn btn-outline-secondary active">
                     <input type="radio" name="v-m_checkcode" value="{$k}" autocomplete="off" checked> {$value}
                 </label>
-                <else />
+                {else /}
                 <label class="btn btn-outline-secondary">
                     <input type="radio" name="v-m_checkcode" value="{$k}" autocomplete="off"> {$value}
                 </label>
-            </if>
-        </foreach>
+            {/if}
+        {/foreach}
         </div>
     </div>
 </div>
@@ -56,17 +56,17 @@
     <label for="v-autoaudit" class="col-3 col-md-2 text-right align-middle">订单自动审核</label>
     <div class="col-9 col-md-8 col-lg-6">
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <foreach name="setting.autoaudit.data" item="value" key="k">
-            <if condition="$k==$setting['autoaudit']['value']">
+        {foreach $setting['autoaudit']['data'] as $k => $value}
+            {if $k==$setting['autoaudit']['value']}
                 <label class="btn btn-outline-secondary active">
                     <input type="radio" name="v-autoaudit" value="{$k}" autocomplete="off" checked> {$value}
                 </label>
-                <else />
+                {else /}
                 <label class="btn btn-outline-secondary">
                     <input type="radio" name="v-autoaudit" value="{$k}" autocomplete="off"> {$value}
                 </label>
-            </if>
-        </foreach>
+            {/if}
+        {/foreach}
         </div>
     </div>
 </div>

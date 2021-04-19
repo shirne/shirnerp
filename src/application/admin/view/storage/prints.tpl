@@ -1,6 +1,6 @@
-<extend name="public:print" />
+{extend name="public:print" /}
 
-<block name="body">
+{block name="body"}
 
     <div class="page-wrapper container ml-auto mr-auto mb-3 d-print-none">
         <div class="pl-3 pr-3">仓库：{$storage.title}</div>
@@ -34,7 +34,7 @@
             </thead>
             <tbody>
             <empty name="goods">{:list_empty(7)}</empty>
-            <volist name="goods" id="v" >
+            {volist name="goods" id="v" }
                 <tr>
                     <td>{$v.id}</td>
                     <td>{$v.goods_no}</td>
@@ -44,13 +44,13 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                 </tr>
-            </volist>
+            {/volist}
             </tbody>
         </table>
 
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript" src="__STATIC__/store.js/store.modern.min.js"></script>
     <script type="text/javascript">
         jQuery(function ($) {
@@ -92,4 +92,4 @@
             })
         })
     </script>
-</block>
+{/block}

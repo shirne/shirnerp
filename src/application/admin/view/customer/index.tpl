@@ -1,7 +1,7 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
-<include file="public/bread" menu="customer_index" title="客户列表" />
+{block name="body"}
+{include file="public/bread" menu="customer_index" title="客户列表" /}
 
 <div id="page-wrapper">
     <div class="row list-header">
@@ -35,8 +35,8 @@
             </tr>
         </thead>
         <tbody>
-        <php>$empty=list_empty(8);</php>
-        <foreach name="lists" item="v" empty="$empty">
+        {empty name="lists"}$empty=list_empty(8);{/empty}
+        {foreach $lists as $v }
             <tr>
                 <td>{$v.id}</td>
                 <td>{$v.title}</td>
@@ -51,15 +51,15 @@
                     <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="删除后将无法恢复!\n请确认!!!" href="{:url('customer/delete',array('id'=>$v['id']))}" ><i class="ion-md-trash"></i> </a>
                 </td>
             </tr>
-        </foreach>
+        {/foreach}
         </tbody>
     </table>
     <div class="clearfix"></div>
     {$page|raw}
 </div>
 
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript" src="__STATIC__/js/location.min.js"></script>
     <script type="text/html" id="customerEdit">
         <div class="row" style="margin:0 10%;">
@@ -100,7 +100,7 @@
             });
 
             var customerTpl = $('#customerEdit').html();
-            var customerUrl = '{:url("customer/edit",['id'=>'__ID__'])}';
+            var customerUrl = "{:url('customer/edit',['id'=>'__ID__'])}";
             function editCustomer(id) {
                 var dlg=new Dialog({
                     onshown:function (body) {
@@ -155,4 +155,4 @@
         })
 
     </script>
-</block>
+{/block}

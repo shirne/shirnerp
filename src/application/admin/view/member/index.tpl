@@ -1,7 +1,7 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
-<include file="public/bread" menu="member_index" title=""/>
+{block name="body"}
+{include file="public/bread" menu="member_index" title=""/}
 
 <div id="page-wrapper">
     <div class="row list-header">
@@ -57,26 +57,26 @@
             </tr>
         </thead>
         <tbody>
-        <volist name="lists" id="v" empty="$empty">
+        {volist name="lists" id="v" empty="$empty"}
             <tr>
                 <td><input type="checkbox" name="id" value="{$v.id}" /></td>
                 <td>{$v.username}
-                    <if condition="$v.status eq 1"><else/><span class="badge badge-danger" >禁用</span></if><br/>{$v.realname}</td>
+                    {if $v['status'] == 1}{else/}<span class="badge badge-danger" >禁用</span>{/if}<br/>{$v.realname}</td>
                 <td>{$v.mobile}<br />{$v.email}</td>
                 <td>
-                    <foreach name="moneyTypes" item="mt" key="k">
+                    {foreach $moneyTypes as $k => $mt}
                         <div class="input-group input-group-sm mb-2">
 								<span class="input-group-prepend">
 									<span class="input-group-text">{$mt}</span>
 								</span>
                             <span class="form-control">{$v[$k]|showmoney}</span>
                         </div>
-                    </foreach>
+                    {/foreach}
                 </td>
                 <td>
                     <empty name="v.refer_name">
                         -
-                        <else/>
+                        {else/}
                         {$v.refer_name}[{$v.referer}]<br />
                         {$v.refer_realname}
                     </empty>
@@ -85,12 +85,12 @@
                 <td>{$v.login_ip}<br />{$v.logintime|showdate}</td>
                 <td class="operations">
 
-                    <if condition="$v.is_agent neq 0">
+                    {if $v.is_agent != 0}
                         <a class="btn btn-outline-primary" title="查看下线" href="{:url('member/index',array('referer'=>$v['id']))}"><i class="ion-md-people"></i> </a>
                         <a class="btn btn-outline-danger link-confirm" data-confirm="取消代理不能更改已注册的用户!!!" title="取消代理" href="{:url('member/cancel_agent',array('id'=>$v['id']))}" ><i class="ion-md-log-out"></i> </a>
-                    <else/>
+                    {else/}
                         <a class="btn btn-outline-primary {$v.refer_agent>2?'disabled':''}" title="设置代理" href="{:url('member/set_agent',array('id'=>$v['id']))}" ><i class="ion-md-check"></i> </a>
-                    </if>
+                    {/if}
 
                 </td> 
                 <td>
@@ -102,27 +102,27 @@
                     <a class="btn btn-outline-warning btn-recharge" title="充值" href="javascript:" data-id="{$v.id}" ><i class="ion-md-card"></i> </a>
                     <a class="btn btn-outline-primary" title="资金明细" href="{:url('member/money_log',array('id'=>$v['id']))}" ><i class="ion-md-paper"></i> </a>
 
-                    <if condition="$v.status eq 1">
+                    {if $v.status == 1}
                         <a class="btn btn-outline-danger link-confirm" title="禁用" data-confirm="禁用后用户将不能登陆!\n请确认!!!" href="{:url('member/delete',array('id'=>$v['id'],'type'=>0))}" ><i class="ion-md-close"></i> </a>
-                        <else/>
+                        {else/}
                         <a class="btn btn-outline-success" title="启用" href="{:url('member/delete',array('id'=>$v['id'],'type'=>1))}" style="color:#50AD1E;"><i class="ion-md-check"></i> </a>
-                    </if>
+                    {/if}
                 </td>
             </tr>
-        </volist>
+        {/volist}
         </tbody>
     </table>
     {$page|raw}
 </div>
 
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/plain" id="rechargeTpl">
         <div class="row" style="margin:0 10%;">
             <div class="col-12 form-group"><div class="input-group"><div ><span class="input-group-text">充值类型</span> </div><div class="col w-50 text-center" ><div class="btn-group btn-group-toggle" data-toggle="buttons">
-                <foreach name="moneyTypes" item="mt" key="k">
+                {foreach $moneyTypes as $k => $mt}
                 <label class="btn btn-outline-primary {$k=='money'?'active':''}"> <input type="radio" name="field" value="{$k}" autocomplete="off" {$k=='money'?'checked':''}> {$mt}</label>
-                </foreach>
+                {/foreach}
             </div></div> </div></div>
             <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">充值金额</span> </div><input type="text" name="amount" class="form-control" placeholder="请填写充值金额"/> </div></div>
             <div class="col-12 form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">充值原因</span> </div><input type="text" name="reson" class="form-control" placeholder="请填写充值原因"/> </div> </div>
@@ -212,4 +212,4 @@
             });
         });
     </script>
-</block>
+{/block}

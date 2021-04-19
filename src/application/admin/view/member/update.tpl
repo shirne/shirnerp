@@ -1,7 +1,7 @@
-<extend name="public:base"/>
+{extend name="public:base"/}
 
-<block name="body">
-    <include file="public/bread" menu="member_index" title="会员信息"/>
+{block name="body"}
+    {include file="public/bread" menu="member_index" title="会员信息"/}
 
     <div id="page-wrapper">
         <div class="page-header">{$model['id']>0?'编辑':'添加'}会员</div>
@@ -19,12 +19,12 @@
                     <label>邮箱</label>
                     <input class="form-control" type="text" name="email" value="{$model.email}"/>
                 </div>
-                <if condition="$model.id GT 0">
+                {if $model['id'] > 0}
                     <div class="form-group">
                         <label>新密码</label>
                         <input class="form-control" type="password" name="password" placeholder="不填写则不更改">
                     </div>
-                    <else/>
+                    {else/}
                     <div class="form-group">
                         <label>密码</label>
                         <input class="form-control" type="password" name="password" placeholder="password">
@@ -33,16 +33,16 @@
                         <label>确认密码</label>
                         <input class="form-control" type="password" name="repassword" placeholder="repassword">
                     </div>
-                </if>
+                {/if}
                 <div class="form-row">
                     <label class="col-2 col-md-1">用户类型</label>
                     <div class="form-group col-md-2">
                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <volist name="types" id="type" key="k">
+                        {volist name="types" id="type" key="k"}
                             <label class="btn btn-outline-secondary{$key==$model['type']?' active':''}">
                                 <input type="radio" name="type" value="{$key}" autocomplete="off" {$key==$model['type']?'checked':''}>{$type}
                             </label>
-                        </volist>
+                        {/volist}
                         </div>
                     </div>
                 </div>
@@ -68,4 +68,4 @@
             </form>
         </div>
     </div>
-</block>
+{/block}

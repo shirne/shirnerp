@@ -1,7 +1,7 @@
-<extend name="public:base"/>
+{extend name="public:base"/}
 
-<block name="body">
-    <include file="public/bread" menu="member_level_index" title="会员组配置"/>
+{block name="body"}
+    {include file="public/bread" menu="member_level_index" title="会员组配置"/}
 
     <div id="page-wrapper">
         <div class="page-header">添加等级</div>
@@ -32,9 +32,9 @@
                                 <span class="input-group-text">样式</span>
                             </div>
                             <select name="style" class="form-control text-{$model.style}" onchange="$(this).attr('class','form-control text-'+$(this).val())">
-                                <foreach name="styles" id="style">
+                                {foreach name="styles" id="style"}
                                     <option value="{$style}" {$model['style']==$style?'selected':''} class="text-{$style}">██████████</option>
-                                </foreach>
+                                {/foreach}
                             </select>
                         </div>
                     </div>
@@ -146,4 +146,4 @@
             </form>
         </div>
     </div>
-</block>
+{/block}

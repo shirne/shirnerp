@@ -1,5 +1,5 @@
-<extend name="public:base" />
-<block name="header">
+{extend name="public:base" /}
+{block name="header"}
     <style type="text/css">
         html,body{height:100%;overflow:hidden;}
         body{
@@ -12,8 +12,8 @@
     <script type="text/javascript">
         window.IS_TOP = true;
     </script>
-</block>
-<block name="body">
+{/block}
+{block name="body"}
     <!-- Sidebar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" role="navigation">
 
@@ -24,7 +24,7 @@
 
         <div class="collapse navbar-collapse justify-content-end navbar-ex1-collapse" id="navbarSupportedContent">
 
-            <include file="public/sidebar" />
+            {include file="public/sidebar" /}
 
             <div class="nav navbar-nav navbar-user">
 
@@ -68,9 +68,9 @@
             <div class="tab-content"></div>
         </div>
     </div>
-</block>
+{/block}
 
-<block name="script">
+{block name="script"}
     <script type="text/javascript">
         (function(){
             var func=arguments.callee;
@@ -384,4 +384,4 @@
             }
         });
     </script>
-</block>
+{/block}

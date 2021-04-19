@@ -1,7 +1,7 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
-    <include file="public/bread" menu="storage_index" title="商品列表" />
+{block name="body"}
+    {include file="public/bread" menu="storage_index" title="商品列表" /}
     <div id="page-wrapper">
 
         <div class="row list-header">
@@ -28,7 +28,7 @@
             </thead>
             <tbody>
             <empty name="goods">{:list_empty(8)}</empty>
-            <volist name="goods" id="v" >
+            {volist name="goods" id="v" }
                 <tr>
                     <td><input type="checkbox" name="id" value="{$v.id}" /></td>
                     <td><span class="badge badge-info">{$v.goods_no}</span> {$v.title}</td>
@@ -42,14 +42,14 @@
 
                     </td>
                 </tr>
-            </volist>
+            {/volist}
             </tbody>
         </table>
 
     </div>
-</block>
-<block name="script">
+{/block}
+{block name="script"}
     <script type="text/javascript">
 
     </script>
-</block>
+{/block}

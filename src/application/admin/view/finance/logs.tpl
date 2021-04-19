@@ -1,7 +1,7 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
-    <include file="public/bread" menu="finance_logs" title="" />
+{block name="body"}
+    {include file="public/bread" menu="finance_logs" title="" /}
 
     <div id="page-wrapper">
         <div class="row list-header">
@@ -16,7 +16,7 @@
                           <button class="btn btn-outline-dark" type="submit"><i class="ion-md-search"></i></button>
                         </div>
                     </div>
-                    <if condition="$id">
+                    {if $id > 0}
                         <div class="btn-group ml-3">
                             <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">客户: {$customer.title}<span class="caret"></span>
                             </button>
@@ -24,8 +24,8 @@
                                 <a class="dropdown-item" href="{:url('logs',searchKey('id',0))}">不限客户</a>
                             </div>
                         </div>
-                    </if>
-                    <if condition="$from_id">
+                    {/if}
+                    {if $from_id > 0}
                         <div class="btn-group ml-3">
                             <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">供应商: {$supplier.title}<span class="caret"></span>
                             </button>
@@ -33,15 +33,15 @@
                                 <a class="dropdown-item" href="{:url('logs',searchKey('from_id',0))}">不限供应商</a>
                             </div>
                         </div>
-                    </if>
+                    {/if}
                     <div class="btn-group ml-3">
                         <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {$types[$type]} <span class="caret"></span>
                         </button>
                         <div class="dropdown-menu">
-                            <foreach name="types" item="t" key="k">
+                            {foreach $types as $k => $t}
                                 <a class="dropdown-item" href="{:url('logs',searchKey('type',$k))}">{$t}</a>
-                            </foreach>
+                            {/foreach}
                         </div>
                     </div>
                 </form>
@@ -62,33 +62,33 @@
             </tr>
             </thead>
             <tbody>
-            <php>$empty=list_empty(8);</php>
-            <volist name="logs" id="v" empty="$empty">
+            {php}$empty=list_empty(8);{/php}
+            {volist name="logs" id="v" empty="$empty"}
                 <tr>
                     <td>{$v.id}</td>
                     <td>
-                        <if condition="$v['type'] EQ 'sale'">
+                        {if $v['type'] == 'sale'}
                             <a href="{:url('saleOrder/detail',['id'=>$v['order_id']])}" rel="ajax" data-title="订单详情">
                             <span class="badge badge-info">销售单</span> {$v['order_id']}
                             </a>
-                            <elseif condition="$v['type'] EQ 'purchase'"/>
+                            {elseif condition="$v['type'] == 'purchase'"/}
                             <a href="{:url('purchaseOrder/detail',['id'=>$v['order_id']])}" rel="ajax" data-title="订单详情">
                             <span class="badge badge-warning">采购单</span> {$v['order_id']}
                             </a>
-                            <else/>
+                            {else/}
                             {$v['order_id']}
-                        </if>
+                        {/if}
                     </td>
                     <td>{$v.pay_type|finance_type|raw}</td>
                     <td class="{$v['amount']>0?'text-success':'text-danger'}">
                         <span class="badge badge-info">{$v.currency}</span> {$v.amount}
                     </td>
                     <td>
-                        <if condition="$v['customer_id']">
+                        {if $v['customer_id'] > 0}
                             <span class="badge badge-info">客户</span> {$v['customer_title']}
-                            <else/>
+                            {else/}
                             <span class="badge badge-warning">供应商</span>{$v['supplier_title']}
-                        </if>
+                        {/if}
                     </td>
                     <td>{$v.create_time|showdate}</td>
                     <td>{$v.remark}</td>
@@ -96,10 +96,10 @@
 
                     </td>
                 </tr>
-            </volist>
+            {/volist}
             </tbody>
         </table>
         {$page|raw}
     </div>
 
-</block>
+{/block}

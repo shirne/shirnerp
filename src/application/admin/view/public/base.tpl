@@ -44,7 +44,7 @@
         window['MAPKEY_GAODE'] = '{:getSetting("mapkey_gaode")}';
     </script>
 
-    <block name="header"></block>
+    {block name="header"}{/block}
     <script type="text/javascript">
         if(!window.IS_TOP && !window.frameElement){
             //console.log('{:url("index/index")}?url={:url()}')
@@ -55,14 +55,14 @@
 
 <body>
 
-    <block name="body" ></block>
+    {block name="body" }{/block}
 
     <script src="__STATIC__/moment/min/moment.min.js"></script>
     <script src="__STATIC__/moment/locale/zh-cn.js"></script>
     <script src="__STATIC__/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
     <script src="__STATIC__/admin/js/app.min.js?v={:config('template.static_version')}"></script>
 
-    <block name="script"></block>
+    {block name="script"}{/block}
     <script type="text/javascript">
         jQuery(function ($) {
             var table = $('table.excel');

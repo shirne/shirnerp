@@ -1,8 +1,8 @@
-<extend name="public:base" />
+{extend name="public:base" /}
 
-<block name="body">
+{block name="body"}
 
-<include file="public/bread" menu="storage_index" title="链接仓库" />
+{include file="public/bread" menu="storage_index" title="链接仓库" /}
 
 <div id="page-wrapper">
     <div class="page-header">{$id>0?'编辑':'添加'}仓库</div>
@@ -27,4 +27,4 @@
     </form>
     </div>
 </div>
-</block>
+{/block}
