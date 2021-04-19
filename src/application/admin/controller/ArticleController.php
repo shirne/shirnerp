@@ -17,10 +17,6 @@ use think\Response;
 class ArticleController extends BaseController
 {
     public function search($key='',$cate=0,$type=0){
-        if($this->request->isPost()){
-            return redirect(url('',['cate'=>$cate,'type'=>$type,'key'=>base64url_encode($key)]));
-        }
-        $key=empty($key)?"":base64url_decode($key);
         $model=Db::name('article')
             ->where('status',1);
         if(!empty($key)){
