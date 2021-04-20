@@ -26,7 +26,7 @@
             </tr>
         </thead>
         <tbody>
-        {foreach $model[0] as $v}
+        {foreach $model[0]??[] as $v}
             <tr>
                 <td>{$v.id}</td>
                 <td>{$v.name}</td>
@@ -46,7 +46,7 @@
                 </td>
             </tr>
             {php}$soncount=empty($model[$v['id']])?0:count($model[$v['id']]);{/php}
-            {foreach $model[$v['id']] as $sv}
+            {foreach $model[$v['id']]??[] as $key => $sv}
                 <tr>
                     <td>{$sv.id}</td>
                     <td><span class="tree-pre">{$soncount==$key+1?'└─':'├─'}</span> {$sv.name}</td>
@@ -65,7 +65,7 @@
                         <a class="btn btn-outline-danger link-confirm" title="删除" data-confirm="您真的确定要删除吗？\n删除后将不能恢复!" href="{:url('permission/delete',array('id'=>$sv['id']))}" onclick="javascript:return del(this,'您真的确定要删除吗？\n\n删除后将不能恢复!');"><i class="ion-md-trash"></i> </a>
                     </td>
                 </tr>
-                {foreach $model[$sv['id']] as $mv}
+                {foreach $model[$sv['id']]??[] as $mv}
                     <tr>
                         <td>{$mv.id}</td>
                         <td><span class="fa">&nbsp;</span><span class="fa">┣</span> {$mv.name}</td>
