@@ -372,12 +372,30 @@ CREATE TABLE `sa_finance_log` (
   KEY `supplier_id` (`supplier_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `sa_factory`;
+CREATE TABLE `sa_factory` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` TINYINT(11) DEFAULT '0' COMMENT '0-自有工厂  1-外包工厂',
+  `title` VARCHAR(100) DEFAULT '',
+  `factory_no` VARCHAR(30) DEFAULT '',
+  `province` VARCHAR(50) DEFAULT '',
+  `city` VARCHAR(30) DEFAULT '',
+  `area` VARCHAR(50) DEFAULT '',
+  `address` VARCHAR(100) DEFAULT '',
+  `remark` VARCHAR(100) DEFAULT '',
+  `status` TINYINT(11) DEFAULT '1',
+  `create_time` INT(11) DEFAULT '0',
+  `update_time` INT(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `sa_produce`;
 CREATE TABLE `sa_produce` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(100) DEFAULT '',
   `goods_id` INT(11) DEFAULT '0',
   `remark` VARCHAR(100) DEFAULT '',
+  `status` TINYINT(11) DEFAULT '1',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
   PRIMARY KEY (`id`)
@@ -388,8 +406,10 @@ CREATE TABLE `sa_produce_goods` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `produce_id` INT(11) DEFAULT '0',
   `goods_id` INT(11) DEFAULT '0',
-  `count` INT(11) DEFAULT '0',
-  `proportion` INT(4) DEFAULT '0',
+  `unit` VARCHAR(10) DEFAULT '0',
+  `count` DECIMAL(14,4) DEFAULT '0',
+  `weight` DECIMAL(14,4) DEFAULT '0',
+  `proportion` INT(11) DEFAULT '0',
   `remark` VARCHAR(100) DEFAULT '',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',
@@ -402,6 +422,7 @@ CREATE TABLE `sa_produce_order` (
   `order_no` VARCHAR(100) DEFAULT '',
   `manager_id` INT(11) DEFAULT '0',
   `produce_id` INT(11) DEFAULT '0',
+  `factory_id` INT(11) DEFAULT '0',
   `is_disassemble` TINYINT(11) DEFAULT '0',
   `count` INT(11) DEFAULT '0',
   `produce_count` INT(11) DEFAULT '0',

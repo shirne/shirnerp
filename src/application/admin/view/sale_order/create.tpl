@@ -14,7 +14,7 @@
                             <div class="col-6 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">客户</span></div>
-                                    <input type="text" class="form-control" @focus="showCustomer" @blur="hideCustomer" @keyup="loadCustomer" v-model="cKey"/>
+                                    <input type="text" class="form-control isautocomplete" @focus="showCustomer" @blur="hideCustomer" @keyup="loadCustomer" v-model="cKey"/>
                                 </div>
                             </div>
                             <div class="col-3 mt-3">
@@ -83,7 +83,7 @@
                         </thead>
                         <tbody>
                             <tr v-for="(good,idx) in goods" :key="idx">
-                                <td><input type="text" class="form-control form-control-sm isgoods" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
+                                <td><input type="text" class="form-control form-control-sm isautocomplete" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
                                 <td>{{good.storage}}</td>
                                 <td class="counttd">
                                     <div class="input-group input-group-sm">

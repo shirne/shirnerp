@@ -56,8 +56,14 @@ table.excel{
         padding: .5rem;
       }
 
-      .input-group .input-group-text {
-        height: auto !important;
+      .input-group {
+        .input-group-text {
+          height: auto !important;
+        }
+        .btn{
+          height: 100%;
+          line-height: 2em;
+        }
       }
       &.operations{
         padding-right:.5rem;

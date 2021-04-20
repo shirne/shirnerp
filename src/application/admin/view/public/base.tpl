@@ -67,6 +67,7 @@
         jQuery(function ($) {
             var table = $('table.excel');
             if(table.length>0){
+                var lastControl = null;
                 table.each(function () {
                     var self=$(this);
                     var lastEle=null;
@@ -107,7 +108,8 @@
                             case 38: //top
                                 if(!isblur) {
                                     if (lastEle && lastEle.is('select')) return;
-                                    if (lastEle && lastEle.is('.isgoods')) break;
+                                    if (lastEle && lastEle.is('.isautocomplete')) break;
+                                    if (lastControl && lastControl.is('.isautocomplete')) break;
                                 }
                                 if(!lastEle){
                                     self.find('tbody tr').eq(-1).find('.form-control').eq(0).focus()
@@ -160,9 +162,11 @@
                                 break;
                             case 40: //bottom
                             case 13: //enter
+                                console.log('isblur:',isblur)
                                 if(!isblur) {
                                     if (lastEle && lastEle.is('select') ) return;
-                                    if (lastEle && lastEle.is('.isgoods')) break;
+                                    if (lastEle && lastEle.is('.isautocomplete')) break;
+                                    if (lastControl && lastControl.is('.isautocomplete')) break;
                                 }
 
                                 if(!lastEle){
@@ -209,7 +213,7 @@
                             if (isblur && isOver) {
                                 lastEle.focus()
                             }
-                            if (!lastEle.is('.isgoods') && lastEle.is('input')) {
+                            if (!lastEle.is('.isautocomplete') && lastEle.is('input')) {
                                 setTimeout(function () {
                                     lastEle.select()
                                 },100)
@@ -218,16 +222,30 @@
                         }
                     });
                     $(document.body).on('focus','.form-control',function (e) {
+                        // console.log(e)
                         if($(this).parents('table.excel').length>0
                            && $(this).parents('tbody').length>0
                         ) {
-                            isblur=false;
+                            // console.log('in table')
+                            isblur = false;
                             lastEle = $(this)
+                            lastControl = null;
+                        }else{
+                            // console.log('out table')
+                            isblur = false;
+                            lastEle = null;
+                            lastControl = $(this)
                         }
                     });
                     $(document.body).on('blur','.form-control',function (e) {
+                        // console.log(e)
                         if(lastEle && $(this).is(lastEle[0])) {
-                            isblur=true;
+                            // console.log('in table')
+                            isblur = true;
+                        }
+                        if(lastControl && $(this).is(lastControl[0])) {
+                            // console.log('out table')
+                            isblur = true;
                         }
                     });
                 })

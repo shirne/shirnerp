@@ -2,28 +2,28 @@
 
 {block name="body"}
 
-    {include file="public/bread" menu="purchase_order_index" title="采购入库" /}
+    {include file="public/bread" menu="purchase_order_index" title="加工生产" /}
 
     <div id="page-wrapper">
-        <div class="page-header">采购入库</div>
+        <div class="page-header">加工生产</div>
         <div class="page-content">
             <form method="post" action="" enctype="multipart/form-data" @submit="onSubmit">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-6 mt-3">
+                            <div class="col-4 mt-3">
                                 <div class="input-group">
-                                    <div class="input-group-prepend"><span class="input-group-text">供应商</span></div>
-                                    <input type="text" class="form-control" @focus="showSupplier" @blur="hideSupplier" @keyup="loadSupplier" v-model="cKey"/>
+                                    <div class="input-group-prepend"><span class="input-group-text">生产流程</span></div>
+                                    <input type="text" class="form-control isautocomplete" @focus="showProduce" @blur="hideProduce" @keyup="loadProduce" v-model="cKey"/>
                                 </div>
                             </div>
-                            <div class="col-3 mt-3">
+                            <div class="col-4 mt-3">
                                 <div class="input-group">
-                                    <div class="input-group-prepend"><span class="input-group-text">客户单号</span></div>
+                                    <div class="input-group-prepend"><span class="input-group-text">生产数量</span></div>
                                     <input type="text" class="form-control" name="supplier_order_no" v-model="order.supplier_order_no"/>
                                 </div>
                             </div>
-                            <div class="col-3 mt-3">
+                            <div class="col-4 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">单号</span></div>
                                     <input type="text" class="form-control" placeholder="不填写将由系统自动生成" name="order_no" v-model="order.order_no"/>
@@ -40,23 +40,20 @@
                                     </select>
                                 </div>
                             </div>
-
                             <div class="col-4 mt-3">
                                 <div class="input-group">
-                                    <div class="input-group-prepend"><span class="input-group-text">货币</span></div>
-                                    <select class="form-control" v-model="order.currency">
-                                        {volist name="currencies" id="cur"}
-                                            <option value="{$cur.key}">[{$cur.key}]{$cur.title}</option>
-                                        {/volist}
-                                    </select>
+                                    <div class="input-group-prepend"><span class="input-group-text">生产日期</span></div>
+                                    <input type="text" class="form-control" name="supplier_order_no" v-model="order.supplier_order_no"/>
                                 </div>
                             </div>
                             <div class="col-4 mt-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">状态</span></div>
                                     <select name="status" class="form-control" v-model="order.status">
-                                        <option :value="0" >待入库</option>
-                                        <option :value="1" >已入库</option>
+                                        <option :value="0" >待排单</option>
+                                        <option :value="1" >已排单</option>
+                                        <option :value="2" >已生产</option>
+                                        <option :value="3" >已入库</option>
                                     </select>
                                 </div>
                             </div>
@@ -77,7 +74,7 @@
                         </thead>
                         <tbody>
                         <tr v-for="(good,idx) in goods" :key="idx">
-                            <td><input type="text" class="form-control form-control-sm isgoods" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
+                            <td><input type="text" class="form-control form-control-sm isautocomplete" :data-idx="idx" @focus="showGoods" @blur="hideGoods" @keyup="loadGoods" v-model="good.title"/> </td>
                             <td>{{good.storage}}</td>
                             <td class="counttd">
                                 <div class="input-group input-group-sm">
@@ -179,6 +176,11 @@
                 [{{good.goods_no}}]{{good.title}}
             </li>
         </ul>
+        <ul class="list-group auto-complete produce-complete" :style="produceStyle">
+            <li class="list-group-item" v-for="(good,idx) in listProduces" :data-idx="idx" :key="produce.id" @click="selectThisProduce" @mouseenter="activeThisProduce">
+                [{{good.goods_no}}]{{good.title}}
+            </li>
+        </ul>
     </div>
 {/block}
 {block name="script"}
@@ -186,7 +188,7 @@
     <script type="text/javascript">
         var hideTimeout=0;
         var currentInput=null;
-        var hideSupplierTimeout=0;
+        var hideProduceTimeout=0;
         var lastCustomerKey=null;
         var lastGoodsKey=null;
 
@@ -201,18 +203,25 @@
                     top:0,
                     width:0
                 },
+                produceStyle:{
+                    display:'none',
+                    position:'absolute',
+                    left:0,
+                    top:0,
+                    width:0
+                },
                 order:{
-                    supplier_id:0,
+                    produce_id:0,
                     storage_id:0,
-                    currency:"{:current($currencies)['key']}",
                     status:0,
                     diy_price:0,
                     order_no:'',
                     freight:0,
                     remark:'',
-                    supplier_order_no:''
+                    produce_order_no:''
                 },
                 cKey:'',
+                listProduces:[],
                 storages:[],
                 emptyGoods:[],
                 key:'',
@@ -467,6 +476,111 @@
                         });
                     }
                 },
+
+                //====================== produce autocomplete
+                showProduce:function (e) {
+                    clearTimeout(hideProduceTimeout);
+                    var target=e.target;
+                    var offset=$(target).offset();
+                    var width=$(target).outerWidth();
+                    var height=$(target).outerHeight();
+                    this.produceStyle.top=(offset.top+height)+'px';
+                    this.produceStyle.left=offset.left+'px';
+                    this.produceStyle.width=width+'px';
+                    this.produceStyle.display='block';
+                    //this.cKey = $(e.target).val();
+                    $(document.body).on('keyup',this.listenProduceKeyup);
+                    this.getProduceList(e);
+                },
+                hideProduce:function (e) {
+                    if(e){
+                        if(this.cKey != this.order.produce_title) {
+                            this.cKey = this.order.produce_title;
+                        }
+                    }
+                    var self=this;
+                    clearTimeout(hideProduceTimeout);
+                    hideProduceTimeout=setTimeout(function () {
+                        $(document.body).off('keyup',self.listenProduceKeyup);
+                        self.produceStyle.display='none';
+                    },500);
+                },
+                loadProduce:function (e) {
+                    this.getProduceList(e);
+                },
+                activeThisProduce:function (e) {
+                    var self=$(e.target);
+                    var parent=self.parents('.list-group').eq(0);
+                    parent.find('.list-group-item').removeClass('hover');
+                    self.addClass('hover');
+                },
+                listenProduceKeyup:function (e) {
+                    var lists=$('.produce-complete .list-group-item');
+                    var idx=lists.index($('.produce-complete .hover'));
+
+                    switch (e.keyCode){
+                        case 40://down
+                            if(idx < lists.length-1){
+                                idx++;
+                                lists.removeClass('hover').eq(idx).addClass('hover');
+                            }
+                            break;
+                        case 38://up
+                            if(idx > 0){
+                                idx--;
+                            }
+                            lists.removeClass('hover').eq(idx).addClass('hover');
+
+                            break;
+                        case 13://enter
+                            if(this.selectProduce()) {
+                                this.hideProduce();
+                            }
+                            break;
+                    }
+                },
+                selectThisProduce:function (e) {
+                    if(this.selectProduce()) {
+                        this.hideProduce();
+                    }
+                },
+                selectProduce:function () {
+                    var hover=$('.produce-complete .hover');
+                    if(hover.length>0){
+                        var idx=hover.data('idx');
+                        var produce = this.listProduces[idx];
+                        if(produce){
+                            this.order.produce_id=produce.id;
+                            this.order.produce_title=produce.title;
+                            this.cKey = produce.title;
+                            updateThisTitle('生产单['+produce.title+']');
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                getProduceList:function (e) {
+                    var self=this;
+                    var ckey = this.cKey.toString();
+                    if(ckey === lastCustomerKey)return;
+                    lastCustomerKey=ckey;
+
+                    $.ajax({
+                        url: '{:url("produce/search")}',
+                        type: 'GET',
+                        dataType: 'JSON',
+                        data: {
+                            key: ckey
+                        },
+                        success: function (json) {
+                            if (json.code == 1) {
+                                if(ckey===lastCustomerKey)self.produces = json.data;
+                            }
+                        }
+                    });
+                },
+
+                //======================
 
                 importOrder:function (e) {
                     e.preventDefault();

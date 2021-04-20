@@ -13,6 +13,17 @@ use think\exception\HttpResponseException;
  */
 class ProduceController extends BaseController
 {
+    public function search($key=''){
+        $model=Db::view('produce','*')->view('goods', ['title'=>'goods_title','fullname'=>'goods_fullname','goods_no'], 'goods.id = produce.goods_id','LEFT');
+        if(!empty($key)){
+            $model->where('id|produce.title|goods_title|goods_no','like',"%$key%");
+        }
+
+        $lists=$model->order('produce.id ASC')->limit(10)->select();
+
+        return json(['data'=>$lists,'code'=>1]);
+    }
+
     /**
      * 生产流程
      */
