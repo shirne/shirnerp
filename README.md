@@ -65,8 +65,8 @@ scripts/update_wechat.sql 微信模块
 
 项目目录
 
->htdocs 项目根目录<br />
-htdocs/public 网站根目录
+>src 项目根目录<br />
+src/htdocs 网站根目录
 
 安装方法
 
