@@ -1,6 +1,6 @@
 {
     "name": "shirnecn/shirnerp",
-    "description": "基于ThinkPHP5.1和Bootstrap4.x的内容管理系统框架",
+    "description": "基于ThinkPHP5.1和Bootstrap4.x的小型ERP管理系统",
     "type": "project",
     "keywords": [
         "framework",
