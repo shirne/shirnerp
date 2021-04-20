@@ -73,3 +73,11 @@ htdocs/public 网站根目录
 > 修改数据库配置文件 config/database.php<br />
 > 手动安装数据库脚本 或者 通过命令行(php think install)或网页安装(/task/util/install)
 
+
+## 开源协议
+
+* 基于GPL-2.0
+* 个人及商业免费使用，但不对使用本系统引起的任何后果负责
+* 修改后的源代码可商用，可以开源形式发布
+* 禁止任何形式任何名义的二次出售
+* 提供收费咨询及部署实施，二次开发等业务(Wechat: shirnewei)
