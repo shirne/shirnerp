@@ -182,7 +182,7 @@ class ManagerController extends BaseController
                 if(SUPER_ADMIN_ID ==$id){
                     $data['type'] = 1;
                 }else{
-                    $parent = Db::name('manage')->where('id',$model['pid'])->find();
+                    $parent = Db::name('manager')->where('id',$model['pid'])->find();
                     if(!empty($parent)){
                         if($data['type']<$parent['type']){
                             $this->error('不能将管理员类型设置为比上级高的类型');
