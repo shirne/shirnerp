@@ -201,7 +201,7 @@
     </div>
 {/block}
 {block name="script"}
-    <script type="text/javascript" src="__STATIC__/admin/js/label.min.js"></script>
+    <script type="text/javascript" src="__STATIC__/admin/js/label.min.js?v={:config('template.static_version')}"></script>
     <script type="text/javascript" src="__STATIC__/js/vue-2.6.min.js"></script>
     <script type="text/javascript">
 
