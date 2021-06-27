@@ -1354,7 +1354,7 @@ function random_str($length = 6, $type = 'string', $convert = 0)
  * @param  string $pre [description]
  * @return array
  */
-function getSortedCategory(&$data, $pid = 0, $pre = "")
+function getSortedCategory($data, $pid = 0, $pre = "")
 {
     $temp = array();
     $curdata=array_filter($data,function($item) use ($pid){

@@ -52,7 +52,7 @@
                                 <td>{{good.storage}}</td>
                                 <td class="counttd">
                                     <div class="input-group input-group-sm">
-                                        <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.count"/>
+                                        <input type="text" class="form-control" v-model="good.count"/>
                                         <select v-model="good.unit" style="flex:0;width: 50px;" @keydown="stopLeftRight" class="form-control">
                                             {volist name="units" id="unit"}
                                                 <option value="{$unit.key}">{$unit.key}</option>
@@ -62,13 +62,13 @@
                                 </td>
                                 <td>
                                     <div class="input-group input-group-sm">
-                                        <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.weight"/>
+                                        <input type="text" class="form-control" v-model="good.weight"/>
                                         <div class="input-group-append"><span class="input-group-text">{:getSetting('weight_unit')}</span></div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="input-group input-group-sm">
-                                        <input type="text" class="form-control" @change="updateRow(idx)" v-model="good.proportion"/>
+                                        <input type="text" class="form-control" v-model="good.proportion"/>
                                     </div>
                                 </td>
                                 <td>
@@ -96,7 +96,7 @@
                                 <td colspan="5">
                                     <div class="input-group input-group-sm w-50 float-right">
                                         <div class="input-group-prepend"><span class="input-group-text">流程备注</span></div>
-                                        <input type="text" class="form-control" v-model="order.remark"/>
+                                        <input type="text" class="form-control" v-model="model.remark"/>
                                     </div>
                                     <a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-sm btn-addrow"><i class="ion-md-add"></i> 添加行</a>
                                     <a href="{:url('goods/importOrder')}" @click="importOrder" class="btn btn-outline-primary btn-sm btn-import"><i class="ion-md-cloud-upload"></i> 导入流程</a>
@@ -159,7 +159,6 @@
             },
             mounted:function(){
                 this.addRow();
-                this.loadStorages();
             },
             methods:{
                 addRow:function(){
@@ -274,7 +273,7 @@
                                 this.goods[idx].storage=good.storage?good.storage:0;
                                 this.goods[idx].unit=good.unit;
                                 tr.find('.counttd input').focus();
-                                this.updateStorage();
+                                //this.updateStorage();
                             }else{
                                 this.model.goods_id = good.id;
                                 this.cKey = good.title;
@@ -340,10 +339,10 @@
                                 remark:good.remark,
                                 total_price:0
                             });
-                            self.updateRow(self.goods.length-1);
+                            //self.updateRow(self.goods.length-1);
                         }
 
-                        self.updateStorage();
+                        //self.updateStorage();
 
                     });
                 },
@@ -370,7 +369,7 @@
                         type:"POST",
                         dataType:'JSON',
                         data:{
-                            order:this.order,
+                            model:this.model,
                             goods:this.goods,
                             total:this.total
                         },

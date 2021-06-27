@@ -2,7 +2,7 @@
 
 {block name="body"}
 
-{include file="public/bread" menu="goods_category_index" title="" /}
+{include file="public/bread" menu="goods_category_index" title=":lang('Category')" /}
 
 <div id="page-wrapper">
     

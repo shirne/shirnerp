@@ -6,16 +6,16 @@ namespace app\common\model;
 use think\Db;
 use think\Exception;
 
-class PurchaseOrderModel extends BaseModel
+class PurchaseModel extends BaseModel
 {
     protected $autoWriteTimestamp = true;
 
-    const ACTION_ADD = 'addproduceorder';
-    const ACTION_EDIT = 'editproduceorder';
-    const ACTION_AUDIT = 'auditproduceorder';
-    const ACTION_EXPORT = 'exportproduceorder';
-    const ACTION_PRINT = 'printproduceorder';
-    const ACTION_DELETE = 'deleteproduceorder';
+    const ACTION_ADD = 'addproduce';
+    const ACTION_EDIT = 'editproduce';
+    const ACTION_AUDIT = 'auditproduce';
+    const ACTION_EXPORT = 'exportproduce';
+    const ACTION_PRINT = 'printproduce';
+    const ACTION_DELETE = 'deleteproduce';
 
     public static function getActions()
     {

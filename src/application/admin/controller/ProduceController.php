@@ -48,7 +48,14 @@ class ProduceController extends BaseController
     }
 
     public function create(){
+        if($this->request->isPost()){
+            $data = $this->request->put('model');
+            $goods = $this->request->put('goods');
+            
+        }
         
+        $model = [];
+        $this->assign('model', $model);
         return $this->fetch();
     }
 }
