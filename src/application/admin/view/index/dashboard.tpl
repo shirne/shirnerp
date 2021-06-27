@@ -3,9 +3,9 @@
 {block name="body"}
 
 {include file="public/bread" menu="Board" section="主面板" title=""/}
-<div id="page-wrapper">
+<div id="page-wrapper" class="p-0 bg-transparent shadow-none">
     {foreach $notices as $notice}
-        <div class="alert alert-{$notice.type|default='warning'} alert-dismissible fade show" role="alert">
+        <div class="alert alert-{$notice.type|default='warning'} alert-dismissible fade show shadow" role="alert">
             {$notice.message|raw}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -14,7 +14,7 @@
     {/foreach}
     <div class="row">
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-info">
+            <div class="card border-0 shadow">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-4">
@@ -26,7 +26,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer announcement-bottom">
+                <div class="card-footer announcement-bottom bg-white">
                     <nav class="nav nav-fill">
                         <a class="nav-item nav-link" data-nav="goods_index" href="{:url('goods/index')}"><i class="ion-md-navicon"></i> 管理商品 </a>
                         <a class="nav-item nav-link" data-nav="storage_index" href="{:url('storage/index')}"><i class="ion-md-stats-bars"></i> 管理库存 </a>
@@ -35,7 +35,7 @@
             </div>
         </div>
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-info">
+            <div class="card border-0 shadow">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-4">
@@ -47,7 +47,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer announcement-bottom">
+                <div class="card-footer announcement-bottom bg-white">
                     <nav class="nav nav-fill">
                         <a class="nav-item nav-link" data-nav="customer_index" href="{:url('customer/index')}"><i class="ion-md-navicon"></i> 管理客户 </a>
                         <a class="nav-item nav-link" data-nav="finance_receive" href="{:url('finance/receive')}"><i class="ion-md-add"></i> 应收款 </a>
@@ -56,7 +56,7 @@
             </div>
         </div>
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-info">
+            <div class="card border-0 shadow">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-4">
@@ -68,7 +68,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer announcement-bottom">
+                <div class="card-footer announcement-bottom bg-white">
                     <nav class="nav nav-fill">
                         <a class="nav-item nav-link" data-nav="supplier_index" href="{:url('supplier/index')}"><i class="ion-md-navicon"></i> 管理供应商 </a>
                         <a class="nav-item nav-link" data-nav="finance_payable" href="{:url('finance/payable')}"><i class="ion-md-remove"></i> 应付款 </a>
@@ -77,7 +77,7 @@
             </div>
         </div>
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-info">
+            <div class="card border-0 shadow">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-4">
@@ -89,7 +89,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer announcement-bottom">
+                <div class="card-footer announcement-bottom bg-white">
                     <nav class="nav nav-fill">
                         <a class="nav-item nav-link" data-nav="sale_order_index" href="{:url('saleOrder/index')}"><i class="ion-md-navicon"></i> 管理销售单 </a>
                         <a class="nav-item nav-link" target="_blank" href="{:url('index/printLabel')}"><i class="ion-md-document"></i> 打印标签 </a>
@@ -101,11 +101,11 @@
 
     {php}$empty=list_empty(3);{/php}
     <div class="row">
-        <div class="col-md-6 mb-3">
-            <div class="card border-default">
-                <div class="card-header">
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-white">
                     <a href="{:url('saleOrder/create')}" data-tab="timestamp" class="float-right">销售开单</a>
-                    <h5 class="panel-title"><i class="ion-md-stats"></i> 销售 <span class="text-muted">7日统计</span> </h5>
+                    <h5 class="panel-title"><i class="ion-md-stats text-info"></i> 销售 <span class="text-muted">7日统计</span> </h5>
                 </div>
                 <table class="table table-striped">
                     <tr>
@@ -123,11 +123,11 @@
                 </table>
             </div>
         </div>
-        <div class="col-md-6 mb-3">
-            <div class="card border-default">
-                <div class="card-header">
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-white">
                     <a href="{:url('purchaseOrder/create')}" data-tab="timestamp" class="float-right">采购入库</a>
-                    <h5 class="panel-title"><i class="ion-md-cart"></i> 采购 <span class="text-muted">7日统计</span> </h5>
+                    <h5 class="panel-title"><i class="ion-md-cart text-info"></i> 采购 <span class="text-muted">7日统计</span> </h5>
                 </div>
                 <table class="table table-striped">
                     <tr>
@@ -145,10 +145,10 @@
                 </table>
             </div>
         </div>
-        <div class="col-md-6 mb-3">
-            <div class="card border-default">
-                <div class="card-header">
-                    <h5 class="panel-title"><i class="ion-md-filing"></i> 库存</h5>
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-white">
+                    <h5 class="panel-title"><i class="ion-md-filing text-info"></i> 库存</h5>
                 </div>
                 <table class="table table-striped">
                     <tr>
@@ -166,10 +166,10 @@
                 </table>
             </div>
         </div>
-        <div class="col-md-6 mb-3">
-            <div class="card border-default">
-                <div class="card-header">
-                    <h5 class="panel-title"><i class="ion-md-swap"></i> 资金</h5>
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-white">
+                    <h5 class="panel-title"><i class="ion-md-swap text-info"></i> 资金</h5>
                 </div>
                 <table class="table table-striped">
                     <tr>
