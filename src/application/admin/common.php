@@ -8,15 +8,17 @@ define('SESSKEY_ADMIN_NAME','adminname');
 define('SESSKEY_ADMIN_LAST_TIME','adminLTime');
 define('SESSKEY_ADMIN_AUTO_LOGIN','adminlogin');
 
-function setLogin($user, $logintype = 1){
+function setLogin($user, $logintype = 1, $isApp = false){
     $time=time();
     session(SESSKEY_ADMIN_ID,$user['id']);
     session(SESSKEY_ADMIN_LAST_TIME,$time);
     session(SESSKEY_ADMIN_NAME,empty($user['realname'])?$user['username']:$user['realname']);
-    Db::name('Manager')->where('id',$user['id'])->update(array(
-        'login_ip'=>Request::ip(),
-        'logintime'=>$time
-    ));
+    if(!$isApp){
+        Db::name('Manager')->where('id',$user['id'])->update(array(
+            'login_ip'=>Request::ip(),
+            'logintime'=>$time
+        ));
+    }
     if($logintype == 1){
         user_log($user['id'],'login',1,'登录成功' ,'manager');
     }else{

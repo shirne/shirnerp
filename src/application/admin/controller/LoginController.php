@@ -4,6 +4,7 @@ namespace app\admin\controller;
 use extcore\traits\Verify;
 use think\Db;
 use think\facade\Log;
+use think\facade\Request;
 use think\facade\Session;
 
 /**
@@ -38,13 +39,14 @@ class LoginController extends BaseController {
                 if($tokenData['manager_id'] > 0){
                     $this->mid = $tokenData['manager_id'];
                     $this->manager = Db::name('Manager')->where('id',$this->mid)->find();
-                    setLogin($this->manager, 0);
+                    setLogin($this->manager, 0, true);
                     $this->manager['logintime'] = session(SESSKEY_ADMIN_LAST_TIME);
                     $this->assign('is_login', 1);
                 }
 
                 Db::name('managerToken')->where('id', $tokenData['id'])->update([
                     'token'=>$token,
+                    'login_ip'=>Request::ip(),
                     'update_time'=>session(SESSKEY_ADMIN_LAST_TIME)
                 ]);
                 
@@ -153,7 +155,7 @@ class LoginController extends BaseController {
         //密码复杂度检查
         check_password($password);
 
-        setLogin($user);
+        setLogin($user, 0, $this->request->isApp);
 
         if($remember){
             $this->setAutoLogin($user);
@@ -168,6 +170,7 @@ class LoginController extends BaseController {
                     'manager_id'=>$user['id'],
                     'username'=>$user['username'],
                     'avatar'=>$user['avatar'],
+                    'login_ip'=>Request::ip(),
                     'update_time'=>time()
                 ]);
 
