@@ -57,8 +57,12 @@ class BaseController extends Controller {
             $this->error(lang('Invalid account!'),url('admin/login/index'));
         }
 
+        // app不自动下线
+        if($this->request->isApp){
+
+        }
         //测试账号不自动下线
-        if($this->manager['username']!= TEST_ACCOUNT && $this->manager['logintime']!=session('adminLTime')){
+        elseif($this->manager['username']!= TEST_ACCOUNT && $this->manager['logintime']!=session('adminLTime')){
             clearLogin();
             $this->error(lang('The account has login in other places!'),url('admin/login/index'));
         }
