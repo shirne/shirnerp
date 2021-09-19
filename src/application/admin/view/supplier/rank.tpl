@@ -53,7 +53,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <empty name="statics">{:list_empty(5)}</empty>
+                {empty name="statics"}{:list_empty(5)}{/empty}
                 {volist name="statics" id="v" }
                     <tr>
                         <td>{$v.supplier_id}</td>

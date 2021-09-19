@@ -57,7 +57,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <empty name="statics">{:list_empty(8)}</empty>
+                {empty name="statics"}{:list_empty(8)}{/empty}
                 {volist name="statics" id="v" }
                     <tr>
                         <td>{$key}</td>

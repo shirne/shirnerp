@@ -33,7 +33,7 @@
             </tr>
             </thead>
             <tbody>
-            <empty name="goods">{:list_empty(7)}</empty>
+            {empty name="goods"}{:list_empty(7)}{/empty}
             {volist name="goods" id="v" }
                 <tr>
                     <td>{$v.id}</td>

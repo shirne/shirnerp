@@ -27,7 +27,7 @@
             </tr>
             </thead>
             <tbody>
-            <empty name="goods">{:list_empty(8)}</empty>
+            {empty name="goods"}{:list_empty(8)}{/empty}
             {volist name="goods" id="v" }
                 <tr>
                     <td><input type="checkbox" name="id" value="{$v.id}" /></td>
