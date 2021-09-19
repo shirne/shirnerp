@@ -22,7 +22,7 @@ class ManagerController extends BaseController
      */
     public function index($key="")
     {
-        if($this->request->isPost()){
+        if($this->request->isPost() && !$this->request->isAjax()){
             return redirect(url('',['key'=>base64url_encode($key)]));
         }
         $key=empty($key)?"":base64url_decode($key);
@@ -33,8 +33,10 @@ class ManagerController extends BaseController
         }
 
         $lists=$model->where($where)->order('ID ASC')->paginate(15);
-        $this->assign('lists',$lists);
-        $this->assign('page',$lists->render());
+        $this->assign('lists',$lists->items());
+        $this->assign('total',$lists->total());
+        $this->assign('total_page',$lists->lastPage());
+        $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());
         return $this->fetch();
     }
 

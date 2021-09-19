@@ -197,7 +197,7 @@ class GoodsController extends BaseController
      */
     public function index($key="",$cate_id=0)
     {
-        if($this->request->isPost()){
+        if($this->request->isPost() && !$this->request->isAjax()){
             return redirect(url('',['cate_id'=>$cate_id,'key'=>base64_encode($key)]));
         }
         $key=empty($key)?"":base64_decode($key);
@@ -213,7 +213,9 @@ class GoodsController extends BaseController
         $lists=$model->order('id DESC')->paginate(10);
         $this->assign('units',getGoodsUnits());
         $this->assign('lists',$lists);
-        $this->assign('page',$lists->render());
+        $this->assign('total',$lists->total());
+        $this->assign('total_page',$lists->lastPage());
+        $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());
         $this->assign('keyword',$key);
         $this->assign('cate_id',$cate_id);
         $this->assign("categories",GoodsCategoryFacade::getCategories());
