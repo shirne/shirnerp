@@ -8,7 +8,7 @@ define('SESSKEY_ADMIN_NAME','adminname');
 define('SESSKEY_ADMIN_LAST_TIME','adminLTime');
 define('SESSKEY_ADMIN_AUTO_LOGIN','adminlogin');
 
-function setLogin($user){
+function setLogin($user, $logintype = 1){
     $time=time();
     session(SESSKEY_ADMIN_ID,$user['id']);
     session(SESSKEY_ADMIN_LAST_TIME,$time);
@@ -17,7 +17,11 @@ function setLogin($user){
         'login_ip'=>Request::ip(),
         'logintime'=>$time
     ));
-    user_log($user['id'],'login',1,'登录成功' ,'manager');
+    if($logintype == 1){
+        user_log($user['id'],'login',1,'登录成功' ,'manager');
+    }else{
+        user_log($user['id'],'login',1,'自动登录成功' ,'manager');
+    }
 }
 
 function filterurl($url){

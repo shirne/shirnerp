@@ -44,6 +44,25 @@ CREATE TABLE `sa_manager` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for table `sa_manager_token`
+--
+
+DROP TABLE IF EXISTS `sa_manager_token`;
+CREATE TABLE `sa_manager_token` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `platform` VARCHAR(30) NOT NULL DEFAULT '',
+  `manager_id` int(11) DEFAULT '0',
+  `token` varchar(64) NOT NULL,
+  `username` varchar(20) NOT NULL DEFAULT '',
+  `avatar` varchar(255) DEFAULT '' COMMENT '头像',
+  `create_time` int(11) DEFAULT '0',
+  `update_time` int(11) DEFAULT '0',
+  `login_ip` varchar(50) DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `token` (`token`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for table `sa_manager_permision`
 --
 DROP TABLE IF EXISTS `sa_manager_permision`;

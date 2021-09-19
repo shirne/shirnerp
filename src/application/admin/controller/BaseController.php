@@ -49,7 +49,7 @@ class BaseController extends Controller {
 
         //判断用户是否登陆
         if(empty($this->mid ) ) {
-            $this->error(lang('Please login first!'),url('admin/login/index'));
+            $this->error(lang('Please login first!'),url('admin/login/index'),99);
         }
         $this->manager=Db::name('Manager')->find($this->mid);
         if(empty($this->manager)){

@@ -59,6 +59,7 @@ CREATE TABLE `sa_goods` (
   `unit` VARCHAR(5) DEFAULT '斤',
   `image` VARCHAR(150) DEFAULT '',
   `description` VARCHAR(500) DEFAULT '',
+  `is_consum` TINYINT(11) DEFAULT '0',
   `delete_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',

@@ -143,6 +143,17 @@
 				</select>
 			</div>
 		</div>
+		<div class="form-group">
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<label class="input-group-text">是否耗材</label>
+				</div>
+				<select name="is_consum" id="is_consum" class="form-control">
+					<option value="0">否</option>
+					<option value="1">是</option>
+				</select>
+			</div>
+		</div>
 		<div class="form-group form-row d-none">
 			<label for="image" class="col-3">商品图</label>
 			<div class="col">
@@ -204,7 +215,7 @@
 			w.actionPublish=function(ids){
 				dialog.confirm('确定将选中商品发布到前台？',function() {
 				    $.ajax({
-						url:'{:url('goods/status',['id'=>'__id__','status'=>1])}'.replace('__id__',ids.join(',')),
+						url:"{:url('goods/status',['id'=>'__id__','status'=>1])}".replace('__id__',ids.join(',')),
 						type:'GET',
 						dataType:'JSON',
 						success:function(json){
@@ -222,7 +233,7 @@
             w.actionCancel=function(ids){
                 dialog.confirm('确定取消选中商品的发布状态？',function() {
                     $.ajax({
-                        url:'{:url('goods/status',['id'=>'__id__','status'=>0])}'.replace('__id__',ids.join(',')),
+                        url:"{:url('goods/status',['id'=>'__id__','status'=>0])}".replace('__id__',ids.join(',')),
                         type:'GET',
                         dataType:'JSON',
                         success:function(json){
@@ -240,7 +251,7 @@
             w.actionDelete=function(ids){
                 dialog.confirm('确定删除选中的商品？',function() {
                     $.ajax({
-                        url:'{:url('goods/delete',['id'=>'__id__'])}'.replace('__id__',ids.join(',')),
+                        url:"{:url('goods/delete',['id'=>'__id__'])}".replace('__id__',ids.join(',')),
                         type:'GET',
                         dataType:'JSON',
                         success:function(json){
@@ -261,8 +272,8 @@
             });
 
             var addTpl = $('#addTpl').html();
-            var addUrl = '{:url("goods/add")}';
-            var editUrl = '{:url("goods/edit",['id'=>'__ID__'])}';
+            var addUrl = "{:url('goods/add')}";
+            var editUrl = "{:url('goods/edit',['id'=>'__ID__'])}";
             function editGoods(id){
                 var dlg = new Dialog({
                     onshown:function (body) {
@@ -307,7 +318,7 @@
                 editGoods($(this).data('id'))
             };
             var batchAddTpl = $('#batchAddTpl').html();
-            var batchAddUrl = '{:url("goods/batch")}';
+            var batchAddUrl = "{:url('goods/batch')}";
 
             w.actionBatchadd=function () {
                 var dlg = new Dialog({
