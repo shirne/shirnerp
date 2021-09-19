@@ -48,6 +48,7 @@ class TransOrderModel extends BaseModel
             Db::name('transOrderGoods')->insertAll($rows);
 
             $data = $model->getOrigin();
+            $data['status'] = 0;
             $model->triggerStatus($data,$order['status']);
             return $model['id'];
         }

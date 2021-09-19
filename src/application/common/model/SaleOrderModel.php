@@ -103,6 +103,7 @@ class SaleOrderModel extends BaseFinanceModel
             Db::name('saleOrderGoods')->insertAll($rows);
 
             $data = $model->getOrigin();
+            $data['status'] = 0;
             $model->triggerStatus($data,$order['status']);
             return $model['id'];
         }

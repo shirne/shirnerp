@@ -50,6 +50,7 @@
 			<tr>
 				<th width="50">#</th>
 				<th>名称</th>
+				<th>库存</th>
 				<th>全名</th>
 				<th>单位</th>
 				<th>分类</th>
@@ -58,11 +59,12 @@
 			</tr>
 		</thead>
 		<tbody>
-			{empty name="lists"}{:list_empty(8)}{/empty}
+			{empty name="lists"}{:list_empty(9)}{/empty}
 			{volist name="lists" id="v" }
 				<tr>
 					<td><input type="checkbox" name="id" value="{$v.id}" /></td>
 					<td><span class="badge badge-info">{$v.goods_no}</span> {$v.title}</td>
+					<td>{$v.storage}</td>
 					<td>
                         {$v.fullname}
 					</td>

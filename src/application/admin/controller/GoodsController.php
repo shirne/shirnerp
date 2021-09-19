@@ -28,19 +28,24 @@ class GoodsController extends BaseController
         $lists=$model->field('id,title,goods_no,cate_id,unit,price_type,image,description,create_time')
             ->order('id ASC')->paginate(12);
 
+        $ids = array_column($lists->items(),'id');
         if(!empty($storage_id)){
-            $ids = array_column($lists->items(),'id');
             $storages = Db::name('goodsStorage')->where('storage_id',$storage_id)
                 ->whereIn('goods_id',$ids)->select();
-            $storages = array_index($storages,'goods_id');
-            foreach ($lists as &$item){
-                if($storages[$item['id']]){
-                    $item['storage']=$storages[$item['id']]['count'];
-                }else{
-                    $item['storage']=0;
-                }
-            }
+        }else{
+            $storages = Db::name('goodsStorage')
+            ->whereIn('goods_id',$ids)->group('goods_id')->field('goods_id, sum(count) as count')->select();
         }
+        $storages = array_index($storages,'goods_id');
+        $lists->each(function($item) use ($storages){
+            if($storages[$item['id']]){
+                $item['storage']=$storages[$item['id']]['count'];
+            }else{
+                $item['storage']=0;
+            }
+            return $item;
+        });
+
         if($is_page){
             return json(['data'=>[
                 'lists'=>$lists->items(),
@@ -195,7 +200,7 @@ class GoodsController extends BaseController
      * @param int $cate_id
      * @return mixed|\think\response\Redirect
      */
-    public function index($key="",$cate_id=0)
+    public function index($key="",$cate_id=0,$storage_id = 0)
     {
         if($this->request->isPost() && !$this->request->isAjax()){
             return redirect(url('',['cate_id'=>$cate_id,'key'=>base64_encode($key)]));
@@ -211,8 +216,27 @@ class GoodsController extends BaseController
         }
 
         $lists=$model->order('id DESC')->paginate(10);
+
+        $ids = array_column($lists->items(),'id');
+        if(!empty($storage_id)){
+            $storages = Db::name('goodsStorage')->where('storage_id',$storage_id)
+                ->whereIn('goods_id',$ids)->select();
+        }else{
+            $storages = Db::name('goodsStorage')
+            ->whereIn('goods_id',$ids)->group('goods_id')->field('goods_id, sum(count) as count')->select();
+        }
+        $storages = array_index($storages,'goods_id');
+        $lists->each(function($item) use ($storages){
+            if($storages[$item['id']]){
+                $item['storage']=$storages[$item['id']]['count'];
+            }else{
+                $item['storage']=0;
+            }
+            return $item;
+        });
+
         $this->assign('units',getGoodsUnits());
-        $this->assign('lists',$lists);
+        $this->assign('lists',$lists->items());
         $this->assign('total',$lists->total());
         $this->assign('total_page',$lists->lastPage());
         $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());

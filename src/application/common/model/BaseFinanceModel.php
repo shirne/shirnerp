@@ -20,7 +20,7 @@ class BaseFinanceModel extends BaseModel
      */
     public static function fixOrderDatas(&$order, &$goods, &$total)
     {
-        $isback = $order['parent_order_id']>0;
+        $isback = !empty($order['parent_order_id']);
 
         $goods_ids=array_column($goods, 'goods_id');
         $oGoods = Db::name('goods')->whereIn('id',$goods_ids)->select();
@@ -41,7 +41,7 @@ class BaseFinanceModel extends BaseModel
             $good['goods_no']=$oGoods[$goods_id]['goods_no'];
             $good['weight']=tonumber($good['weight']);
             $good['count']=tonumber($good['count']);
-            $good['storage_id']=$good['storage_id']?:$order['storage_id'];
+            $good['storage_id']=!empty($good['storage_id'])?$good['storage_id']:$order['storage_id'];
 
             if(isset($good['unit']) && !isset($good['goods_unit'])){
                 $good['goods_unit']=$good['unit'];

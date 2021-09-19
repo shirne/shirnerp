@@ -102,7 +102,8 @@ class PurchaseOrderModel extends BaseFinanceModel
             Db::name('purchaseOrderGoods')->insertAll($rows);
 
             $data = $model->getOrigin();
-            $model->triggerStatus($data,$order['status']);
+            $data['status'] = 0;
+            $model->triggerStatus($data, $order['status']);
             return $model->id;
         }
 
@@ -167,7 +168,7 @@ class PurchaseOrderModel extends BaseFinanceModel
 
     protected function triggerStatus($item,$status)
     {
-        if($status>$item['status']){
+        if($status > $item['status']){
             switch ($status){
                 case 1:
                     $goods = Db::name('purchaseOrderGoods')->where('purchase_order_id',$item['id'])->select();

@@ -187,7 +187,7 @@ class Bootstrap4 extends Paginator
                     $this->getActivePageWrapper($this->currentPage()),
                     $this->getNextButton()
                 );
-            }elseif ($this->options['simple']) {
+            }elseif (!empty($this->options['simple'])) {
                 return sprintf(
                     '<nav aria-label="Page navigation">%s<ul class="pagination'.$this->extstyle.'">%s %s %s %s %s</ul></nav>',
                     $this->jump?$this->getJumpComponent():'',
