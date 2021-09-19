@@ -16,7 +16,7 @@ use think\facade\Log;
 
 class GoodsController extends BaseController
 {
-    public function search($key='',$cate=0,$storage_id=0){
+    public function search($key='',$cate=0,$storage_id=0, $is_page = 0){
         $model=Db::name('goods');
         if(!empty($key)){
             $model->where('id|title|fullname|goods_no','like',"%$key%");
@@ -26,10 +26,10 @@ class GoodsController extends BaseController
         }
 
         $lists=$model->field('id,title,goods_no,cate_id,unit,price_type,image,description,create_time')
-            ->order('id ASC')->limit(10)->select();
+            ->order('id ASC')->paginate(12);
 
         if(!empty($storage_id)){
-            $ids = array_column($lists,'id');
+            $ids = array_column($lists->items(),'id');
             $storages = Db::name('goodsStorage')->where('storage_id',$storage_id)
                 ->whereIn('goods_id',$ids)->select();
             $storages = array_index($storages,'goods_id');
@@ -41,8 +41,15 @@ class GoodsController extends BaseController
                 }
             }
         }
-
-        return json(['data'=>$lists,'code'=>1]);
+        if($is_page){
+            return json(['data'=>[
+                'lists'=>$lists->items(),
+                'total'=>$lists->count(),
+                'page'=>$lists->currentPage(),
+                'total_page'=>$lists->lastPage()
+            ],'code'=>1]);
+        }
+        return json(['data'=>$lists->items(),'code'=>1]);
     }
 
     //从订单中导入
@@ -583,6 +590,23 @@ class GoodsController extends BaseController
         }
 
         $excel->output('['.$goods['title'].']统计'.$datestr);
+    }
+    /**
+     * 发布
+     * @param $id
+     * @param int $status
+     */
+    public function category($ids,$category=0)
+    {
+        $data['cate_id'] = $category;
+
+        $result = Db::name('goods')->whereIn("id",idArr($ids))->update($data);
+        if ($result ) {
+            user_log($this->mid,'categorygoods',1,'设置商品分类 '.$ids.'=>'.$category ,'manager');
+            $this -> success("设置成功", url('Goods/index'));
+        } else {
+            $this -> error("操作失败");
+        }
     }
 
     /**

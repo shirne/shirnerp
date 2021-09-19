@@ -14,6 +14,7 @@ return [
     'Sort'=>'排序',
     'Operate'=>'操作',
 
+    'Set Category'=>'设置分类',
     'Publish'=>'发布',
     'Publish Article'=>'发布文章',
     'Add Category'=>'添加分类',

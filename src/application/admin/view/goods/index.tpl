@@ -12,6 +12,7 @@
 					<a href="javascript:" class="btn btn-outline-secondary checkreverse-btn">反选</a>
 				</div>
 				<div class="btn-group btn-group-sm mr-2" role="group" aria-label="action button group">
+					<a href="javascript:" class="btn btn-outline-secondary action-btn" data-action="category">{:lang('Set Category')}</a>
 					<a href="javascript:" class="btn btn-outline-secondary action-btn" data-action="delete">{:lang('Delete')}</a>
 				</div>
 				<a href="{:url('goods/add')}" class="btn btn-outline-primary btn-sm action-btn mr-2" data-needchecks="false" data-action="add"><i class="ion-md-add"></i> 添加商品</a>
@@ -210,8 +211,23 @@
 			</div>
 		</div>
 	</script>
+	<script type="text/html" id="categoryTpl">
+		<div class="form-group">
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<label class="input-group-text">商品分类</label>
+				</div>
+				<select name="cate_id" id="goods-cate" class="form-control">
+					{foreach $categories as $v}
+						<option value="{$v.id}" >{$v.html} {$v.title}</option>
+					{/foreach}
+				</select>
+			</div>
+		</div>
+	</script>
 	<script type="text/javascript">
 		(function(w){
+			var categoryTpl = $('#categoryTpl').html();
 			w.actionPublish=function(ids){
 				dialog.confirm('确定将选中商品发布到前台？',function() {
 				    $.ajax({
@@ -265,6 +281,31 @@
                         }
                     });
                 });
+            };
+			w.actionCategory=function(ids){
+                var dlg = new Dialog({
+                    onsure:function (body) {
+						var cateid = body.find('[name=cate_id]').val();
+                        $.ajax({
+                            url:"{:url('goods/category')}",
+                            type:'POST',
+                            dataType:'JSON',
+                            data:{
+								ids:ids,
+								category:cateid
+							},
+                            success:function (json) {
+                                //console.log(json);
+                                dialog.alert(json.msg);
+                                if(json.code==1){
+                                    location.reload();
+                                    dlg.close();
+                                }
+                            }
+                        });
+                        return false;
+                    }
+                }).show(categoryTpl,'设置分类');
             };
             $('.btn-import').click(function (e) {
                 e.preventDefault();
