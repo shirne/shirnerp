@@ -57,7 +57,7 @@ class SaleOrderModel extends BaseFinanceModel
         if(empty($order['order_no'])){
             $order['order_no']=self::create_no();
         }
-        if($order['customer_time']){
+        if(!empty($order['customer_time'])){
             $order['customer_time']=strtotime($order['customer_time']);
         }else{
             $order['customer_time']=0;
@@ -80,7 +80,7 @@ class SaleOrderModel extends BaseFinanceModel
                 'goods_no'=>$good['goods_no'],
                 'goods_unit'=>$good['goods_unit'],
                 'price_type'=>$good['price_type'],
-                'storage_id'=>$good['storage_id'],
+                'storage_id'=>empty($good['storage_id'])?$order['storage_id']:$good['storage_id'],
                 'count'=>$good['count'],
                 'base_count'=>$good['base_count'],
                 'weight'=>$good['weight'],

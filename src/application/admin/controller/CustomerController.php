@@ -10,17 +10,24 @@ use think\Db;
 
 class CustomerController extends BaseController
 {
-    public function search($key=''){
+    public function search($key='', $is_page = 0){
         $model=Db::name('customer');
         if(!empty($key)){
             $model->where('id|title|phone','like',"%$key%");
         }
 
         $lists=$model->field('id,title,short,phone,create_time')
-            ->order('id ASC')->limit(10)->select();
+            ->order('id ASC')->paginate(10);
 
-
-        return json(['data'=>$lists,'code'=>1]);
+        if($is_page){
+            return json(['data'=>[
+                'lists'=>$lists->items(),
+                'total'=>$lists->count(),
+                'page'=>$lists->currentPage(),
+                'total_page'=>$lists->lastPage()
+            ],'code'=>1]);
+        }
+        return json(['data'=>$lists->items(),'code'=>1]);
     }
 
     /**
@@ -40,8 +47,10 @@ class CustomerController extends BaseController
             $model->whereLike('title|short|phone',"%$key%");
         }
         $lists=$model->order('ID DESC')->paginate(15);
-        $this->assign('lists',$lists);
-        $this->assign('page',$lists->render());
+        $this->assign('lists',$lists->items());
+        $this->assign('total',$lists->total());
+        $this->assign('total_page',$lists->lastPage());
+        $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());
         return $this->fetch();
     }
 

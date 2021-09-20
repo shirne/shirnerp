@@ -25,6 +25,17 @@ class CurrencyModel extends BaseModel
         });
     }
 
+    public static function getDefaultCurrency()
+    {
+        $currencies = self::getCurrencies();
+        foreach($currencies as $currency){
+            if($currency['is_base']){
+                return $currency['key'];
+            }
+        }
+        return '';
+    }
+
     public static function getCurrency($key)
     {
         $currencies = self::getCurrencies();

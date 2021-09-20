@@ -76,10 +76,11 @@ class SaleOrderController extends BaseController
             if(is_string($total)){
                 $total = json_decode($total,true);
             }
+            $order['manager_id'] = $this->mid;
             try{
                 $result = SaleOrderModel::createOrder($order,$goods,$total);
-            }catch (Exception $e){
-                Log::record($e->getTraceAsString());
+            }catch (\Exception $e){
+                Log::record($e->getMessage());
                 $this->error($e->getMessage());
             }
             if($result){

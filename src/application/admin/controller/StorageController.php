@@ -12,19 +12,26 @@ use think\Db;
 
 class StorageController extends BaseController
 {
-    public function search($key='')
+    public function search($key='', $is_page = 0)
     {
         $model=Db::name('storage');
         if(!empty($key)){
             $model->where('id|title|fullname|storage_no','like',"%$key%");
         }
 
-        $limit = $this->request->get('limit',20);
+        $limit = $this->request->param('limit',20);
         $lists=$model->field('id,title,fullname,storage_no,create_time')
-            ->order('id ASC')->limit($limit)->select();
+            ->order('id ASC')->paginate($limit);
 
-
-        return json(['data'=>$lists,'code'=>1]);
+        if($is_page){
+            return json(['data'=>[
+                'lists'=>$lists->items(),
+                'total'=>$lists->count(),
+                'page'=>$lists->currentPage(),
+                'total_page'=>$lists->lastPage()
+            ],'code'=>1]);
+        }
+        return json(['data'=>$lists->items(),'code'=>1]);
     }
 
     public function getStorage($storage_id, $goods_id=''){

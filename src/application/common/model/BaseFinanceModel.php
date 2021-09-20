@@ -21,6 +21,9 @@ class BaseFinanceModel extends BaseModel
     public static function fixOrderDatas(&$order, &$goods, &$total)
     {
         $isback = !empty($order['parent_order_id']);
+        if(empty($order['currency'])){
+            $order['currency'] = CurrencyModel::getDefaultCurrency();
+        }
 
         $goods_ids=array_column($goods, 'goods_id');
         $oGoods = Db::name('goods')->whereIn('id',$goods_ids)->select();
@@ -43,8 +46,12 @@ class BaseFinanceModel extends BaseModel
             $good['count']=tonumber($good['count']);
             $good['storage_id']=!empty($good['storage_id'])?$good['storage_id']:$order['storage_id'];
 
-            if(isset($good['unit']) && !isset($good['goods_unit'])){
-                $good['goods_unit']=$good['unit'];
+            if(!isset($good['goods_unit'])){
+                if(isset($good['unit'])){
+                    $good['goods_unit']=$good['unit'];
+                }else{
+                    $good['goods_unit']=$oGoods[$goods_id]['unit'];
+                }
             }
 
             if(!empty($good['goods_unit']) && isset($units[$good['goods_unit']])){
@@ -78,7 +85,7 @@ class BaseFinanceModel extends BaseModel
                 }
             }
 
-            if($good['diy_price']==1){
+            if(!empty($good['diy_price'])){
                 $amount = transsymbol(tonumber($good['total_price']),$isback?'-':'+');
             }else {
                 $amount = $good['price_type'] == 1 ? ($good['weight'] * $good['price']) : ($good['count'] * $good['price']);
@@ -93,7 +100,7 @@ class BaseFinanceModel extends BaseModel
         $total_price = round($total_price,2);
         $total['price']=transsymbol(tonumber($total['price']),$isback?'-':'+');
         $order['freight'] = transsymbol(tonumber($order['freight']),$isback?'-':'+');
-        if($order['diy_price']==1) {
+        if(!empty($order['diy_price'])) {
             $order['amount'] = $total['price'];
         }else {
             $order['amount'] = $total_price;
