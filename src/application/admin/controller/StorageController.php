@@ -12,13 +12,17 @@ use think\Db;
 
 class StorageController extends BaseController
 {
-    public function search($key='', $is_page = 0)
+    public function search($key='', $ids = '', $is_page = 0)
     {
         $model=Db::name('storage');
         if(!empty($key)){
             $model->where('id|title|fullname|storage_no','like',"%$key%");
         }
 
+        if(!empty($ids)){
+            $model->whereIn('id', idArr($ids));
+        }
+        
         $limit = $this->request->param('limit',20);
         $lists=$model->field('id,title,fullname,storage_no,create_time')
             ->order('id ASC')->paginate($limit);

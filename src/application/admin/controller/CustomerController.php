@@ -10,10 +10,13 @@ use think\Db;
 
 class CustomerController extends BaseController
 {
-    public function search($key='', $is_page = 0){
+    public function search($key='',$ids = '', $is_page = 0){
         $model=Db::name('customer');
         if(!empty($key)){
             $model->where('id|title|phone','like',"%$key%");
+        }
+        if(!empty($ids)){
+            $model->whereIn('id', idArr($ids));
         }
 
         $lists=$model->field('id,title,short,phone,create_time')

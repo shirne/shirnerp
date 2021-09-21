@@ -10,18 +10,28 @@ use think\Db;
 
 class SupplierController extends BaseController
 {
-    public function search($key='')
+    public function search($key='', $ids = '', $is_page = 0)
     {
         $model=Db::name('supplier');
         if(!empty($key)){
             $model->where('id|title|phone','like',"%$key%");
         }
+        if(!empty($ids)){
+            $model->whereIn('id', idArr($ids));
+        }
 
         $lists=$model->field('id,title,short,phone,create_time')
-            ->order('id ASC')->limit(10)->select();
+            ->order('id ASC')->paginate(10);
 
-
-        return json(['data'=>$lists,'code'=>1]);
+        if($is_page){
+            return json(['data'=>[
+                'lists'=>$lists->items(),
+                'total'=>$lists->count(),
+                'page'=>$lists->currentPage(),
+                'total_page'=>$lists->lastPage()
+            ],'code'=>1]);
+        }
+        return json(['data'=>$lists->items(),'code'=>1]);
     }
 
     /**

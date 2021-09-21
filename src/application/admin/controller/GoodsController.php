@@ -16,13 +16,16 @@ use think\facade\Log;
 
 class GoodsController extends BaseController
 {
-    public function search($key='',$cate=0,$storage_id=0, $is_page = 0){
+    public function search($key='',$cate=0,$storage_id=0, $ids = '',$is_page = 0){
         $model=Db::name('goods');
         if(!empty($key)){
             $model->where('id|title|fullname|goods_no','like',"%$key%");
         }
         if($cate>0){
             $model->whereIn('cate_id',GoodsCategoryFacade::getSubCateIds($cate));
+        }
+        if(!empty($ids)){
+            $model->whereIn('id', idArr($ids));
         }
 
         $lists=$model->field('id,title,goods_no,cate_id,unit,price_type,image,description,create_time')
@@ -38,7 +41,7 @@ class GoodsController extends BaseController
         }
         $storages = array_index($storages,'goods_id');
         $lists->each(function($item) use ($storages){
-            if($storages[$item['id']]){
+            if(isset($storages[$item['id']])){
                 $item['storage']=$storages[$item['id']]['count'];
             }else{
                 $item['storage']=0;
@@ -227,7 +230,7 @@ class GoodsController extends BaseController
         }
         $storages = array_index($storages,'goods_id');
         $lists->each(function($item) use ($storages){
-            if($storages[$item['id']]){
+            if(isset($storages[$item['id']])){
                 $item['storage']=$storages[$item['id']]['count'];
             }else{
                 $item['storage']=0;
