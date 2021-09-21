@@ -43,6 +43,7 @@ function clearLogin($log=true){
     session(SESSKEY_ADMIN_ID,null);
     session(SESSKEY_ADMIN_NAME,null);
     session(SESSKEY_ADMIN_LAST_TIME,null);
+    cookie(SESSKEY_ADMIN_AUTO_LOGIN, null);
 }
 
 function getMenus(){

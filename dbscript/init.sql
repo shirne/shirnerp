@@ -78,10 +78,10 @@ VALUES
   ( 'sms_password', '登录密码', 'text', 'third', '0',1, '', '', ''),
   ( 'kd_userid', '快递鸟用户ID', 'text', 'third', '0',1, '', '', ''),
   ( 'kd_apikey', '快递鸟API Key', 'text', 'third', '0',1, '', '', ''),
-  ( 'mapkey_baidu', '百度地图密钥', 'text', 'third', '0',1, 'rO9tOdEWFfvyGgDkiWqFjxK6', '', ''),
-  ( 'mapkey_google', '谷哥地图密钥y', 'text', 'third', '0',1, 'AIzaSyB8lorvl6EtqIWz67bjWBruOhm9NYS1e24', '', ''),
-  ( 'mapkey_tencent', '腾讯地图密钥', 'text', 'third', '0',1, '7I5BZ-QUE6R-JXLWV-WTVAA-CJMYF-7PBBI', '', ''),
-  ( 'mapkey_gaode', '高德地图密钥', 'text', 'third', '0',1, '3ec311b5db0d597e79422eeb9a6d4449', '', ''),
+  ( 'mapkey_baidu', '百度地图密钥', 'text', 'third', '0',1, '', '', ''),
+  ( 'mapkey_google', '谷哥地图密钥y', 'text', 'third', '0',1, '', '', ''),
+  ( 'mapkey_tencent', '腾讯地图密钥', 'text', 'third', '0',1, '', '', ''),
+  ( 'mapkey_gaode', '高德地图密钥', 'text', 'third', '0',1, '', '', ''),
   ( 'captcha_mode', '验证码模式', 'radio', 'third', '0',1, '0', '', '0:图形验证\r\n1:极验验证'),
   ( 'captcha_geeid', '极验ID', 'text', 'third', '0',1, '', '', ''),
   ( 'captcha_geekey', '极验密钥', 'text', 'third', '0',1, '', '', ''),
@@ -89,7 +89,7 @@ VALUES
   ( 'm_invite', '邀请注册', 'radio', 'member', '0',1, '1', '', '0:关闭\r\n1:启用\r\n2:强制'),
   ( 'm_register', '强制注册', 'radio', 'member', '0',1, '1', '', '0:关闭\r\n1:启用'),
   ( 'm_checkcode', '验证码', 'radio', 'member', '0',1, '1', '', '0:关闭\r\n1:启用'),
-  ( 'weight_unit', '重量单位', 'text', 'advance', '0',0, '司码', '', '');
+  ( 'weight_unit', '重量单位', 'text', 'advance', '0',0, '斤', '', '');
 
 
 TRUNCATE TABLE `sa_member_level`;
@@ -101,3 +101,5 @@ TRUNCATE TABLE `sa_category`;
 
 INSERT INTO `sa_category`(`id`,`pid`,`title`,`short`,`name`,`icon`,`image`,`sort`,`keywords`,`description`)VALUES
 (1,0,'新闻动态','新闻','news','','',0,'','');
+
+

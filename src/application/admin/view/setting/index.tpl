@@ -5,7 +5,6 @@
 {include file="public/bread" menu="setting_index" title="" /}
 
 <div id="page-wrapper">
-
     <div class="container-fluid tab-container" >
         <div class="btn-toolbar tab-toolbar" role="toolbar" aria-label="Toolbar with button groups">
             <div class="btn-group mr-2 btn-group-sm" role="group" aria-label="First group">
@@ -27,7 +26,7 @@
 
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
-            {foreach $groups as $name}
+            {foreach $groups as $key=>$name}
                 <li class="nav-item head-{$key}"><a class="nav-link" href="#panel-{$key}" data-group="{$key}" role="tab" data-toggle="tab">{$name}</a></li>
             {/foreach}
         </ul>
@@ -38,7 +37,7 @@
             {php} function group_tab($group,$setting){ {/php}
             {switch name="group"}
                 {case value="common"}
-            {include file="setting/part/common"  /}
+                    {include file="setting/part/common"  /}
                 {/case}
                 {case value="member"}
                     {include file="setting/part/member"  /}
@@ -53,10 +52,10 @@
             {php} return "";} {/php}
             <!-- Tab panes -->
             <div class="tab-content">
-                {foreach $groups as $name}
+                {foreach $groups as $key=>$name}
                 <div role="tabpanel" class="tab-pane" id="panel-{$key}">
                     {:group_tab($key,$settings[$key])}
-                    {foreach $settings[$key] as $item}
+                    {foreach $settings[$key]??[] as $key=>$item}
                         {if $item['is_sys'] == 0}
                         <div class="form-row form-group">
                             <label for="v-{$key}" class="col-3 col-md-2 text-right align-middle">{$item.title}</label>
