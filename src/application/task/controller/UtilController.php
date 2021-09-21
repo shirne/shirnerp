@@ -93,12 +93,6 @@ class UtilController extends Controller
     public function daily()
     {
         # code...
-        $rows = Db::name('product')->whereLike('title',["%1%","%2%"],'AND')->select();
-        var_export($rows);
-        $instance=ProductModel::getInstance();
-        echo $instance->getName();
-        $instance=ArticleModel::getInstance();
-        echo $instance->getName();
     }
 
     public function install($sql='',$mode='')
