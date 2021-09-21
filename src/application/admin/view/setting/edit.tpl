@@ -18,7 +18,7 @@
         <div class="form-group">
             <label for="value">分组</label>
             <select name="group" class="form-control" >
-                {foreach $groups as $itm}
+                {foreach $groups as $key=>$itm}
                     {if $key==$model['group']}
                         <option value="{$key}" selected="selected">{$itm}</option>
                     {else /}
@@ -30,7 +30,7 @@
         <div class="form-group">
             <label for="value">字段类型</label>
             <select name="type" class="form-control" >
-                {foreach $types as $itm}
+                {foreach $types as $key=>$itm}
                     {if $key==$model['type']}
                         <option value="{$key}" selected="selected">{$itm}</option>
                     {else /}

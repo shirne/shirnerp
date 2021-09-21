@@ -35,7 +35,7 @@
             </tr>
         </thead>
         <tbody>
-        {empty name="lists"}$empty=list_empty(8);{/empty}
+        {empty name="lists"}{:list_empty(8)}{/empty}
         {foreach $lists as $v}
             <tr>
                 <td>{$v.id}</td>

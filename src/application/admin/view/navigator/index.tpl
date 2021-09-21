@@ -21,7 +21,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {foreach $navigator as $item}
+                    {foreach $navigator as $key=>$item}
                         <tr class="navrow row-{$key}" data-key="{$key}">
                             <td><i class="ion-md-apps"></i> </td>
                             <td>
