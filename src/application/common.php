@@ -1442,14 +1442,14 @@ function gener_qrcode($text,$size=300,$pad=10,$errLevel='high'){
 
     $qrCode->setText($text)
         ->setSize($size)
-        ->setPadding($pad)
-        ->setErrorCorrection($errLevel)
+        ->setMargin($pad)
+        ->setErrorCorrectionLevel($errLevel)
         ->setForegroundColor(array('r' => 0, 'g' => 0, 'b' => 0, 'a' => 0))
         ->setBackgroundColor(array('r' => 255, 'g' => 255, 'b' => 255, 'a' => 0))
         //->setLabel('thinkphp.cn')
         //->setLabelFontSize(16)
-        ->setImageType(\Endroid\QrCode\QrCode::IMAGE_TYPE_PNG);
-    $qrCode->render();
+        ->setWriterByExtension('png');
+    $qrCode->writeString();
 }
 
 function file_rule($file){

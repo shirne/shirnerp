@@ -136,6 +136,7 @@ CREATE TABLE `sa_trans_order` (
   `storage_id` INT(4) NOT NULL,
   `order_no` VARCHAR(30) NOT NULL,
   `status` TINYINT(4) NOT NULL DEFAULT '0',
+  `remark` VARCHAR(100) DEFAULT '',
   `delete_time` INT(11) DEFAULT '0',
   `create_time` INT(11) DEFAULT '0',
   `update_time` INT(11) DEFAULT '0',

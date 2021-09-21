@@ -69,7 +69,13 @@
                         </tbody>
                         <tfoot>
                         <tr>
-                            <td colspan="5"><a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-sm btn-addrow"><i class="ion-md-add"></i> 添加行</a> </td>
+                            <td colspan="5">
+                                <div class="input-group input-group-sm w-50 float-right">
+                                    <div class="input-group-prepend"><span class="input-group-text">订单备注</span></div>
+                                    <input type="text" class="form-control" v-model="order.remark"/>
+                                </div>
+                                <a href="javascript:" @click="addRow" class="btn btn-outline-primary btn-sm btn-addrow"><i class="ion-md-add"></i> 添加行</a> 
+                            </td>
                         </tr>
                         </tfoot>
                     </table>
@@ -107,7 +113,8 @@
                     from_storage_id:0,
                     storage_id:0,
                     status:0,
-                    order_no:''
+                    order_no:'',
+                    remark:''
                 },
                 storages:[],
                 emptyGoods:[],
