@@ -21,6 +21,9 @@ class LoginController extends BaseController {
 
     public function token($platform, $last_token = ''){
         // todo ip 限制
+        if(!in_array($platform, ['Api','Desktop', 'App'])){
+            $this->error('platform error');
+        }
 
         do{
             $token = sha1(config('session.sec_key').rand(1000,9999).microtime());

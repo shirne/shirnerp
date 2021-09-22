@@ -11,7 +11,8 @@ class AuthMiddleware
     public function handle($request, \Closure $next)
     {
         // 从参数中初始化session
-        if(strpos($request->header('user-agent'), ' Api ') !== false){
+        $requestType = $request->server('HTTP_X_REQUESTED_TYPE');
+        if( in_array($requestType,['Api','Desktop', 'App']) ){
             Log::record('api request');
             $token = $request->header('token');
             if(empty($token)){
