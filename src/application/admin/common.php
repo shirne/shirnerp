@@ -20,9 +20,9 @@ function setLogin($user, $logintype = 1, $isApp = false){
         ));
     }
     if($logintype == 1){
-        user_log($user['id'],'login',1,'登录成功' ,'manager');
+        user_log($user['id'],'login',1,request()->server('HTTP_X_REQUESTED_TYPE').'登录成功' ,'manager');
     }else{
-        user_log($user['id'],'login',1,'自动登录成功' ,'manager');
+        user_log($user['id'],'login',1,request()->server('HTTP_X_REQUESTED_TYPE').'自动登录成功' ,'manager');
     }
 }
 
@@ -37,7 +37,7 @@ function filterurl($url){
 function clearLogin($log=true){
     $id=session(SESSKEY_ADMIN_ID);
     if($log && !empty($id)) {
-        user_log($id, 'logout', 1, '退出登录');
+        user_log($id, 'logout', 1, request()->server('HTTP_X_REQUESTED_TYPE').'退出登录');
     }
 
     session(SESSKEY_ADMIN_ID,null);
@@ -94,8 +94,8 @@ function delete_image($images){
 }
 
 
-function list_empty($col=5){
-    return '<tr><td colspan="'.$col.'" class="text-center text-muted">暂时没有记录</td></tr>';
+function list_empty($col=5,$msg = '暂时没有记录'){
+    return '<tr><td colspan="'.$col.'" class="text-center text-muted">'.$msg.'</td></tr>';
 }
 
 function show_finance($finance){

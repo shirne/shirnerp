@@ -39,7 +39,33 @@
                 <td>{$v.username}</td>
                 <td>{$v.email}</td>
                 <td>{$v.create_time|showdate}<br />{$v.update_time|showdate}</td>
-                <td>{$v.login_ip}<br />{$v.logintime|showdate}</td>
+                <td>
+                    {$v.login_ip}<br />{$v.logintime|showdate}<br />{if !empty($v['logined_count'])}
+                    <a href="javascript:" class="login-detail" data-target="div-{$v['id']}">APP端 {$v['logined_count']}个登录</a>
+                    <div id="div-{$v.id}" class="hidden">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>设备</th>
+                                    <th>登录时间</th>
+                                    <th>更新时间</th>
+                                    <th>登录ip</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                        {foreach $v['logins'] as $litem}
+                            <tr>
+                                <td>{$litem['platform']}</td>
+                                <td>{$litem.create_time|showdate}</td>
+                                <td>{$litem.update_time|showdate}</td>
+                                <td>{$litem.login_ip}</td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                    </table>
+                    </div>
+                    {/if}
+                </td>
                 <td>
                     {if $v['type'] == 1} <span class="label label-success">超级管理员</span>
                     {elseif condition="$v['type'] == 2"/}<span class="label label-danger">管理员</span>
@@ -63,4 +89,15 @@
     </table>
 </div>
 
+{/block}
+{block name="script"}
+<script>
+    jQuery(function($){
+        $('.login-detail').click(function(){
+            var did = $(this).data('target');
+            var tpl = $('#'+did).html();
+            dialog.alert({'content':tpl,'size':'md'},null);
+        })
+    })
+</script>
 {/block}

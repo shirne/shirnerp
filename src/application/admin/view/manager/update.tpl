@@ -7,7 +7,8 @@
     <div id="page-wrapper">
         <div class="page-header">{$model['id']>0?'编辑':'添加'}管理员</div>
         <div id="page-content">
-
+            <div class="row">
+                <div class="col col-6">
             <form action="" method="post">
                 <div class="form-group">
                     <label>用户名</label>
@@ -73,6 +74,33 @@
 
 
             </form>
+        </div>
+        <div class="col col-6">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>设备</th>
+                        <th>登录时间</th>
+                        <th>更新时间</th>
+                        <th>登录ip</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {empty name="logins"}{:list_empty(5)}{/empty}
+            {foreach $logins as $litem}
+                <tr>
+                    <td>{$litem['platform']}</td>
+                    <td>{$litem.create_time|showdate}</td>
+                    <td>{$litem.update_time|showdate}</td>
+                    <td>{$litem.login_ip}</td>
+                    <td><a href="{:url('clear',['id'=>$litem['id']])}" class="removeLogin">清除</a></td>
+                </tr>
+            {/foreach}
+        </tbody>
+        </table>
+        </div>
+    </div>
         </div>
     </div>
 
