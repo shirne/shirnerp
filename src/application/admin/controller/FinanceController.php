@@ -192,9 +192,11 @@ class FinanceController extends BaseController
         $this->assign('key',$key);
         $this->assign('status',$status);
         $this->assign('orderids',empty($orderids)?0:implode(',',$orderids));
-        $this->assign('lists',$lists);
+        $this->assign('lists',$lists->items());
         $this->assign('paytypes',getFinanceTypes(false));
-        $this->assign('page',$lists->render());
+        $this->assign('total',$lists->total());
+        $this->assign('total_page',$lists->lastPage());
+        $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());
         return $this->fetch();
     }
 
@@ -281,9 +283,11 @@ class FinanceController extends BaseController
         $this->assign('key',$key);
         $this->assign('status',$status);
         $this->assign('orderids',empty($orderids)?0:implode(',',$orderids));
-        $this->assign('lists',$lists);
+        $this->assign('lists',$lists->items());
         $this->assign('paytypes',getFinanceTypes(false));
-        $this->assign('page',$lists->render());
+        $this->assign('total',$lists->total());
+        $this->assign('total_page',$lists->lastPage());
+        $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());
         return $this->fetch();
     }
 
@@ -395,8 +399,10 @@ class FinanceController extends BaseController
 
         $this->assign('types',$types);
         $this->assign('statics', $statics);
-        $this->assign('logs', $logs);
-        $this->assign('page',$logs->render());
+        $this->assign('lists', $logs->items());
+        $this->assign('total',$logs->total());
+        $this->assign('total_page',$logs->lastPage());
+        $this->assign('page',$this->request->isAjax()?$logs->currentPage() : $logs->render());
         return $this->fetch();
     }
 }

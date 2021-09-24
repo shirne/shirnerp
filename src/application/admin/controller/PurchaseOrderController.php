@@ -48,8 +48,10 @@ class PurchaseOrderController extends BaseController
         $this->assign('key',$key);
         $this->assign('status',$status);
         $this->assign('orderids',empty($orderids)?0:implode(',',$orderids));
-        $this->assign('lists',$lists);
-        $this->assign('page',$lists->render());
+        $this->assign('lists',$lists->items());
+        $this->assign('total',$lists->total());
+        $this->assign('total_page',$lists->lastPage());
+        $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());
         return $this->fetch();
     }
 

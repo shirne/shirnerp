@@ -33,8 +33,10 @@ class FeedbackController extends BaseController
             $where['_logic'] = 'or';
         }
         $lists=$model->where($where)->paginate(15);
-        $this->assign('lists',$lists);
-        $this->assign('page',$lists->render());
+        $this->assign('lists',$lists->items());
+        $this->assign('total',$lists->total());
+        $this->assign('total_page',$lists->lastPage());
+        $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());
         return $this->fetch();
     }
 

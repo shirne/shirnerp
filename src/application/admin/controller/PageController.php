@@ -35,8 +35,10 @@ class PageController extends BaseController
         }
         $lists=$model->view('pageGroup',['group_name','use_template'=>'group_use_template'],'pageGroup.group=page.group','LEFT')
             ->order('sort ASC,ID DESC')->paginate(15);
-        $this->assign('lists',$lists);
-        $this->assign('page',$lists->render());
+        $this->assign('lists',$lists->items());
+        $this->assign('total',$lists->total());
+        $this->assign('total_page',$lists->lastPage());
+        $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());
         $this->assign('group',$group);
         $this->assign('keyword',$key);
         $this->assign('groups', getPageGroups());

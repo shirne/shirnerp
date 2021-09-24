@@ -27,13 +27,12 @@ class ManagerController extends BaseController
             return redirect(url('', ['key' => base64url_encode($key)]));
         }
         $key = empty($key) ? "" : base64url_decode($key);
-        $model = Db::name('Manager');
-        $where = array();
+        $model = Db::name('Manager')->hidden(['password','salt']);
         if (!empty($key)) {
-            $where[] = array('username|email', 'like', "%$key%");
+            $model->whereLike('username|email',"%$key%");
         }
 
-        $lists = $model->where($where)->order('ID ASC')->paginate(15);
+        $lists = $model->order('ID ASC')->paginate(15);
 
         if (!$lists->isEmpty()) {
             $ids = array_column($lists->items(), 'id');
@@ -84,9 +83,11 @@ class ManagerController extends BaseController
         }
 
         $logs = $model->order('ManagerLog.id DESC')->paginate(15);
-        $this->assign('logs', $logs);
+        $this->assign('lists', $logs->items());
         $this->assign('keyword', $key);
-        $this->assign('page', $logs->render());
+        $this->assign('total',$logs->total());
+        $this->assign('total_page',$logs->lastPage());
+        $this->assign('page',$this->request->isAjax()?$logs->currentPage() : $logs->render());
         return $this->fetch();
     }
 
@@ -168,7 +169,7 @@ class ManagerController extends BaseController
     {
         $id = intval($id);
         if ($id == 0) $this->error('参数错误');
-        $model = ManagerModel::get($id);
+        $model = ManagerModel::where('id',$id)->hidden(['password','salt'])->find();
         if ($this->manager['type'] > $model['type']) {
             $this->error('您没有权限查看该管理员');
         }

@@ -31,8 +31,10 @@ class AdvController extends BaseController
             $model->whereLike('title|flag',"%$key%");
         }
         $lists=$model->order('id DESC')->paginate(15);
-        $this->assign('lists',$lists);
-        $this->assign('page',$lists->render());
+        $this->assign('lists',$lists->items());
+        $this->assign('total',$lists->total());
+        $this->assign('total_page',$lists->lastPage());
+        $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());
         return $this->fetch();
     }
 
@@ -135,8 +137,10 @@ class AdvController extends BaseController
             $where[] = array('title|url','like',"%$key%");
         }
         $lists=$model->where($where)->order('sort ASC,id DESC')->paginate(15);
-        $this->assign('lists',$lists);
-        $this->assign('page',$lists->render());
+        $this->assign('lists',$lists->items());
+        $this->assign('total',$lists->total());
+        $this->assign('total_page',$lists->lastPage());
+        $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());
         $this->assign('gid',$gid);
         return $this->fetch();
     }

@@ -28,8 +28,10 @@ class LinksController extends BaseController
             $where[] = array('title|url','like',"%$key%");
         }
         $lists=$model->where($where)->order('ID DESC')->paginate(15);
-        $this->assign('lists',$lists);
-        $this->assign('page',$lists->render());
+        $this->assign('lists',$lists->items());
+        $this->assign('total',$lists->total());
+        $this->assign('total_page',$lists->lastPage());
+        $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());
         return $this->fetch();
     }
 

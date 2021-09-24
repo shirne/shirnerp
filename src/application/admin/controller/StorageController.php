@@ -196,7 +196,10 @@ class StorageController extends BaseController
             ->order('storageInventory.create_time DESC')
             ->paginate(10);
 
-        $this->assign('lists',$lists);
+        $this->assign('lists',$lists->items());
+        $this->assign('total',$lists->total());
+        $this->assign('total_page',$lists->lastPage());
+        $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());
         $this->assign('storage',$storage);
         $this->assign('storage_id',$storage_id);
         return $this->fetch();

@@ -34,7 +34,7 @@
             </tr>
         </thead>
         <tbody>
-        {foreach $logs as $v}
+        {foreach $lists as $v}
             <tr>
                 <td>{$v.id}</td>
                 <td>{$v.username}</td>

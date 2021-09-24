@@ -63,7 +63,7 @@
             </thead>
             <tbody>
             {php}$empty=list_empty(8);{/php}
-            {volist name="logs" id="v" empty="$empty"}
+            {volist name="lists" id="v" empty="$empty"}
                 <tr>
                     <td>{$v.id}</td>
                     <td>

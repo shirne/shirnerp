@@ -56,8 +56,10 @@ class ArticleController extends BaseController
         }
 
         $lists=$model->order('id DESC')->paginate(10);
-        $this->assign('lists',$lists);
-        $this->assign('page',$lists->render());
+        $this->assign('lists',$lists->items());
+        $this->assign('total',$lists->total());
+        $this->assign('total_page',$lists->lastPage());
+        $this->assign('page',$this->request->isAjax()?$lists->currentPage() : $lists->render());
         $this->assign('types',getArticleTypes());
         $this->assign('keyword',$key);
         $this->assign('cate_id',$cate_id);

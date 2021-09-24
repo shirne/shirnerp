@@ -3,7 +3,7 @@
 namespace app\admin\controller;
 
 use app\common\facade\CategoryFacade;
-use app\common\facade\ProductCategoryFacade;
+use app\common\facade\GoodsCategoryFacade;
 use think\Db;
 use think\facade\Env;
 
@@ -122,8 +122,8 @@ class NavigatorController extends BaseController
             case 'Article':
                 $cates=CategoryFacade::getCategories();
                 break;
-            case 'Product':
-                $cates=ProductCategoryFacade::getCategories();
+            case 'Goods':
+                $cates=GoodsCategoryFacade::getCategories();
                 break;
             default:
                 break;
